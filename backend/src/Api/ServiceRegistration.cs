@@ -14,6 +14,20 @@ public static class ServiceRegistration
             .AddIdentity()
             .AddFastEndpoints();
 
+        // development services
+        if (builder.Environment.IsDevelopment())
+        {
+            // add cors policy
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policyBuilder => policyBuilder
+                    .WithOrigins("http://localhost:4200")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                );
+            });
+        }
+
         return builder;
     }
 
