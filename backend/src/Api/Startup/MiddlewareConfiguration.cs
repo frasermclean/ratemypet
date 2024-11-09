@@ -1,8 +1,7 @@
 ﻿using FastEndpoints;
-using Microsoft.AspNetCore.Identity;
 using RateMyPet.Persistence.Models;
 
-namespace RateMyPet.Api;
+namespace RateMyPet.Api.Startup;
 
 public static class MiddlewareConfiguration
 {

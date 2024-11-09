@@ -1,9 +1,8 @@
 ﻿using FastEndpoints;
-using Microsoft.AspNetCore.Identity;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
 
-namespace RateMyPet.Api;
+namespace RateMyPet.Api.Startup;
 
 public static class ServiceRegistration
 {

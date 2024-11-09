@@ -1,3 +1,5 @@
+using RateMyPet.Api.Startup;
+
 namespace RateMyPet.Api;
 
 public static class Program
