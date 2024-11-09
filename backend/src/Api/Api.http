@@ -1,0 +1,6 @@
+@Api_HostAddress = https://localhost:5443
+
+GET {{Api_HostAddress}}/api/posts
+Accept: application/json
+
+###
