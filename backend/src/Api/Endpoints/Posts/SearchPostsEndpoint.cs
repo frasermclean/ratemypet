@@ -16,11 +16,13 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext) : EndpointWitho
     public override async Task<IEnumerable<PostResponse>> ExecuteAsync(CancellationToken cancellationToken)
     {
         return await dbContext.Posts
+            .AsNoTracking()
             .Select(post => new PostResponse
             {
                 Id = post.Id,
                 Title = post.Title,
-                Caption = post.Caption
+                Caption = post.Caption,
+                Reactions = post.Reactions
             })
             .ToListAsync(cancellationToken);
     }

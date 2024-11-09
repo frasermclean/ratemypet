@@ -30,7 +30,8 @@ public class AddPostEndpoint(ApplicationDbContext dbContext) : Endpoint<AddPostR
         {
             Id = post.Id,
             Title = post.Title,
-            Caption = post.Caption
+            Caption = post.Caption,
+            Reactions = post.Reactions
         };
     }
 }

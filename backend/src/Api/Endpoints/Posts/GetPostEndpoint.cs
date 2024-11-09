@@ -18,12 +18,15 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
     {
         var postId = Route<Guid>("postId");
 
-        var response = await dbContext.Posts.Where(post => post.Id == postId)
+        var response = await dbContext.Posts
+            .AsNoTracking()
+            .Where(post => post.Id == postId)
             .Select(post => new PostResponse
             {
                 Id = post.Id,
                 Title = post.Title,
-                Caption = post.Caption
+                Caption = post.Caption,
+                Reactions = post.Reactions
             })
             .FirstOrDefaultAsync(cancellationToken);
 
