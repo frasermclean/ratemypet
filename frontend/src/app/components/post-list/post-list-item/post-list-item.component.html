@@ -1,0 +1,35 @@
+<mat-card>
+  <mat-card-header>
+    <img mat-card-avatar [src]="authorAvatarUrl" />
+    <mat-card-title>{{ post.title }}</mat-card-title>
+    <mat-card-subtitle>{{ post.caption }}</mat-card-subtitle>
+  </mat-card-header>
+  <a routerLink="{{ post.id }}">
+    <img
+      mat-card-image
+      class="preview-image"
+      [src]="post.imageUrl"
+      [alt]="post.title"
+    />
+  </a>
+
+  <mat-card-actions>
+    @for (reaction of reactions; track $index) {
+    <button
+      mat-icon-button
+      [matBadge]="post.reactions[reaction] > 0 ? post.reactions[reaction] : null"
+      (click)="handleReaction(reaction)"
+      aria-label="Reaction button"
+      matTooltip="{{ reaction | titlecase }}"
+    >
+      <mat-icon
+        svgIcon="reactions:{{ reaction }}"
+        color="primary"
+        class="reaction-icon"
+      />
+    </button>
+    }
+    <span class="spacer"></span>
+    <button mat-button>Comments</button>
+  </mat-card-actions>
+</mat-card>

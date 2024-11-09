@@ -1,0 +1,20 @@
+$card-width: 320px;
+$image-height: 240px;
+
+mat-card {
+  max-width: $card-width;
+
+  mat-card-header {
+    white-space: nowrap;
+  }
+
+  img.preview-image {
+    object-fit: cover;
+    width: $card-width;
+    height: $image-height;
+  }
+}
+
+.spacer {
+  flex: 1 1 auto;
+}

@@ -1,0 +1,29 @@
+:host {
+  width: 100%;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  mat-card {
+    width: 100%;
+    max-width: 1440px;
+    min-width: 320px;
+
+    img.full-image {
+      width: inherit;
+      height: auto;
+    }
+
+    mat-card-content {
+      .spinner-container {
+        width: 100%;
+        min-height: 400px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+}
