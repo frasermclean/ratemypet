@@ -1,4 +1,4 @@
-﻿namespace RateMyPet.Core;
+﻿namespace RateMyPet.Persistence.Models;
 
 public class Post
 {
@@ -8,4 +8,5 @@ public class Post
     public Guid Id { get; init; }
     public required string Title { get; set; }
     public required string Caption { get; set; }
+    public required User User { get; init; }
 }

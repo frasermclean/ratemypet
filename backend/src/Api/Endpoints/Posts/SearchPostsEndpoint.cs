@@ -1,7 +1,7 @@
 ﻿using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
-using RateMyPet.Core;
 using RateMyPet.Persistence;
+using RateMyPet.Persistence.Models;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 

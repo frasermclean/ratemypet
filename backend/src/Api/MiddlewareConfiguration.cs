@@ -1,4 +1,6 @@
 ﻿using FastEndpoints;
+using Microsoft.AspNetCore.Identity;
+using RateMyPet.Persistence.Models;
 
 namespace RateMyPet.Api;
 
@@ -10,6 +12,10 @@ public static class MiddlewareConfiguration
         {
             config.Endpoints.RoutePrefix = "api";
         });
+
+        // authentication endpoints
+        app.MapGroup("auth")
+            .MapIdentityApi<User>();
 
         return app;
     }
