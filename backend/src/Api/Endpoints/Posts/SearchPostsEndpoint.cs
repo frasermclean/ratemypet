@@ -5,7 +5,7 @@ using RateMyPet.Persistence.Models;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class SearchPostsEndpoint(ApplicationDbContext dbContext) : EndpointWithoutRequest<IEnumerable<Post>>
+public class SearchPostsEndpoint(ApplicationDbContext dbContext) : EndpointWithoutRequest<IEnumerable<PostResponse>>
 {
     public override void Configure()
     {
@@ -13,9 +13,15 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext) : EndpointWitho
         AllowAnonymous();
     }
 
-    public override async Task<IEnumerable<Post>> ExecuteAsync(CancellationToken cancellationToken)
+    public override async Task<IEnumerable<PostResponse>> ExecuteAsync(CancellationToken cancellationToken)
     {
-        var posts = await dbContext.Posts.ToListAsync(cancellationToken);
-        return posts;
+        return await dbContext.Posts
+            .Select(post => new PostResponse
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Caption = post.Caption
+            })
+            .ToListAsync(cancellationToken);
     }
 }

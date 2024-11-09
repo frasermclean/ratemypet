@@ -8,10 +8,7 @@ public static class MiddlewareConfiguration
 {
     public static WebApplication ConfigureMiddleware(this WebApplication app)
     {
-        app.UseFastEndpoints(config =>
-        {
-            config.Endpoints.RoutePrefix = "api";
-        });
+        app.UseFastEndpoints();
 
         // authentication endpoints
         app.MapGroup("auth")
