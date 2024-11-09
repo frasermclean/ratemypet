@@ -16,14 +16,5 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
 
         builder.Property(post => post.Caption)
             .HasMaxLength(Post.CaptionMaxLength);
-
-        builder.OwnsOne<PostReactions>(post => post.Reactions, navigationBuilder =>
-        {
-            navigationBuilder.Property(reactions => reactions.LikeCount).HasColumnName("LikeCount");
-            navigationBuilder.Property(reactions => reactions.FunnyCount).HasColumnName("FunnyCount");
-            navigationBuilder.Property(reactions => reactions.CrazyCount).HasColumnName("CrazyCount");
-            navigationBuilder.Property(reactions => reactions.WowCount).HasColumnName("WowCount");
-            navigationBuilder.Property(reactions => reactions.SadCount).HasColumnName("SadCount");
-        });
     }
 }

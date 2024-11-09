@@ -4,5 +4,6 @@ namespace RateMyPet.Persistence.Models;
 
 public class User : IdentityUser<Guid>
 {
-    public List<Post> Posts { get; init; } = [];
+    public List<Post> Posts { get; } = [];
+    public List<PostReaction> PostReactions { get; } = [];
 }

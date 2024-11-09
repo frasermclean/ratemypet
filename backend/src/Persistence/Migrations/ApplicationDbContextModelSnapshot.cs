@@ -152,6 +152,32 @@ namespace RateMyPet.Persistence.Migrations
                     b.ToTable("Posts");
                 });
 
+            modelBuilder.Entity("RateMyPet.Persistence.Models.PostReaction", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<char>("Reaction")
+                        .HasColumnType("nvarchar(1)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PostReactions", (string)null);
+                });
+
             modelBuilder.Entity("RateMyPet.Persistence.Models.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -305,53 +331,37 @@ namespace RateMyPet.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("RateMyPet.Persistence.Models.PostReactions", "Reactions", b1 =>
-                        {
-                            b1.Property<Guid>("PostId")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uniqueidentifier");
+                    b.Navigation("User");
+                });
 
-                            b1.Property<long>("CrazyCount")
-                                .HasColumnType("bigint")
-                                .HasColumnName("CrazyCount")
-                                .HasAnnotation("Relational:JsonPropertyName", "crazy");
-
-                            b1.Property<long>("FunnyCount")
-                                .HasColumnType("bigint")
-                                .HasColumnName("FunnyCount")
-                                .HasAnnotation("Relational:JsonPropertyName", "funny");
-
-                            b1.Property<long>("LikeCount")
-                                .HasColumnType("bigint")
-                                .HasColumnName("LikeCount")
-                                .HasAnnotation("Relational:JsonPropertyName", "like");
-
-                            b1.Property<long>("SadCount")
-                                .HasColumnType("bigint")
-                                .HasColumnName("SadCount")
-                                .HasAnnotation("Relational:JsonPropertyName", "sad");
-
-                            b1.Property<long>("WowCount")
-                                .HasColumnType("bigint")
-                                .HasColumnName("WowCount")
-                                .HasAnnotation("Relational:JsonPropertyName", "wow");
-
-                            b1.HasKey("PostId");
-
-                            b1.ToTable("Posts");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PostId");
-                        });
-
-                    b.Navigation("Reactions")
+            modelBuilder.Entity("RateMyPet.Persistence.Models.PostReaction", b =>
+                {
+                    b.HasOne("RateMyPet.Persistence.Models.Post", "Post")
+                        .WithMany("Reactions")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("RateMyPet.Persistence.Models.User", "User")
+                        .WithMany("PostReactions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Post");
 
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("RateMyPet.Persistence.Models.Post", b =>
+                {
+                    b.Navigation("Reactions");
+                });
+
             modelBuilder.Entity("RateMyPet.Persistence.Models.User", b =>
                 {
+                    b.Navigation("PostReactions");
+
                     b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
