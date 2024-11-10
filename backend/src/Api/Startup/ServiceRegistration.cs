@@ -34,6 +34,7 @@ public static class ServiceRegistration
                     .WithOrigins("http://localhost:4200")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
+                    .AllowCredentials()
                 );
             });
         }
