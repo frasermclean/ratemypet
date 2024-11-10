@@ -1,4 +1,7 @@
-﻿using FastEndpoints;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using FastEndpoints;
+using Microsoft.AspNetCore.Http.Json;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
 
@@ -12,6 +15,14 @@ public static class ServiceRegistration
             .AddPersistence()
             .AddIdentity()
             .AddFastEndpoints();
+
+        // json serialization options
+        builder.Services.Configure<JsonOptions>(options =>
+        {
+            options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            options.SerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+        });
 
         // development services
         if (builder.Environment.IsDevelopment())

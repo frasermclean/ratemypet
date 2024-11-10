@@ -2,7 +2,7 @@
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class PostReactionResponse
+public class PostReactionsResponse
 {
     [JsonPropertyName("like")] public int LikeCount { get; init; }
     [JsonPropertyName("funny")] public int FunnyCount { get; init; }

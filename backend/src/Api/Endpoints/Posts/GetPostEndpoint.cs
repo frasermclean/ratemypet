@@ -27,7 +27,7 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
                 Id = post.Id,
                 Title = post.Title,
                 Caption = post.Caption,
-                Reactions = new PostReactionResponse
+                Reactions = new PostReactionsResponse
                 {
                     LikeCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Like),
                     CrazyCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Crazy),
