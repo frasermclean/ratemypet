@@ -37,6 +37,8 @@ public static class ServiceRegistration
         services.AddIdentityApiEndpoints<User>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
+        services.ConfigureApplicationCookie(options => { options.Cookie.Name = "RateMyPet"; });
+
         return services;
     }
 }
