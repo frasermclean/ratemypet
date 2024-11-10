@@ -10,6 +10,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     : IdentityDbContext<User, Role, Guid>(options)
 {
     public DbSet<Post> Posts => Set<Post>();
+    public DbSet<PostReaction> PostReactions => Set<PostReaction>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

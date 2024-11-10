@@ -31,13 +31,6 @@ public class UpdatePostReactionEndpoint(ApplicationDbContext dbContext)
         var existingReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == user.Id);
         if (existingReaction is not null)
         {
-            if (existingReaction.Reaction == request.Reaction)
-            {
-                Logger.LogInformation("User with ID {UserId} already has reaction {Reaction} on post with ID {PostId}",
-                    user.Id, request.Reaction, post.Id);
-                return TypedResults.Ok(Map.FromEntity(post));
-            }
-
             Logger.LogInformation("Updating reaction to {Reaction} for user with ID {UserId} on post with ID {PostId}",
                 request.Reaction, user.Id, post.Id);
             existingReaction.Reaction = request.Reaction;

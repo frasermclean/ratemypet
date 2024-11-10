@@ -5,7 +5,7 @@ using RateMyPet.Persistence.Models;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class AddPostEndpoint(ApplicationDbContext dbContext) : Endpoint<AddPostRequest, PostResponse>
+public class AddPostEndpoint(ApplicationDbContext dbContext) : Endpoint<AddPostRequest, PostResponse, PostResponseMapper>
 {
     public override void Configure()
     {
@@ -26,12 +26,6 @@ public class AddPostEndpoint(ApplicationDbContext dbContext) : Endpoint<AddPostR
         user.Posts.Add(post);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new PostResponse
-        {
-            Id = post.Id,
-            Title = post.Title,
-            Caption = post.Caption,
-            Reactions = new PostReactionsResponse()
-        };
+        return Map.FromEntity(post);
     }
 }
