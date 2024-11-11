@@ -9,7 +9,12 @@
     <UserSecretsId>e5a738df-5b24-4d63-a1f0-6d0d6f425dec</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>    
+  <PropertyGroup>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..</DockerfileContext>
+  </PropertyGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Persistence\Persistence.csproj" />
   </ItemGroup>
 
@@ -18,7 +23,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>    
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
   </ItemGroup>
 
 </Project>
