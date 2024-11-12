@@ -1,13 +1,14 @@
 @if (posts$ | async; as posts) { @for (post of posts; track post.id) {
 <app-post-list-item [post]="post" />
-} } @else if (loading$ | async) {
-<div class="centered-container">
-  <h2>Loading posts</h2>
-  <mat-spinner></mat-spinner>
-</div>
-} @else {
+} @empty {
 <div class="centered-container">
   <h2>No posts found</h2>
   <p>No posts could be loaded from the server. Please try again later.</p>
+  <button mat-raised-button (click)="refreshPosts()">Try again</button>
+</div>
+}} @else if (loading$ | async) {
+<div class="centered-container">
+  <h2>Loading posts</h2>
+  <mat-spinner></mat-spinner>
 </div>
 }
