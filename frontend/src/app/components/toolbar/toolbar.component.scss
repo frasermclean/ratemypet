@@ -10,4 +10,10 @@ mat-toolbar {
   .spacer {
     flex: 1 1 auto;
   }
+
+  .user-content {
+    display: flex;
+    align-items: end;
+    gap: 8px;
+  }
 }

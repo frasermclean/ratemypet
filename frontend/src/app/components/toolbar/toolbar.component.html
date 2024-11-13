@@ -4,8 +4,19 @@
   </button>
   <a class="title" routerLink="/">{{ title }}</a>
   <span class="spacer"></span>
-  <button mat-flat-button color="primary">
-    <mat-icon>share</mat-icon>
-    Share
-  </button>
+  <div class="user-content">
+    @if (isBusy()) {
+    <mat-spinner diameter="20"></mat-spinner>
+    } @else if(isLoggedIn()) {
+    <button mat-flat-button (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button>
+    } @else {
+    <a mat-flat-button routerLink="/login">
+      <mat-icon>login</mat-icon>
+      Login
+    </a>
+    }
+  </div>
 </mat-toolbar>
