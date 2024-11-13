@@ -14,4 +14,4 @@ export interface Post {
 }
 
 export const reactions: Reaction[] = ['like', 'funny', 'crazy', 'wow', 'sad'];
-type Reaction = 'like' | 'funny' | 'crazy' | 'wow' | 'sad';
+export type Reaction = 'like' | 'funny' | 'crazy' | 'wow' | 'sad';

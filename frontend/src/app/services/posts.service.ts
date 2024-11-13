@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, finalize, Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import { Post } from '@models/post.model';
+import { Post, Reaction } from '@models/post.model';
 
 @Injectable({
   providedIn: 'root',
@@ -32,5 +32,12 @@ export class PostsService {
       catchError(() => [null]),
       finalize(() => this.busySubject.next(false))
     );
+  }
+
+  updatePostReaction(postId: string, reaction: Reaction) {
+    this.busySubject.next(true);
+    return this.httpClient
+      .put<Post>(`${this.baseUrl}/${postId}/reactions`, { reaction })
+      .pipe(finalize(() => this.busySubject.next(false)));
   }
 }
