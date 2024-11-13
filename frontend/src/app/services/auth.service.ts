@@ -36,21 +36,27 @@ export class AuthService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('accessToken')}`);
     return this.httpClient.post(`${this.baseUrl}/logout`, null, { headers }).pipe(
       tap(() => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('accessTokenExpiry');
-        localStorage.removeItem('refreshToken');
+        localStorage.clear();
         this._isLoggedIn.set(false);
       }),
       finalize(() => this._isBusy.set(false))
     );
   }
 
-  private refreshToken(refreshToken: string) {
-    return this.httpClient.post<AccessTokenResponse>(`${this.baseUrl}/refresh`, { refreshToken }).pipe(
-      tap((response) => {
-        this.processAccessTokenResponse(response);
-      })
-    );
+  public initialize(): void {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) {
+      return;
+    }
+
+    this._isBusy.set(true);
+    this.httpClient
+      .post<AccessTokenResponse>(`${this.baseUrl}/refresh`, { refreshToken })
+      .pipe(
+        tap((response) => this.processAccessTokenResponse(response)),
+        finalize(() => this._isBusy.set(false))
+      )
+      .subscribe();
   }
 
   private processAccessTokenResponse(response: AccessTokenResponse) {
