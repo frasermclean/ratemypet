@@ -10,6 +10,8 @@ public class AddPostEndpoint(ApplicationDbContext dbContext) : Endpoint<AddPostR
     public override void Configure()
     {
         Post("posts");
+        AllowFormData();
+        AllowFileUploads();
     }
 
     public override async Task<PostResponse> ExecuteAsync(AddPostRequest request, CancellationToken cancellationToken)
