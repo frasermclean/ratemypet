@@ -1,7 +1,6 @@
-import { APP_INITIALIZER, ApplicationConfig, inject, PLATFORM_ID, provideZoneChangeDetection } from '@angular/core';
-import { isPlatformServer } from '@angular/common';
-import { provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
-import { DomSanitizer, provideClientHydration } from '@angular/platform-browser';
+import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { DomSanitizer } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { MatIconRegistry } from '@angular/material/icon';
@@ -23,7 +22,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
-    provideClientHydration(),
     provideAnimationsAsync(),
     provideStore(
       [AuthState, PostsState],
@@ -41,13 +39,9 @@ export const appConfig: ApplicationConfig = {
 };
 
 function initializeApp(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {
-  const platformId = inject(PLATFORM_ID);
-  const isServer = isPlatformServer(platformId);
-  const baseUrl = isServer ? 'http://localhost:4200/' : '';
-
   // register SVG icons
   iconRegistry.addSvgIconResolver((name, namespace) => {
     const path = `icons/${namespace}/${name}.svg`;
-    return sanitizer.bypassSecurityTrustResourceUrl(baseUrl + path);
+    return sanitizer.bypassSecurityTrustResourceUrl(path);
   });
 }
