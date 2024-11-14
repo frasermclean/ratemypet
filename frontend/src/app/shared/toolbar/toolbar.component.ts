@@ -1,26 +1,29 @@
 import { Component, inject, Input } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '@services/auth.service';
+import { Store } from '@ngxs/store';
+import { AuthState } from '../../auth/auth.state';
+import { AuthActions } from '../../auth/auth.actions';
 
 @Component({
   selector: 'app-toolbar',
   standalone: true,
-  imports: [MatIconModule, MatButtonModule, MatProgressSpinnerModule, MatToolbarModule, RouterLink],
+  imports: [AsyncPipe, MatIconModule, MatButtonModule, MatProgressSpinnerModule, MatToolbarModule, RouterLink],
   templateUrl: './toolbar.component.html',
   styleUrl: './toolbar.component.scss',
 })
 export class ToolbarComponent {
-  authService = inject(AuthService);
+  store = inject(Store);
   router = inject(Router);
   @Input() title: string = 'Rate My Pet';
-  isBusy = this.authService.isBusy;
-  isLoggedIn = this.authService.isLoggedIn;
+  isBusy$ = this.store.select(AuthState.isBusy);
+  isLoggedIn$ = this.store.select(AuthState.isLoggedIn);
 
   logout() {
-    this.authService.logout().subscribe();
+    this.store.dispatch(new AuthActions.Logout());
   }
 }

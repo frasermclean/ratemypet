@@ -5,9 +5,9 @@
   <a class="title" routerLink="/">{{ title }}</a>
   <span class="spacer"></span>
   <div class="user-content">
-    @if (isBusy()) {
+    @if (isBusy$ | async) {
     <mat-spinner diameter="20"></mat-spinner>
-    } @else if(isLoggedIn()) {
+    } @else if(isLoggedIn$ | async) {
     <button mat-flat-button (click)="logout()">
       <mat-icon>logout</mat-icon>
       Logout

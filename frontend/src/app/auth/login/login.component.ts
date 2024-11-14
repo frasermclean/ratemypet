@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,9 +7,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Store } from '@ngxs/store';
 import { catchError, tap } from 'rxjs';
-
-import { AuthService } from '@services/auth.service';
+import { AuthActions } from '../auth.actions';
 
 @Component({
   selector: 'app-login',
@@ -34,8 +34,8 @@ export class LoginComponent {
     password: ['', Validators.required],
   });
 
-  private router: Router = inject(Router);
-  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly store = inject(Store);
   private readonly snackBar = inject(MatSnackBar);
 
   onSubmit() {
@@ -43,15 +43,18 @@ export class LoginComponent {
       return;
     }
     const formValue = this.formGroup.getRawValue();
-    this.authService.login(formValue.email, formValue.password).pipe(
-      tap(() => {
-        this.snackBar.open('Welcome back!', 'Close', { duration: 1500 });
-        this.router.navigate(['/']);
-      }),
-      catchError((error) => {
-        this.snackBar.open('Invalid credentials. Please check and try again.', 'Close', { duration: 5000 });
-        return error;
-      })
-    ).subscribe();
+    this.store
+      .dispatch(new AuthActions.Login(formValue.email, formValue.password))
+      .pipe(
+        tap(() => {
+          this.snackBar.open('Welcome back!', 'Close', { duration: 1500 });
+          this.router.navigate(['/']);
+        }),
+        catchError((error) => {
+          this.snackBar.open('Invalid credentials. Please check and try again.', 'Close', { duration: 5000 });
+          return error;
+        })
+      )
+      .subscribe();
   }
 }
