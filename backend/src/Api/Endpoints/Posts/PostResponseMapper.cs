@@ -10,13 +10,12 @@ public class PostResponseMapper : ResponseMapper<PostResponse, Post>
         Id = post.Id,
         Title = post.Title,
         Caption = post.Caption,
-        Reactions = new PostReactionsResponse
-        {
-            LikeCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Like),
-            CrazyCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Crazy),
-            FunnyCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Funny),
-            WowCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Wow),
-            SadCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Sad)
-        }
+        ImageUrl = "",
+        AuthorEmailHash = "",
+        LikeCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Like),
+        CrazyCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Crazy),
+        FunnyCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Funny),
+        WowCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Wow),
+        SadCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Sad)
     };
 }

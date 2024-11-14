@@ -8,9 +8,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngxs/store';
 
-import { Post, Reaction, reactions } from '@models/post.model';
 import { GravatarComponent } from '@shared/gravatar/gravatar.component';
 import { PostsActions } from '../../posts.actions';
+import { allReactions, Post, Reaction } from '@models/post.models';
+
 
 @Component({
   selector: 'app-post-list-item',
@@ -29,10 +30,14 @@ import { PostsActions } from '../../posts.actions';
   styleUrl: './post-list-item.component.scss',
 })
 export class PostItemComponent {
-  reactions = reactions;
+  reactions = allReactions;
 
   private readonly store = inject(Store);
   @Input({ required: true }) post!: Post;
+
+  getReactionCount(reaction: Reaction) {
+    return this.post[`${reaction}Count`];
+  }
 
   handleReaction(reaction: Reaction) {
     this.store.dispatch(new PostsActions.UpdatePostReaction(this.post.id, reaction));

@@ -5,9 +5,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 
-import { Post } from '@models/post.model';
 import { PostsActions } from '../posts.actions';
 import { PostsState } from '../posts.state';
+import { DetailedPost } from '@models/post.models';
 
 @Component({
   selector: 'app-post-view',
@@ -18,13 +18,13 @@ import { PostsState } from '../posts.state';
 })
 export class PostViewComponent implements OnInit {
   private readonly store = inject(Store);
-  status$ = this.store.select(PostsState.status)
-  post$!: Observable<Post | undefined>;
+  status$ = this.store.select(PostsState.status);
+  post$!: Observable<DetailedPost | null>;
 
   @Input({ required: true }) postId!: string;
 
   ngOnInit(): void {
     this.store.dispatch(new PostsActions.GetPost(this.postId));
-    this.post$ = this.store.select(PostsState.getPostById(this.postId));
+    this.post$ = this.store.select(PostsState.currentPost);
   }
 }

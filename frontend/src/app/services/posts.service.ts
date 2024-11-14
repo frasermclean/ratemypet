@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { finalize, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import { Post, Reaction } from '@models/post.model';
+import { DetailedPost, Post, Reaction } from '@models/post.models';
 
 @Injectable({
   providedIn: 'root',
@@ -17,10 +17,10 @@ export class PostsService {
   }
 
   getPost(postId: string) {
-    return this.httpClient.get<Post>(`${this.baseUrl}/${postId}`);
+    return this.httpClient.get<DetailedPost>(`${this.baseUrl}/${postId}`);
   }
 
   updatePostReaction(postId: string, reaction: Reaction) {
-    return this.httpClient.put<Post>(`${this.baseUrl}/${postId}/reactions`, { reaction });
+    return this.httpClient.put<DetailedPost>(`${this.baseUrl}/${postId}/reactions`, { reaction });
   }
 }

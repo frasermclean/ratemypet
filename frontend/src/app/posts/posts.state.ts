@@ -1,15 +1,16 @@
 import { inject, Injectable } from '@angular/core';
-import { Action, createSelector, Selector, State, StateContext } from '@ngxs/store';
+import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { catchError, tap } from 'rxjs';
 
-import { Post } from '@models/post.model';
 import { PostsService } from '@services/posts.service';
 import { PostsActions } from './posts.actions';
+import { DetailedPost, Post } from '@models/post.models';
 
 interface PostsStateModel {
   status: 'initial' | 'busy' | 'error' | 'ready';
   error: any;
   posts: Post[];
+  currentPost: DetailedPost | null;
 }
 
 @State<PostsStateModel>({
@@ -18,6 +19,7 @@ interface PostsStateModel {
     status: 'initial',
     error: null,
     posts: [],
+    currentPost: null,
   },
 })
 @Injectable()
@@ -28,8 +30,8 @@ export class PostsState {
   searchPosts(context: StateContext<PostsStateModel>) {
     context.patchState({ status: 'busy' });
     return this.postsService.searchPosts().pipe(
-      tap((posts) => {
-        context.patchState({ status: 'ready', posts });
+      tap((summaries) => {
+        context.patchState({ status: 'ready', posts: summaries });
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });
@@ -40,15 +42,10 @@ export class PostsState {
 
   @Action(PostsActions.GetPost)
   getPost(context: StateContext<PostsStateModel>, action: PostsActions.GetPost) {
-    const state = context.getState();
-    if (state.posts.some((post) => post.id === action.postId)) {
-      return;
-    }
-
     context.patchState({ status: 'busy' });
     return this.postsService.getPost(action.postId).pipe(
       tap((post) => {
-        context.patchState({ status: 'ready', posts: [post] });
+        context.patchState({ status: 'ready', currentPost: post });
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });
@@ -60,13 +57,13 @@ export class PostsState {
   @Action(PostsActions.UpdatePostReaction)
   updatePostReaction(context: StateContext<PostsStateModel>, action: PostsActions.UpdatePostReaction) {
     return this.postsService.updatePostReaction(action.postId, action.reaction).pipe(
-      tap((post) => {
-        const posts = context.getState().posts.map((p) => (p.id === post.id ? post : p));
-        context.patchState({ status: 'ready', posts });
+      tap((response) => {
+        context.patchState({ status: 'ready' });
       }),
       catchError((error) => {
+        console.error('Error updating post reaction', error);
         context.patchState({ status: 'error', error });
-        return error;
+        return [error];
       })
     );
   }
@@ -81,9 +78,8 @@ export class PostsState {
     return state.posts;
   }
 
-  static getPostById(postId: string) {
-    return createSelector([PostsState], (state: PostsStateModel) => {
-      return state.posts.find((post) => post.id === postId);
-    });
+  @Selector()
+  static currentPost(state: PostsStateModel) {
+    return state.currentPost;
   }
 }
