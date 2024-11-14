@@ -4,10 +4,12 @@ namespace RateMyPet.Api.Extensions;
 
 public static class ClaimsPrincipalExtensions
 {
-    public static Guid GetUserId(this ClaimsPrincipal principal)
+    public static Guid? GetUserId(this ClaimsPrincipal principal)
     {
-        var claim = principal.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier);
+        var claim = principal.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
 
-        return Guid.Parse(claim.Value);
+        return claim is not null
+            ? Guid.Parse(claim.Value)
+            : null;
     }
 }
