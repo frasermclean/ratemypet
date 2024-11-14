@@ -61,7 +61,8 @@ export class PostsState {
   updatePostReaction(context: StateContext<PostsStateModel>, action: PostsActions.UpdatePostReaction) {
     return this.postsService.updatePostReaction(action.postId, action.reaction).pipe(
       tap((post) => {
-        context.patchState({ status: 'ready' });
+        const posts = context.getState().posts.map((p) => (p.id === post.id ? post : p));
+        context.patchState({ status: 'ready', posts });
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });
