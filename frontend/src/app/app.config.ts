@@ -6,11 +6,17 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { MatIconRegistry } from '@angular/material/icon';
 import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
-import { provideStore, withNgxsDevelopmentOptions } from '@ngxs/store';
+import { NgxsModuleOptions, provideStore } from '@ngxs/store';
 
 import { routes } from './app.routes';
 import { AuthState } from './auth/auth.state';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { PostsState } from './posts/posts.state';
+import { environment } from '../environments/environment';
+
+const ngxsOptions: NgxsModuleOptions = {
+  developmentMode: environment.name === 'development',
+};
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,7 +26,8 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(),
     provideAnimationsAsync(),
     provideStore(
-      [AuthState],
+      [AuthState, PostsState],
+      ngxsOptions,
       withNgxsStoragePlugin({
         keys: ['auth.refreshToken'],
       })

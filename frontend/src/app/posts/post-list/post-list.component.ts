@@ -1,10 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Store } from '@ngxs/store';
 
-import { PostsService } from '@services/posts.service';
+import { PostsState } from '../posts.state';
 import { PostItemComponent } from './post-list-item/post-list-item.component';
+import { PostsActions } from '../posts.actions';
 
 @Component({
   selector: 'app-post-list',
@@ -13,12 +15,16 @@ import { PostItemComponent } from './post-list-item/post-list-item.component';
   templateUrl: './post-list.component.html',
   styleUrl: './post-list.component.scss',
 })
-export class PostListComponent {
-  private readonly postsService = inject(PostsService);
-  posts$ = this.postsService.getPosts();
-  loading$ = this.postsService.busy$;
+export class PostListComponent implements OnInit{
+  private readonly store = inject(Store);
+  status$ = this.store.select(PostsState.status);
+  posts$ = this.store.select(PostsState.posts);
 
-  refreshPosts() {
-    this.posts$ = this.postsService.getPosts();
+  ngOnInit(): void {
+    this.searchPosts();
+  }
+
+  searchPosts() {
+    this.store.dispatch(new PostsActions.SearchPosts());
   }
 }

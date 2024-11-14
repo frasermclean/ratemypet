@@ -1,4 +1,4 @@
 export interface Environment {
-  name: string;
+  name: 'development' | 'production';
   apiBaseUrl: string;
 }

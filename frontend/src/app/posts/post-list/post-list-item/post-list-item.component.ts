@@ -6,11 +6,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
+import { Store } from '@ngxs/store';
 
 import { Post, Reaction, reactions } from '@models/post.model';
-
-import { PostsService } from '@services/posts.service';
 import { GravatarComponent } from '@shared/gravatar/gravatar.component';
+import { PostsActions } from '../../posts.actions';
 
 @Component({
   selector: 'app-post-list-item',
@@ -31,11 +31,10 @@ import { GravatarComponent } from '@shared/gravatar/gravatar.component';
 export class PostItemComponent {
   reactions = reactions;
 
-  private readonly postsService = inject(PostsService);
+  private readonly store = inject(Store);
   @Input({ required: true }) post!: Post;
 
-
   handleReaction(reaction: Reaction) {
-    this.postsService.updatePostReaction(this.post.id, reaction).subscribe();
+    this.store.dispatch(new PostsActions.UpdatePostReaction(this.post.id, reaction));
   }
 }
