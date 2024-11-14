@@ -6,8 +6,9 @@ import { AuthService } from '@services/auth.service';
 import { catchError, tap } from 'rxjs';
 
 interface AuthStateModel {
-  isBusy: boolean;
+  status: 'initial' | 'busy' | 'error' | 'loggedIn' | 'loggedOut';
   error: any;
+  emailAddress: string | null;
   accessToken: string | null;
   accessTokenExpiry: Date | null;
   refreshToken: string | null;
@@ -16,8 +17,9 @@ interface AuthStateModel {
 @State<AuthStateModel>({
   name: 'auth',
   defaults: {
-    isBusy: false,
+    status: 'initial',
     error: null,
+    emailAddress: null,
     accessToken: null,
     accessTokenExpiry: null,
     refreshToken: null,
@@ -36,20 +38,20 @@ export class AuthState implements NgxsOnInit {
 
   @Action(AuthActions.Login)
   login(context: StateContext<AuthStateModel>, action: AuthActions.Login) {
-    context.patchState({ isBusy: true });
+    context.patchState({ status: 'busy', emailAddress: action.email });
     return this.authService.login(action.email, action.password).pipe(
       tap((response) => {
         const accessTokenExpiry = new Date();
         accessTokenExpiry.setSeconds(accessTokenExpiry.getSeconds() + response.expiresIn);
         context.patchState({
-          isBusy: false,
+          status: 'loggedIn',
           accessToken: response.accessToken,
           accessTokenExpiry,
           refreshToken: response.refreshToken,
         });
       }),
       catchError((error) => {
-        context.patchState({ isBusy: false, error });
+        context.patchState({ status: 'error', error });
         return error;
       })
     );
@@ -57,11 +59,12 @@ export class AuthState implements NgxsOnInit {
 
   @Action(AuthActions.Logout)
   logout(context: StateContext<AuthStateModel>) {
-    context.patchState({ isBusy: true });
+    context.patchState({ status: 'busy' });
     return this.authService.logout().pipe(
       tap(() => {
         context.patchState({
-          isBusy: false,
+          status: 'loggedOut',
+          emailAddress: null,
           accessToken: null,
           accessTokenExpiry: null,
           refreshToken: null,
@@ -72,41 +75,37 @@ export class AuthState implements NgxsOnInit {
 
   @Action(AuthActions.RefreshAccessToken)
   refreshAccessToken(context: StateContext<AuthStateModel>, action: AuthActions.RefreshAccessToken) {
-    context.patchState({ isBusy: true });
+    context.patchState({ status: 'busy' });
     return this.authService.refreshAccessToken(action.refreshToken).pipe(
       tap((response) => {
         const accessTokenExpiry = new Date();
         accessTokenExpiry.setSeconds(accessTokenExpiry.getSeconds() + response.expiresIn);
         context.patchState({
-          isBusy: false,
+          status: 'loggedIn',
           accessToken: response.accessToken,
           accessTokenExpiry,
           refreshToken: response.refreshToken,
         });
       }),
       catchError((error) => {
-        context.patchState({ isBusy: false, error });
+        context.patchState({ status: 'error', error });
         return error;
       })
     );
   }
 
   @Selector()
-  static isBusy(state: AuthStateModel): boolean {
-    return state.isBusy;
+  static status(state: AuthStateModel) {
+    return state.status;
   }
 
   @Selector()
-  static isLoggedIn(state: AuthStateModel): boolean {
-    if (!state.accessToken || !state.accessTokenExpiry) {
-      return false;
-    }
-
-    return state.accessTokenExpiry > new Date();
+  static emailAddress(state: AuthStateModel) {
+    return state.emailAddress;
   }
 
   @Selector()
-  static accessToken(state: AuthStateModel): string | null {
+  static accessToken(state: AuthStateModel) {
     return state.accessToken;
   }
 }

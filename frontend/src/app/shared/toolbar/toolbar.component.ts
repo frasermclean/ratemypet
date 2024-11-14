@@ -20,8 +20,7 @@ export class ToolbarComponent {
   store = inject(Store);
   router = inject(Router);
   @Input() title: string = 'Rate My Pet';
-  isBusy$ = this.store.select(AuthState.isBusy);
-  isLoggedIn$ = this.store.select(AuthState.isLoggedIn);
+  status$ = this.store.select(AuthState.status);
 
   logout() {
     this.store.dispatch(new AuthActions.Logout());
