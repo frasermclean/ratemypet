@@ -8,8 +8,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 
 import { Post, Reaction, reactions } from '@models/post.model';
-import { GravatarService } from '@services/gravatar.service';
+
 import { PostsService } from '@services/posts.service';
+import { GravatarComponent } from '@shared/gravatar/gravatar.component';
 
 @Component({
   selector: 'app-post-list-item',
@@ -22,19 +23,17 @@ import { PostsService } from '@services/posts.service';
     MatIconModule,
     MatTooltipModule,
     RouterLink,
+    GravatarComponent,
   ],
   templateUrl: './post-list-item.component.html',
   styleUrl: './post-list-item.component.scss',
 })
 export class PostItemComponent {
   reactions = reactions;
-  private readonly gravatarService = inject(GravatarService);
+
   private readonly postsService = inject(PostsService);
   @Input({ required: true }) post!: Post;
 
-  get authorAvatarUrl() {
-    return this.gravatarService.getGravatarUrl(this.post.authorHash);
-  }
 
   handleReaction(reaction: Reaction) {
     this.postsService.updatePostReaction(this.post.id, reaction).subscribe();

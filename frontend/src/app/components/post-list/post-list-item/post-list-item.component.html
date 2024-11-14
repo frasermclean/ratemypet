@@ -1,6 +1,6 @@
 <mat-card>
   <mat-card-header>
-    <img mat-card-avatar [src]="authorAvatarUrl" />
+    <app-gravatar mat-card-avatar [emailHash]="post.authorHash" />
     <mat-card-title>{{ post.title }}</mat-card-title>
     <mat-card-subtitle>{{ post.caption }}</mat-card-subtitle>
   </mat-card-header>
