@@ -1,11 +1,13 @@
 ﻿using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
+using RateMyPet.Api.Services;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class SearchPostsEndpoint(ApplicationDbContext dbContext) : EndpointWithoutRequest<IEnumerable<PostResponse>>
+public class SearchPostsEndpoint(ApplicationDbContext dbContext, EmailHasher emailHasher)
+    : EndpointWithoutRequest<IEnumerable<PostResponse>>
 {
     public override void Configure()
     {
@@ -22,8 +24,8 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext) : EndpointWitho
                 Id = post.Id,
                 Title = post.Title,
                 Caption = post.Caption,
-                ImageUrl = "",
-                AuthorEmailHash = "abc123",
+                ImageUrl = PostResponse.SampleImageUrl,
+                AuthorEmailHash = emailHasher.GetSha256Hash(post.User.Email),
                 LikeCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Like),
                 CrazyCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Crazy),
                 FunnyCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Funny),

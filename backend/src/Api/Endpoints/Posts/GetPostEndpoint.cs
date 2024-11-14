@@ -1,12 +1,13 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using RateMyPet.Api.Services;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class GetPostEndpoint(ApplicationDbContext dbContext)
+public class GetPostEndpoint(ApplicationDbContext dbContext, EmailHasher emailHasher)
     : EndpointWithoutRequest<Results<Ok<PostResponse>, NotFound>>
 {
     public override void Configure()
@@ -27,8 +28,8 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
                 Id = post.Id,
                 Title = post.Title,
                 Caption = post.Caption,
-                ImageUrl = "",
-                AuthorEmailHash = "",
+                ImageUrl = PostResponse.SampleImageUrl,
+                AuthorEmailHash = emailHasher.GetSha256Hash(post.User.Email),
                 LikeCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Like),
                 CrazyCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Crazy),
                 FunnyCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Funny),

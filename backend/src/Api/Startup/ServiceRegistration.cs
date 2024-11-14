@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.Json;
+using RateMyPet.Api.Services;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
 
@@ -14,7 +15,8 @@ public static class ServiceRegistration
         builder.Services
             .AddPersistence()
             .AddIdentity()
-            .AddFastEndpoints();
+            .AddFastEndpoints()
+            .AddSingleton<EmailHasher>();
 
         // json serialization options
         builder.Services.Configure<JsonOptions>(options =>

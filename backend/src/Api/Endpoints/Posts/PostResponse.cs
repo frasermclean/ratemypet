@@ -2,6 +2,9 @@
 
 public class PostResponse
 {
+    public const string SampleImageUrl =
+        "https://adoptrixdemo.blob.core.windows.net/animal-images/alberto-2024-02-14/c70d9597-0d16-43eb-8600-288c03d18fed/full.webp";
+
     public required Guid Id { get; init; }
     public required string Title { get; init; }
     public required string Caption { get; init; }
