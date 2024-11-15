@@ -3,8 +3,8 @@ using System.Text.Json.Serialization;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.Json;
 using RateMyPet.Api.Services;
-using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
+using RateMyPet.Persistence.Services;
 
 namespace RateMyPet.Api.Startup;
 

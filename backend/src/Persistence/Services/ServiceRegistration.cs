@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace RateMyPet.Persistence;
+namespace RateMyPet.Persistence.Services;
 
 public static class ServiceRegistration
 {

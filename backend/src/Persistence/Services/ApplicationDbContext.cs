@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Persistence.Models;
 
-namespace RateMyPet.Persistence;
+namespace RateMyPet.Persistence.Services;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : IdentityDbContext<User, Role, Guid>(options)
