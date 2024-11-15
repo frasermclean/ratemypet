@@ -13,7 +13,7 @@ public static class ServiceRegistration
     public static WebApplicationBuilder RegisterServices(this WebApplicationBuilder builder)
     {
         builder.Services
-            .AddPersistence()
+            .AddPersistence(builder.Configuration)
             .AddIdentity()
             .AddFastEndpoints()
             .AddSingleton<EmailHasher>();

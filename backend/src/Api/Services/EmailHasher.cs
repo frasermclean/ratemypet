@@ -6,7 +6,7 @@ namespace RateMyPet.Api.Services;
 
 public class EmailHasher
 {
-    private readonly ConcurrentDictionary<string, string> _dictionary = new();
+    private readonly ConcurrentDictionary<string, string> dictionary = new();
 
     public string GetSha256Hash(string? emailAddress)
     {
@@ -15,7 +15,7 @@ public class EmailHasher
             return string.Empty;
         }
 
-        return _dictionary.GetOrAdd(emailAddress, value =>
+        return dictionary.GetOrAdd(emailAddress, value =>
         {
             var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(value));
             var builder = new StringBuilder();
