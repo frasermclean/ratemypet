@@ -6,9 +6,6 @@ param workload string
 @description('Category of the workload')
 param category string
 
-@description('Azure region of the non global resources')
-param location string = resourceGroup().location
-
 @description('Domain name of the root DNS zone')
 param dnsZoneName string
 
@@ -20,9 +17,32 @@ var tags = {
   category: category
 }
 
-// DNS zone
-resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
+// root DNS zone
+resource rootDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
   name: dnsZoneName
+  location: 'global'
+  tags: tags
+  properties: {
+    zoneType: 'Public'
+  }
+
+  resource notifyNameserverRecords 'NS' = {
+    name: 'notify'
+    properties: {
+      TTL: 3600
+      NSRecords: [
+        { nsdname: notifyDnsZone.properties.nameServers[0] }
+        { nsdname: notifyDnsZone.properties.nameServers[1] }
+        { nsdname: notifyDnsZone.properties.nameServers[2] }
+        { nsdname: notifyDnsZone.properties.nameServers[3] }
+      ]
+    }
+  }
+}
+
+// notify subdomain
+resource notifyDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
+  name: 'notify.${dnsZoneName}'
   location: 'global'
   tags: tags
   properties: {
@@ -31,7 +51,7 @@ resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
 
   // notify domain verification and spf records
   resource notifyDomainVerification 'TXT' = {
-    name: 'notify'
+    name: '@'
     properties: {
       TTL: 3600
       TXTRecords: [
@@ -81,5 +101,26 @@ resource emailCommunicationServices 'Microsoft.Communication/emailServices@2023-
       domainManagement: 'CustomerManaged'
       userEngagementTracking: 'Disabled'
     }
+
+    resource noReplyUsername 'senderUsernames' = {
+      name: 'no-reply'
+      properties: {
+        username: 'no-reply'
+        displayName: 'Rate My Pet'
+      }
+    }
+  }
+}
+
+// communication services
+resource communicationServices 'Microsoft.Communication/communicationServices@2023-04-01' = {
+  name: '${workload}-${category}-acs'
+  location: 'global'
+  tags: tags
+  properties: {
+    dataLocation: emailDataLocation
+    linkedDomains: [
+      emailCommunicationServices::notifyDomain.id
+    ]
   }
 }
