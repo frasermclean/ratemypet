@@ -20,13 +20,47 @@ var tags = {
   category: category
 }
 
-// root DNS zone
-resource rootDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
+// DNS zone
+resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
   name: dnsZoneName
   location: 'global'
   tags: tags
   properties: {
     zoneType: 'Public'
+  }
+
+  // notify domain verification and spf records
+  resource notifyDomainVerification 'TXT' = {
+    name: 'notify'
+    properties: {
+      TTL: 3600
+      TXTRecords: [
+        { value: [emailCommunicationServices::notifyDomain.properties.verificationRecords.Domain.value] }
+        { value: [emailCommunicationServices::notifyDomain.properties.verificationRecords.SPF.value] }
+      ]
+    }
+  }
+
+  // dkim 1 record
+  resource dkim1Record 'CNAME' = {
+    name: 'selector1-azurecomm-prod-net._domainkey'
+    properties: {
+      TTL: 3600
+      CNAMERecord: {
+        cname: emailCommunicationServices::notifyDomain.properties.verificationRecords.DKIM.value
+      }
+    }
+  }
+
+  // dkim 2 record
+  resource dkim2Record 'CNAME' = {
+    name: 'selector2-azurecomm-prod-net._domainkey'
+    properties: {
+      TTL: 3600
+      CNAMERecord: {
+        cname: emailCommunicationServices::notifyDomain.properties.verificationRecords.DKIM2.value
+      }
+    }
   }
 }
 
@@ -37,5 +71,15 @@ resource emailCommunicationServices 'Microsoft.Communication/emailServices@2023-
   tags: tags
   properties: {
     dataLocation: emailDataLocation
+  }
+
+  resource notifyDomain 'domains' = {
+    name: 'notify.${dnsZoneName}'
+    location: 'global'
+    tags: tags
+    properties: {
+      domainManagement: 'CustomerManaged'
+      userEngagementTracking: 'Disabled'
+    }
   }
 }
