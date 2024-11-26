@@ -9,5 +9,6 @@ public class Post
     public required string Title { get; set; }
     public required string Caption { get; set; }
     public required User User { get; init; }
+    public required PostImage Image { get; init; }
     public List<PostReaction> Reactions { get; } = [];
 }

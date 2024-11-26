@@ -16,5 +16,18 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
 
         builder.Property(post => post.Caption)
             .HasMaxLength(Post.CaptionMaxLength);
+
+        builder.OwnsOne<PostImage>(post => post.Image, imageBuilder =>
+        {
+            imageBuilder.Property(image => image.Width)
+                .HasColumnName("ImageWidth");
+
+            imageBuilder.Property(image => image.Height)
+                .HasColumnName("ImageHeight");
+
+            imageBuilder.Property(image => image.BlobName)
+                .HasMaxLength(PostImage.BlobNameMaxLength)
+                .HasColumnName("ImageBlobName");
+        });
     }
 }

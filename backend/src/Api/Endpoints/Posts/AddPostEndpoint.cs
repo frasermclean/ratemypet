@@ -10,7 +10,8 @@ namespace RateMyPet.Api.Endpoints.Posts;
 public class AddPostEndpoint(
     ApplicationDbContext dbContext,
     ImageProcessor imageProcessor,
-    [FromKeyedServices(BlobContainerNames.OriginalImages)] IBlobContainerManager blobContainerManager)
+    [FromKeyedServices(BlobContainerNames.OriginalImages)]
+    IBlobContainerManager blobContainerManager)
     : Endpoint<AddPostRequest, PostResponse, PostResponseMapper>
 {
     public override void Configure()
@@ -22,26 +23,48 @@ public class AddPostEndpoint(
 
     public override async Task<PostResponse> ExecuteAsync(AddPostRequest request, CancellationToken cancellationToken)
     {
-        var imageStream = request.Image.OpenReadStream();
-        await imageProcessor.ProcessImageAsync(request.Image.OpenReadStream(), cancellationToken);
+        var imageResult = await ProcessAndUploadImageAsync(request, cancellationToken);
+        var post = await CreatePostEntityAsync(request, imageResult, cancellationToken);
 
-        // upload image to blob storage
-        var stream = request.Image.OpenReadStream();
-        var blobName = $"{request.UserId}/{request.Image.FileName}";
-        await blobContainerManager.UploadBlobAsync(blobName, stream, request.Image.ContentType, cancellationToken);
+        return Map.FromEntity(post);
+    }
 
+    private async Task<ProcessImageResult> ProcessAndUploadImageAsync(AddPostRequest request,
+        CancellationToken cancellationToken)
+    {
+        var blobName = $"{Guid.NewGuid():N}.webp";
+
+        await using var readStream = request.Image.OpenReadStream();
+        await using var writeStream = await blobContainerManager.OpenWriteStreamAsync(blobName,
+            ImageProcessor.ContentType, cancellationToken);
+
+        var result = await imageProcessor.ProcessImageAsync(readStream, writeStream, cancellationToken);
+
+        Logger.LogInformation("Image processed and uploaded to blob storage, blobName: {BlobName}", blobName);
+
+        return result with { BlobName = blobName };
+    }
+
+    private async Task<Post> CreatePostEntityAsync(AddPostRequest request, ProcessImageResult imageResult,
+        CancellationToken cancellationToken)
+    {
         var user = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken);
-
         var post = new Post
         {
             Title = request.Title,
             Caption = request.Caption,
-            User = user
+            User = user,
+            Image = new PostImage
+            {
+                Width = imageResult.Width,
+                Height = imageResult.Height,
+                BlobName = imageResult.BlobName
+            }
         };
 
         user.Posts.Add(post);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return Map.FromEntity(post);
+        return post;
     }
 }
