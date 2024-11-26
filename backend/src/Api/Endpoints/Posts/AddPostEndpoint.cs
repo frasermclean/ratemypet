@@ -32,17 +32,17 @@ public class AddPostEndpoint(
     private async Task<ProcessImageResult> ProcessAndUploadImageAsync(AddPostRequest request,
         CancellationToken cancellationToken)
     {
-        var blobName = $"{Guid.NewGuid():N}.webp";
+        var blobName = imageProcessor.GenerateBlobName();
 
         await using var readStream = request.Image.OpenReadStream();
         await using var writeStream = await blobContainerManager.OpenWriteStreamAsync(blobName,
-            ImageProcessor.ContentType, cancellationToken);
+            imageProcessor.ContentType, cancellationToken);
 
-        var result = await imageProcessor.ProcessImageAsync(readStream, writeStream, cancellationToken);
+        var result = await imageProcessor.ProcessImageAsync(readStream, writeStream, blobName, cancellationToken);
 
         Logger.LogInformation("Image processed and uploaded to blob storage, blobName: {BlobName}", blobName);
 
-        return result with { BlobName = blobName };
+        return result;
     }
 
     private async Task<Post> CreatePostEntityAsync(AddPostRequest request, ProcessImageResult imageResult,
@@ -58,7 +58,8 @@ public class AddPostEndpoint(
             {
                 Width = imageResult.Width,
                 Height = imageResult.Height,
-                BlobName = imageResult.BlobName
+                BlobName = imageResult.BlobName,
+                ContentType = imageResult.ContentType
             }
         };
 

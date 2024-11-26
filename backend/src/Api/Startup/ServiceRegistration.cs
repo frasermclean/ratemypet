@@ -66,6 +66,10 @@ public static class ServiceRegistration
             .AddSingleton<ImageProcessor>()
             .AddTransient<IEmailSender, EmailSender>();
 
+        services.AddOptions<ImageProcessorOptions>()
+            .BindConfiguration(ImageProcessorOptions.SectionName)
+            .ValidateDataAnnotations();
+
         services.AddOptions<EmailSenderOptions>()
             .BindConfiguration(EmailSenderOptions.SectionName)
             .ValidateDataAnnotations();
