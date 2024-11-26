@@ -33,6 +33,8 @@ export class AuthState implements NgxsOnInit {
     const refreshToken = context.getState().refreshToken;
     if (refreshToken) {
       context.dispatch(new AuthActions.RefreshAccessToken(refreshToken));
+    } else {
+      context.patchState({ status: 'loggedOut' });
     }
   }
 
