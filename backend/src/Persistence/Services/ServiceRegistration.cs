@@ -16,12 +16,6 @@ public static class ServiceRegistration
             builder.UseSqlServer(connectionString);
         });
 
-        services.AddAzureClients(builder =>
-        {
-            var connectionString = configuration.GetConnectionString("Storage");
-            builder.AddBlobServiceClient(connectionString);
-        });
-
         services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.OriginalImages, (provider, _) =>
         {
             var containerClient = provider.GetRequiredService<BlobServiceClient>()

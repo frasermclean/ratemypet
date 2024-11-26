@@ -1,7 +1,12 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Azure.Communication.Email;
+using Azure.Identity;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Azure;
+using RateMyPet.Api.Options;
 using RateMyPet.Api.Services;
 using RateMyPet.Persistence.Models;
 using RateMyPet.Persistence.Services;
@@ -13,10 +18,21 @@ public static class ServiceRegistration
     public static WebApplicationBuilder RegisterServices(this WebApplicationBuilder builder)
     {
         builder.Services
+            .AddApiServices()
             .AddPersistence(builder.Configuration)
             .AddIdentity()
-            .AddFastEndpoints()
-            .AddSingleton<EmailHasher>();
+            .AddFastEndpoints();
+
+        builder.Services.AddAzureClients(factoryBuilder =>
+        {
+            var connectionString = builder.Configuration.GetConnectionString("Storage");
+            factoryBuilder.AddBlobServiceClient(connectionString);
+
+            var emailClientEndpoint = new Uri(builder.Configuration["EmailSender:Endpoint"]!);
+            factoryBuilder.AddEmailClient(emailClientEndpoint);
+
+            factoryBuilder.UseCredential(new DefaultAzureCredential());
+        });
 
         // json serialization options
         builder.Services.Configure<JsonOptions>(options =>
@@ -42,6 +58,19 @@ public static class ServiceRegistration
         }
 
         return builder;
+    }
+
+    private static IServiceCollection AddApiServices(this IServiceCollection services)
+    {
+        services.AddSingleton<EmailHasher>()
+            .AddSingleton<ImageProcessor>()
+            .AddTransient<IEmailSender, EmailSender>();
+
+        services.AddOptions<EmailSenderOptions>()
+            .BindConfiguration(EmailSenderOptions.SectionName)
+            .ValidateDataAnnotations();
+
+        return services;
     }
 
     private static IServiceCollection AddIdentity(this IServiceCollection services)

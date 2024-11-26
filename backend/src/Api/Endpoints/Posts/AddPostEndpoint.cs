@@ -1,5 +1,6 @@
 ﻿using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
+using RateMyPet.Api.Services;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
 using RateMyPet.Persistence.Services;
@@ -8,6 +9,7 @@ namespace RateMyPet.Api.Endpoints.Posts;
 
 public class AddPostEndpoint(
     ApplicationDbContext dbContext,
+    ImageProcessor imageProcessor,
     [FromKeyedServices(BlobContainerNames.OriginalImages)] IBlobContainerManager blobContainerManager)
     : Endpoint<AddPostRequest, PostResponse, PostResponseMapper>
 {
@@ -20,6 +22,9 @@ public class AddPostEndpoint(
 
     public override async Task<PostResponse> ExecuteAsync(AddPostRequest request, CancellationToken cancellationToken)
     {
+        var imageStream = request.Image.OpenReadStream();
+        await imageProcessor.ProcessImageAsync(request.Image.OpenReadStream(), cancellationToken);
+
         // upload image to blob storage
         var stream = request.Image.OpenReadStream();
         var blobName = $"{request.UserId}/{request.Image.FileName}";
