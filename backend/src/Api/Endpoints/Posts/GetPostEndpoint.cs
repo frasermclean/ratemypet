@@ -1,13 +1,19 @@
-﻿using FastEndpoints;
+﻿using Azure.Storage.Blobs;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using RateMyPet.Api.Extensions;
 using RateMyPet.Api.Services;
+using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
 using RateMyPet.Persistence.Services;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class GetPostEndpoint(ApplicationDbContext dbContext, EmailHasher emailHasher)
+public class GetPostEndpoint(
+    ApplicationDbContext dbContext,
+    EmailHasher emailHasher,
+    BlobServiceClient blobServiceClient)
     : EndpointWithoutRequest<Results<Ok<PostResponse>, NotFound>>
 {
     public override void Configure()
@@ -28,7 +34,7 @@ public class GetPostEndpoint(ApplicationDbContext dbContext, EmailHasher emailHa
                 Id = post.Id,
                 Title = post.Title,
                 Caption = post.Caption,
-                ImageUrl = PostResponse.SampleImageUrl,
+                ImageUrl = blobServiceClient.GetBlobUri(post.Image.BlobName, BlobContainerNames.OriginalImages),
                 AuthorEmailHash = emailHasher.GetSha256Hash(post.User.Email),
                 LikeCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Like),
                 CrazyCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Crazy),
