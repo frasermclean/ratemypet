@@ -1,4 +1,5 @@
 ﻿using FastEndpoints;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Api.Services;
 using RateMyPet.Persistence;
@@ -12,7 +13,7 @@ public class AddPostEndpoint(
     ImageProcessor imageProcessor,
     [FromKeyedServices(BlobContainerNames.OriginalImages)]
     IBlobContainerManager blobContainerManager)
-    : Endpoint<AddPostRequest, PostResponse, PostResponseMapper>
+    : Endpoint<AddPostRequest, Created<PostResponse>, PostResponseMapper>
 {
     public override void Configure()
     {
@@ -21,12 +22,13 @@ public class AddPostEndpoint(
         AllowFileUploads();
     }
 
-    public override async Task<PostResponse> ExecuteAsync(AddPostRequest request, CancellationToken cancellationToken)
+    public override async Task<Created<PostResponse>> ExecuteAsync(AddPostRequest request,
+        CancellationToken cancellationToken)
     {
         var imageResult = await ProcessAndUploadImageAsync(request, cancellationToken);
         var post = await CreatePostEntityAsync(request, imageResult, cancellationToken);
 
-        return Map.FromEntity(post);
+        return TypedResults.Created($"/posts/{post.Id}", Map.FromEntity(post));
     }
 
     private async Task<ProcessImageResult> ProcessAndUploadImageAsync(AddPostRequest request,
@@ -65,6 +67,8 @@ public class AddPostEndpoint(
 
         user.Posts.Add(post);
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
 
         return post;
     }
