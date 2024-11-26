@@ -4,11 +4,15 @@ export interface Post {
   caption: string;
   imageUrl: string;
   authorEmailHash: string;
-  likeCount: number;
-  funnyCount: number;
-  crazyCount: number;
-  wowCount: number;
-  sadCount: number;
+  reactions: PostReactions;
+}
+
+export interface PostReactions {
+  like: number;
+  funny: number;
+  crazy: number;
+  wow: number;
+  sad: number;
 }
 
 export interface DetailedPost extends Post {}

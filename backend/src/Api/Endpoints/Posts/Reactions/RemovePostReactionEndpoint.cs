@@ -18,17 +18,15 @@ public class RemovePostReactionEndpoint(ApplicationDbContext dbContext)
     {
         var postId = Route<Guid>("postId");
         var userId = User.GetUserId();
-        var postReaction = await dbContext.PostReactions.FirstOrDefaultAsync(
-            reaction => reaction.Post.Id == postId &&
-                        reaction.User.Id == userId, cancellationToken);
 
-        if (postReaction is null)
+        var deletedReactionCount = await dbContext.PostReactions
+            .Where(reaction => reaction.User.Id == userId && reaction.Post.Id == postId)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        if (deletedReactionCount > 0)
         {
-            return TypedResults.NotFound();
+            Logger.LogInformation("Removed reaction from post {PostId} for user with ID: {UserId}", postId, userId);
         }
-
-        dbContext.PostReactions.Remove(postReaction);
-        await dbContext.SaveChangesAsync(cancellationToken);
 
         return TypedResults.NoContent();
     }

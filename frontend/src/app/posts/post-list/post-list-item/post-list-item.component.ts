@@ -36,7 +36,7 @@ export class PostItemComponent {
   @Input({ required: true }) post!: Post;
 
   getReactionCount(reaction: Reaction) {
-    return this.post[`${reaction}Count`];
+    return this.post.reactions[reaction];
   }
 
   handleReaction(reaction: Reaction) {
