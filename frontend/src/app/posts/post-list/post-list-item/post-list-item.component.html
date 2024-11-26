@@ -1,8 +1,8 @@
 <mat-card>
   <mat-card-header>
     <app-gravatar mat-card-avatar [emailHash]="post.authorEmailHash" />
-    <mat-card-title>{{ post.title }}</mat-card-title>
-    <mat-card-subtitle>{{ post.caption }}</mat-card-subtitle>
+    <mat-card-title class="title">{{ post.title }}</mat-card-title>
+    <mat-card-subtitle class="caption">{{ post.caption }}</mat-card-subtitle>
   </mat-card-header>
   <a routerLink="{{ post.id }}">
     <img mat-card-image class="preview-image" [src]="post.imageUrl" [alt]="post.title" />
@@ -12,7 +12,8 @@
     @for (reaction of reactions; track $index) {
     <button
       mat-icon-button
-      [matBadge]="getReactionCount(reaction) || null"
+      [matBadge]="post.reactions[reaction] || null"
+      [class.selected]="post.userReaction === reaction"
       (click)="handleReaction(reaction)"
       aria-label="Reaction button"
       matTooltip="{{ reaction | titlecase }}"

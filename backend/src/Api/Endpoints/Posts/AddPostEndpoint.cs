@@ -1,6 +1,8 @@
-﻿using FastEndpoints;
+﻿using Azure.Storage.Blobs;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using RateMyPet.Api.Extensions;
 using RateMyPet.Api.Services;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
@@ -11,9 +13,11 @@ namespace RateMyPet.Api.Endpoints.Posts;
 public class AddPostEndpoint(
     ApplicationDbContext dbContext,
     ImageProcessor imageProcessor,
+    BlobServiceClient blobServiceClient,
+    EmailHasher emailHasher,
     [FromKeyedServices(BlobContainerNames.OriginalImages)]
     IBlobContainerManager blobContainerManager)
-    : Endpoint<AddPostRequest, Created<PostResponse>, PostResponseMapper>
+    : Endpoint<AddPostRequest, Created<PostResponse>>
 {
     public override void Configure()
     {
@@ -28,7 +32,7 @@ public class AddPostEndpoint(
         var imageResult = await ProcessAndUploadImageAsync(request, cancellationToken);
         var post = await CreatePostEntityAsync(request, imageResult, cancellationToken);
 
-        return TypedResults.Created($"/posts/{post.Id}", Map.FromEntity(post));
+        return TypedResults.Created($"/posts/{post.Id}", MapToResponse(request, post));
     }
 
     private async Task<ProcessImageResult> ProcessAndUploadImageAsync(AddPostRequest request,
@@ -71,5 +75,12 @@ public class AddPostEndpoint(
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
 
         return post;
+    }
+
+    private PostResponse MapToResponse(AddPostRequest request, Post post)
+    {
+        var imageUri = blobServiceClient.GetBlobUri(post.Image.BlobName);
+        var authorEmailHash = emailHasher.GetSha256Hash(post.User.Email);
+        return post.ToResponse(imageUri, authorEmailHash, request.UserId);
     }
 }

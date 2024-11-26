@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import { DetailedPost, Post, Reaction } from '@models/post.models';
+import { DetailedPost, Post, PostReactions, Reaction } from '@models/post.models';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +21,10 @@ export class PostsService {
   }
 
   updatePostReaction(postId: string, reaction: Reaction) {
-    return this.httpClient.put<DetailedPost>(`${this.baseUrl}/${postId}/reactions`, { reaction });
+    return this.httpClient.put<PostReactions>(`${this.baseUrl}/${postId}/reactions`, { reaction });
+  }
+
+  removePostReaction(postId: string) {
+    return this.httpClient.delete<PostReactions>(`${this.baseUrl}/${postId}/reactions`);
   }
 }

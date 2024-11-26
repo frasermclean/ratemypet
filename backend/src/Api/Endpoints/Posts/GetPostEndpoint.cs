@@ -25,6 +25,7 @@ public class GetPostEndpoint(
     public override async Task<Results<Ok<PostResponse>, NotFound>> ExecuteAsync(CancellationToken cancellationToken)
     {
         var postId = Route<Guid>("postId");
+        var userId = User.GetUserId();
 
         var response = await dbContext.Posts
             .AsNoTracking()
@@ -43,7 +44,8 @@ public class GetPostEndpoint(
                     FunnyCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Funny),
                     WowCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Wow),
                     SadCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Sad)
-                }
+                },
+                UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == userId)!.Reaction
             })
             .FirstOrDefaultAsync(cancellationToken);
 

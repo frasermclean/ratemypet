@@ -23,6 +23,7 @@ public class SearchPostsEndpoint(
 
     public override async Task<IEnumerable<PostResponse>> ExecuteAsync(CancellationToken cancellationToken)
     {
+        var userId = User.GetUserId();
         return await dbContext.Posts
             .AsNoTracking()
             .Select(post => new PostResponse
@@ -39,7 +40,8 @@ public class SearchPostsEndpoint(
                     FunnyCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Funny),
                     WowCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Wow),
                     SadCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Sad)
-                }
+                },
+                UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == userId)!.Reaction
             })
             .ToListAsync(cancellationToken);
     }

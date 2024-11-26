@@ -30,8 +30,8 @@ export class PostsState {
   searchPosts(context: StateContext<PostsStateModel>) {
     context.patchState({ status: 'busy' });
     return this.postsService.searchPosts().pipe(
-      tap((summaries) => {
-        context.patchState({ status: 'ready', posts: summaries });
+      tap((posts) => {
+        context.patchState({ status: 'ready', posts });
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });
@@ -57,13 +57,40 @@ export class PostsState {
   @Action(PostsActions.UpdatePostReaction)
   updatePostReaction(context: StateContext<PostsStateModel>, action: PostsActions.UpdatePostReaction) {
     return this.postsService.updatePostReaction(action.postId, action.reaction).pipe(
-      tap((response) => {
-        context.patchState({ status: 'ready' });
+      tap((reactions) => {
+        const posts = context.getState().posts.map((post) => {
+          if (post.id === action.postId) {
+            return { ...post, reactions, userReaction: action.reaction };
+          }
+          return post;
+        });
+
+        context.patchState({ status: 'ready', posts });
       }),
       catchError((error) => {
         console.error('Error updating post reaction', error);
         context.patchState({ status: 'error', error });
-        return [error];
+        return error;
+      })
+    );
+  }
+
+  @Action(PostsActions.RemovePostReaction)
+  removePostReaction(context: StateContext<PostsStateModel>, action: PostsActions.RemovePostReaction) {
+    return this.postsService.removePostReaction(action.postId).pipe(
+      tap((reactions) => {
+        const posts = context.getState().posts.map((post) => {
+          if (post.id === action.postId) {
+            return { ...post, reactions, userReaction: undefined };
+          }
+          return post;
+        });
+        context.patchState({ status: 'ready', posts });
+      }),
+      catchError((error) => {
+        console.error('Error removing post reaction', error);
+        context.patchState({ status: 'error', error });
+        return error;
       })
     );
   }

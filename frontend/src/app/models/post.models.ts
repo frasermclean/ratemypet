@@ -4,6 +4,7 @@ export interface Post {
   caption: string;
   imageUrl: string;
   authorEmailHash: string;
+  userReaction?: Reaction;
   reactions: PostReactions;
 }
 
@@ -17,6 +18,12 @@ export interface PostReactions {
 
 export interface DetailedPost extends Post {}
 
-export type Reaction = 'like' | 'funny' | 'crazy' | 'wow' | 'sad';
+export enum Reaction {
+  Like = 'like',
+  Funny = 'funny',
+  Crazy = 'crazy',
+  Wow = 'wow',
+  Sad = 'sad',
+}
 
-export const allReactions: Reaction[] = ['like', 'funny', 'crazy', 'wow', 'sad'];
+export const allReactions: Reaction[] = [Reaction.Like, Reaction.Funny, Reaction.Crazy, Reaction.Wow, Reaction.Sad];

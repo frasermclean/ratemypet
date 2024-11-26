@@ -6,6 +6,13 @@ mat-card {
 
   mat-card-header {
     white-space: nowrap;
+
+    .title,
+    .caption {
+      max-width: $card-width - 64px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 
   img.preview-image {
@@ -17,4 +24,8 @@ mat-card {
 
 .spacer {
   flex: 1 1 auto;
+}
+
+.selected {
+  background: rgb(173, 79, 60)
 }

@@ -7,15 +7,15 @@ using RateMyPet.Persistence.Services;
 namespace RateMyPet.Api.Endpoints.Posts.Reactions;
 
 public class UpdatePostReactionEndpoint(ApplicationDbContext dbContext)
-    : Endpoint<UpdatePostReactionRequest, Results<Ok<PostResponse>, NotFound>, PostResponseMapper>
+    : Endpoint<UpdatePostReactionRequest, Results<Ok<PostReactionsResponse>, NotFound>>
 {
     public override void Configure()
     {
         Put("posts/{postId:guid}/reactions");
     }
 
-    public override async Task<Results<Ok<PostResponse>, NotFound>> ExecuteAsync(UpdatePostReactionRequest request,
-        CancellationToken cancellationToken)
+    public override async Task<Results<Ok<PostReactionsResponse>, NotFound>> ExecuteAsync(
+        UpdatePostReactionRequest request, CancellationToken cancellationToken)
     {
         var post = await dbContext.Posts.Where(post => post.Id == request.PostId)
             .Include(post => post.Reactions)
@@ -48,6 +48,16 @@ public class UpdatePostReactionEndpoint(ApplicationDbContext dbContext)
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        return TypedResults.Ok(Map.FromEntity(post));
+
+        var response = new PostReactionsResponse
+        {
+            LikeCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Like),
+            FunnyCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Funny),
+            CrazyCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Crazy),
+            WowCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Wow),
+            SadCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Sad)
+        };
+
+        return TypedResults.Ok(response);
     }
 }

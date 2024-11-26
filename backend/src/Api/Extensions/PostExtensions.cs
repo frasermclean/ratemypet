@@ -1,21 +1,17 @@
-﻿using Azure.Storage.Blobs;
-using FastEndpoints;
-using RateMyPet.Api.Extensions;
-using RateMyPet.Api.Services;
+﻿using RateMyPet.Api.Endpoints.Posts;
 using RateMyPet.Persistence.Models;
 
-namespace RateMyPet.Api.Endpoints.Posts;
+namespace RateMyPet.Api.Extensions;
 
-public class PostResponseMapper(EmailHasher emailHasher, BlobServiceClient blobServiceClient)
-    : ResponseMapper<PostResponse, Post>
+public static class PostExtensions
 {
-    public override PostResponse FromEntity(Post post) => new()
+    public static PostResponse ToResponse(this Post post, Uri imageUrl, string authorEmailHash, Guid userId) => new()
     {
         Id = post.Id,
         Title = post.Title,
         Caption = post.Caption,
-        ImageUrl = blobServiceClient.GetBlobUri(post.Image.BlobName),
-        AuthorEmailHash = emailHasher.GetSha256Hash(post.User.Email),
+        ImageUrl = imageUrl,
+        AuthorEmailHash = authorEmailHash,
         Reactions = new PostReactionsResponse
         {
             LikeCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Like),
@@ -24,5 +20,6 @@ public class PostResponseMapper(EmailHasher emailHasher, BlobServiceClient blobS
             WowCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Wow),
             SadCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Sad)
         },
+        UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == userId)!.Reaction
     };
 }
