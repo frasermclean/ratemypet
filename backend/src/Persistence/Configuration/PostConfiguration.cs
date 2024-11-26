@@ -28,6 +28,10 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
             imageBuilder.Property(image => image.BlobName)
                 .HasMaxLength(PostImage.BlobNameMaxLength)
                 .HasColumnName("ImageBlobName");
+
+            imageBuilder.Property(image => image.ContentType)
+                .HasMaxLength(PostImage.ContentTypeMaxLength)
+                .HasColumnName("ImageContentType");
         });
     }
 }
