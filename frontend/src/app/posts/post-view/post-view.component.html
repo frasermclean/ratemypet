@@ -1,4 +1,4 @@
-@switch (status$ | async) { @case ('busy') {
+@switch (status()) { @case ('busy') {
 <div class="centered-container">
   <h2>Loading posts</h2>
   <mat-spinner></mat-spinner>
@@ -8,12 +8,14 @@
   <h2>An error occurred while loading the post.</h2>
   <p>Could not load the requested post from the server.</p>
 </div>
-} @case ('ready') { @if(post$ | async; as post) {
+} @case ('ready') { @if(post(); as post) {
 <mat-card>
   <mat-card-header>
     <mat-card-title>{{ post.title }}</mat-card-title>
-    <mat-card-subtitle>{{ post.description }}</mat-card-subtitle>
   </mat-card-header>
   <img mat-card-image class="full-image" [src]="post.imageUrl" [alt]="post.title" />
+  <mat-card-content>
+    <p>{{ post.description }}</p>
+  </mat-card-content>
 </mat-card>
 } } }
