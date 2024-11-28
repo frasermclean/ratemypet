@@ -1,12 +1,12 @@
-using FastEndpoints;
+﻿using FastEndpoints;
 using FluentValidation;
 using RateMyPet.Persistence.Models;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class AddPostValidator : Validator<AddPostRequest>
+public class UpdatePostValidator : Validator<UpdatePostRequest>
 {
-    public AddPostValidator()
+    public UpdatePostValidator()
     {
         RuleFor(request => request.Title)
             .NotEmpty()
@@ -18,10 +18,5 @@ public class AddPostValidator : Validator<AddPostRequest>
 
         RuleFor(request => request.SpeciesId)
             .NotEmpty();
-
-        RuleFor(request => request.Image)
-            .NotNull()
-            .Must(image => image.ContentType.StartsWith("image/"))
-            .WithMessage("Must be an image file");
     }
 }

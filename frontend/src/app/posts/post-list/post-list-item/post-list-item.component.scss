@@ -8,7 +8,7 @@ mat-card {
     white-space: nowrap;
 
     .title,
-    .caption {
+    .description {
       max-width: $card-width - 64px;
       overflow: hidden;
       text-overflow: ellipsis;

@@ -14,12 +14,14 @@ public partial class PostResponseMapper(
     IHttpContextAccessor httpContextAccessor)
 {
     [MapProperty(nameof(Post.Image.BlobName), nameof(PostResponse.ImageUrl))]
-    [MapProperty(nameof(Post.User.Email), nameof(PostResponse.AuthorEmailHash))]
+    [MapProperty(nameof(Post.User.Email), nameof(PostResponse.AuthorEmailHash), Use = nameof(MapAuthorEmailHash))]
     [MapProperty(nameof(Post.Reactions), nameof(PostResponse.UserReaction))]
     [MapperIgnoreSource(nameof(Post.RowVersion))]
     public partial PostResponse MapToResponse(Post post);
 
     private Uri MapImageUrl(string blobName) => blobServiceClient.GetBlobUri(blobName);
+
+    [UserMapping(Default = false)]
     private string MapAuthorEmailHash(string emailAddress) => emailHasher.GetSha256Hash(emailAddress);
 
     private Reaction? MapUserReaction(List<PostReaction> reactions)

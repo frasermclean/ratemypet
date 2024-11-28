@@ -34,7 +34,7 @@ public class GetPostEndpoint(
             {
                 Id = post.Id,
                 Title = post.Title,
-                Caption = post.Caption,
+                Description = post.Description,
                 ImageUrl = blobServiceClient.GetBlobUri(post.Image.BlobName, BlobContainerNames.OriginalImages),
                 AuthorEmailHash = emailHasher.GetSha256Hash(post.User.Email),
                 SpeciesName = post.Species.Name,

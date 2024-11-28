@@ -1,7 +1,7 @@
 export interface Post {
   id: string;
   title: string;
-  caption: string;
+  description?: string;
   imageUrl: string;
   authorEmailHash: string;
   userReaction?: Reaction;

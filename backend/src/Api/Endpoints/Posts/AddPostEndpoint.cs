@@ -67,7 +67,7 @@ public class AddPostEndpoint(
         var post = new Post
         {
             Title = request.Title,
-            Caption = request.Caption,
+            Description = request.Description,
             User = user,
             Species = species,
             Image = new PostImage

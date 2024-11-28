@@ -12,7 +12,7 @@ using RateMyPet.Persistence.Services;
 namespace RateMyPet.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241128015643_Initial")]
+    [Migration("20241128035850_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -135,16 +135,15 @@ namespace RateMyPet.Persistence.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("newid()");
 
-                    b.Property<string>("Caption")
-                        .IsRequired()
-                        .HasMaxLength(80)
-                        .HasColumnType("nvarchar(80)");
-
                     b.Property<DateTime>("CreatedAtUtc")
                         .ValueGeneratedOnAdd()
                         .HasPrecision(2)
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()

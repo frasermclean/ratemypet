@@ -93,7 +93,7 @@ namespace RateMyPet.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newid()"),
                     Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Caption = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SpeciesId = table.Column<int>(type: "int", nullable: false),
                     ImageWidth = table.Column<int>(type: "int", nullable: false),

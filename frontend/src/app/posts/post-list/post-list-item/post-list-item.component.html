@@ -2,7 +2,9 @@
   <mat-card-header>
     <app-gravatar mat-card-avatar [emailHash]="post.authorEmailHash" />
     <mat-card-title class="title">{{ post.title }}</mat-card-title>
-    <mat-card-subtitle class="caption">{{ post.caption }}</mat-card-subtitle>
+    @if (post.description) {
+    <mat-card-subtitle class="description">{{ post.description }}</mat-card-subtitle>
+    }
   </mat-card-header>
   <a routerLink="{{ post.id }}">
     <img mat-card-image class="preview-image" [src]="post.imageUrl" [alt]="post.title" />

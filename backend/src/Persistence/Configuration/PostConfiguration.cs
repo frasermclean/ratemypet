@@ -14,8 +14,8 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(post => post.Title)
             .HasMaxLength(Post.TitleMaxLength);
 
-        builder.Property(post => post.Caption)
-            .HasMaxLength(Post.CaptionMaxLength);
+        builder.Property(post => post.Description)
+            .HasMaxLength(Post.DescriptionMaxLength);
 
         builder.Property(post => post.CreatedAtUtc)
             .HasPrecision(2)
