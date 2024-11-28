@@ -12,15 +12,15 @@ using RateMyPet.Persistence.Services;
 namespace RateMyPet.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241109101344_AddPostReactions")]
-    partial class AddPostReactions
+    [Migration("20241128015643_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -140,15 +140,36 @@ namespace RateMyPet.Persistence.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("nvarchar(80)");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(2)
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int>("SpeciesId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasPrecision(2)
+                        .HasColumnType("datetime2(2)");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SpeciesId");
 
                     b.HasIndex("UserId");
 
@@ -166,7 +187,8 @@ namespace RateMyPet.Persistence.Migrations
                     b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<char>("Reaction")
+                    b.Property<string>("Reaction")
+                        .IsRequired()
                         .HasColumnType("nvarchar(1)");
 
                     b.Property<Guid>("UserId")
@@ -207,6 +229,50 @@ namespace RateMyPet.Persistence.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("Roles", (string)null);
+                });
+
+            modelBuilder.Entity("RateMyPet.Persistence.Models.Species", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Species");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Dog",
+                            RowVersion = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Cat",
+                            RowVersion = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Bird",
+                            RowVersion = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }
+                        });
                 });
 
             modelBuilder.Entity("RateMyPet.Persistence.Models.User", b =>
@@ -328,11 +394,56 @@ namespace RateMyPet.Persistence.Migrations
 
             modelBuilder.Entity("RateMyPet.Persistence.Models.Post", b =>
                 {
+                    b.HasOne("RateMyPet.Persistence.Models.Species", "Species")
+                        .WithMany("Posts")
+                        .HasForeignKey("SpeciesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("RateMyPet.Persistence.Models.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.OwnsOne("RateMyPet.Persistence.Models.PostImage", "Image", b1 =>
+                        {
+                            b1.Property<Guid>("PostId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("BlobName")
+                                .IsRequired()
+                                .HasMaxLength(40)
+                                .HasColumnType("nvarchar(40)")
+                                .HasColumnName("ImageBlobName");
+
+                            b1.Property<string>("ContentType")
+                                .IsRequired()
+                                .HasMaxLength(25)
+                                .HasColumnType("nvarchar(25)")
+                                .HasColumnName("ImageContentType");
+
+                            b1.Property<int>("Height")
+                                .HasColumnType("int")
+                                .HasColumnName("ImageHeight");
+
+                            b1.Property<int>("Width")
+                                .HasColumnType("int")
+                                .HasColumnName("ImageWidth");
+
+                            b1.HasKey("PostId");
+
+                            b1.ToTable("Posts");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PostId");
+                        });
+
+                    b.Navigation("Image")
+                        .IsRequired();
+
+                    b.Navigation("Species");
 
                     b.Navigation("User");
                 });
@@ -359,6 +470,11 @@ namespace RateMyPet.Persistence.Migrations
             modelBuilder.Entity("RateMyPet.Persistence.Models.Post", b =>
                 {
                     b.Navigation("Reactions");
+                });
+
+            modelBuilder.Entity("RateMyPet.Persistence.Models.Species", b =>
+                {
+                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("RateMyPet.Persistence.Models.User", b =>

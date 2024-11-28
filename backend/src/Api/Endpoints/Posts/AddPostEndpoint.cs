@@ -3,6 +3,7 @@ using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Api.Extensions;
+using RateMyPet.Api.Mapping;
 using RateMyPet.Api.Services;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
@@ -13,11 +14,10 @@ namespace RateMyPet.Api.Endpoints.Posts;
 public class AddPostEndpoint(
     ApplicationDbContext dbContext,
     ImageProcessor imageProcessor,
-    BlobServiceClient blobServiceClient,
-    EmailHasher emailHasher,
     [FromKeyedServices(BlobContainerNames.OriginalImages)]
-    IBlobContainerManager blobContainerManager)
-    : Endpoint<AddPostRequest, Created<PostResponse>>
+    IBlobContainerManager blobContainerManager,
+    PostResponseMapper mapper)
+    : Endpoint<AddPostRequest, Results<Created<PostResponse>, ErrorResponse>>
 {
     public override void Configure()
     {
@@ -26,13 +26,21 @@ public class AddPostEndpoint(
         AllowFileUploads();
     }
 
-    public override async Task<Created<PostResponse>> ExecuteAsync(AddPostRequest request,
+    public override async Task<Results<Created<PostResponse>, ErrorResponse>> ExecuteAsync(AddPostRequest request,
         CancellationToken cancellationToken)
     {
-        var imageResult = await ProcessAndUploadImageAsync(request, cancellationToken);
-        var post = await CreatePostEntityAsync(request, imageResult, cancellationToken);
+        var species = await dbContext.Species.FirstOrDefaultAsync(s => s.Id == request.SpeciesId, cancellationToken);
+        if (species is null)
+        {
+            AddError(r => r.SpeciesId, "Invalid species ID");
+            return new ErrorResponse(ValidationFailures);
+        }
 
-        return TypedResults.Created($"/posts/{post.Id}", MapToResponse(request, post));
+        var imageResult = await ProcessAndUploadImageAsync(request, cancellationToken);
+        var post = await CreatePostEntityAsync(request, species, imageResult, cancellationToken);
+
+        var response = mapper.MapToResponse(post);
+        return TypedResults.Created($"/posts/{response.Id}", response);
     }
 
     private async Task<ProcessImageResult> ProcessAndUploadImageAsync(AddPostRequest request,
@@ -51,7 +59,8 @@ public class AddPostEndpoint(
         return result;
     }
 
-    private async Task<Post> CreatePostEntityAsync(AddPostRequest request, ProcessImageResult imageResult,
+    private async Task<Post> CreatePostEntityAsync(AddPostRequest request, Species species,
+        ProcessImageResult imageResult,
         CancellationToken cancellationToken)
     {
         var user = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken);
@@ -60,6 +69,7 @@ public class AddPostEndpoint(
             Title = request.Title,
             Caption = request.Caption,
             User = user,
+            Species = species,
             Image = new PostImage
             {
                 Width = imageResult.Width,
@@ -75,12 +85,5 @@ public class AddPostEndpoint(
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
 
         return post;
-    }
-
-    private PostResponse MapToResponse(AddPostRequest request, Post post)
-    {
-        var imageUri = blobServiceClient.GetBlobUri(post.Image.BlobName);
-        var authorEmailHash = emailHasher.GetSha256Hash(post.User.Email);
-        return post.ToResponse(imageUri, authorEmailHash, request.UserId);
     }
 }

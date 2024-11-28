@@ -137,15 +137,36 @@ namespace RateMyPet.Persistence.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("nvarchar(80)");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(2)
+                        .HasColumnType("datetime2(2)")
+                        .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int>("SpeciesId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasPrecision(2)
+                        .HasColumnType("datetime2(2)");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SpeciesId");
 
                     b.HasIndex("UserId");
 
@@ -205,6 +226,50 @@ namespace RateMyPet.Persistence.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("Roles", (string)null);
+                });
+
+            modelBuilder.Entity("RateMyPet.Persistence.Models.Species", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Species");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Dog",
+                            RowVersion = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Cat",
+                            RowVersion = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Bird",
+                            RowVersion = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }
+                        });
                 });
 
             modelBuilder.Entity("RateMyPet.Persistence.Models.User", b =>
@@ -326,6 +391,12 @@ namespace RateMyPet.Persistence.Migrations
 
             modelBuilder.Entity("RateMyPet.Persistence.Models.Post", b =>
                 {
+                    b.HasOne("RateMyPet.Persistence.Models.Species", "Species")
+                        .WithMany("Posts")
+                        .HasForeignKey("SpeciesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("RateMyPet.Persistence.Models.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
@@ -369,6 +440,8 @@ namespace RateMyPet.Persistence.Migrations
                     b.Navigation("Image")
                         .IsRequired();
 
+                    b.Navigation("Species");
+
                     b.Navigation("User");
                 });
 
@@ -394,6 +467,11 @@ namespace RateMyPet.Persistence.Migrations
             modelBuilder.Entity("RateMyPet.Persistence.Models.Post", b =>
                 {
                     b.Navigation("Reactions");
+                });
+
+            modelBuilder.Entity("RateMyPet.Persistence.Models.Species", b =>
+                {
+                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("RateMyPet.Persistence.Models.User", b =>

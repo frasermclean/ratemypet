@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace RateMyPet.Persistence.Migrations
 {
     /// <inheritdoc />
@@ -23,6 +25,20 @@ namespace RateMyPet.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Species",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Species", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -78,11 +94,25 @@ namespace RateMyPet.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newid()"),
                     Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Caption = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SpeciesId = table.Column<int>(type: "int", nullable: false),
+                    ImageWidth = table.Column<int>(type: "int", nullable: false),
+                    ImageHeight = table.Column<int>(type: "int", nullable: false),
+                    ImageBlobName = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    ImageContentType = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
+                    CreatedAtUtc = table.Column<DateTime>(type: "datetime2(2)", precision: 2, nullable: false, defaultValueSql: "getutcdate()"),
+                    UpdatedAtUtc = table.Column<DateTime>(type: "datetime2(2)", precision: 2, nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Posts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Posts_Species_SpeciesId",
+                        column: x => x.SpeciesId,
+                        principalTable: "Species",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Posts_Users_UserId",
                         column: x => x.UserId,
@@ -176,6 +206,56 @@ namespace RateMyPet.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "PostReactions",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Reaction = table.Column<string>(type: "nvarchar(1)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PostReactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PostReactions_Posts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Posts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PostReactions_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.InsertData(
+                table: "Species",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Dog" },
+                    { 2, "Cat" },
+                    { 3, "Bird" }
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostReactions_PostId",
+                table: "PostReactions",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostReactions_UserId",
+                table: "PostReactions",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_SpeciesId",
+                table: "Posts",
+                column: "SpeciesId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Posts_UserId",
                 table: "Posts",
@@ -225,7 +305,7 @@ namespace RateMyPet.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Posts");
+                name: "PostReactions");
 
             migrationBuilder.DropTable(
                 name: "RoleClaims");
@@ -243,7 +323,13 @@ namespace RateMyPet.Persistence.Migrations
                 name: "UserTokens");
 
             migrationBuilder.DropTable(
+                name: "Posts");
+
+            migrationBuilder.DropTable(
                 name: "Roles");
+
+            migrationBuilder.DropTable(
+                name: "Species");
 
             migrationBuilder.DropTable(
                 name: "Users");

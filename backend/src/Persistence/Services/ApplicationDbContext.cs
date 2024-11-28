@@ -11,6 +11,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public DbSet<Post> Posts => Set<Post>();
     public DbSet<PostReaction> PostReactions => Set<PostReaction>();
+    public DbSet<Species> Species => Set<Species>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

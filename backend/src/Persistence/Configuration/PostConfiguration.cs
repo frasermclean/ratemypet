@@ -17,6 +17,17 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(post => post.Caption)
             .HasMaxLength(Post.CaptionMaxLength);
 
+        builder.Property(post => post.CreatedAtUtc)
+            .HasPrecision(2)
+            .HasDefaultValueSql("getutcdate()");
+
+        builder.Property(post => post.UpdatedAtUtc)
+            .HasPrecision(2);
+
+        builder.Property(post => post.RowVersion)
+            .IsRowVersion()
+            .HasConversion<byte[]>();
+
         builder.OwnsOne<PostImage>(post => post.Image, imageBuilder =>
         {
             imageBuilder.Property(image => image.Width)

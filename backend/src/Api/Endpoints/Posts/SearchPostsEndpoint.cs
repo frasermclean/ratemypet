@@ -33,6 +33,9 @@ public class SearchPostsEndpoint(
                 Caption = post.Caption,
                 ImageUrl = blobServiceClient.GetBlobUri(post.Image.BlobName, BlobContainerNames.OriginalImages),
                 AuthorEmailHash = emailHasher.GetSha256Hash(post.User.Email),
+                SpeciesName = post.Species.Name,
+                CreatedAtUtc = post.CreatedAtUtc,
+                UpdatedAtUtc = post.UpdatedAtUtc,
                 Reactions = new PostReactionsResponse
                 {
                     LikeCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Like),
