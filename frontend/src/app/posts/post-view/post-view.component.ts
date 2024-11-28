@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, input, OnInit } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -18,13 +18,11 @@ import { DetailedPost } from '@models/post.models';
 })
 export class PostViewComponent implements OnInit {
   private readonly store = inject(Store);
+  postId = input.required<string>();
   status$ = this.store.select(PostsState.status);
-  post$!: Observable<DetailedPost | null>;
-
-  @Input({ required: true }) postId!: string;
+  post$ = this.store.select(PostsState.currentPost);
 
   ngOnInit(): void {
-    this.store.dispatch(new PostsActions.GetPost(this.postId));
-    this.post$ = this.store.select(PostsState.currentPost);
+    this.store.dispatch(new PostsActions.GetPost(this.postId()));
   }
 }
