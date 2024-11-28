@@ -27,7 +27,7 @@ export const appConfig: ApplicationConfig = {
       [AuthState, PostsState],
       ngxsOptions,
       withNgxsStoragePlugin({
-        keys: ['auth.refreshToken'],
+        keys: ['auth.refreshToken', 'auth.emailAddress'],
       })
     ),
     {

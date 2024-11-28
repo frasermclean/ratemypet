@@ -6,12 +6,9 @@
   <span class="spacer"></span>
   <div class="user-content">
     @switch (status$ | async) { @case ('busy'){
-    <mat-spinner diameter="20"></mat-spinner>
+    <mat-spinner diameter="20" />
     } @case ('loggedIn') {
-    <button mat-flat-button (click)="logout()">
-      <mat-icon>logout</mat-icon>
-      Logout
-    </button>
+    <app-user-menu />
     } @case ('loggedOut') {
     <a mat-flat-button routerLink="/auth/login">
       <mat-icon>login</mat-icon>

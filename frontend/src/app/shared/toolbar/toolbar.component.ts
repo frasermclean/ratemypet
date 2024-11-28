@@ -8,11 +8,20 @@ import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { AuthState } from '../../auth/auth.state';
 import { AuthActions } from '../../auth/auth.actions';
+import { UserMenuComponent } from "./user-menu/user-menu.component";
 
 @Component({
   selector: 'app-toolbar',
   standalone: true,
-  imports: [AsyncPipe, MatIconModule, MatButtonModule, MatProgressSpinnerModule, MatToolbarModule, RouterLink],
+  imports: [
+    AsyncPipe,
+    MatIconModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatToolbarModule,
+    RouterLink,
+    UserMenuComponent
+],
   templateUrl: './toolbar.component.html',
   styleUrl: './toolbar.component.scss',
 })
@@ -21,8 +30,4 @@ export class ToolbarComponent {
   router = inject(Router);
   @Input() title: string = 'Rate My Pet';
   status$ = this.store.select(AuthState.status);
-
-  logout() {
-    this.store.dispatch(new AuthActions.Logout());
-  }
 }

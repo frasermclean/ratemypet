@@ -1,0 +1,18 @@
+<button mat-icon-button [matMenuTriggerFor]="menu">
+  @if (emailAddress$ | async; as emailAddress) {
+  <mat-icon>
+    <app-gravatar [emailOrHash]="emailAddress" [size]="24"></app-gravatar>
+  </mat-icon>
+  }
+</button>
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item>
+    <mat-icon>add</mat-icon>
+    <span>Create Post</span>
+  </button>
+  <button mat-menu-item (click)="logout()">
+    <mat-icon>logout</mat-icon>
+    <span>Logout</span>
+  </button>
+</mat-menu>
