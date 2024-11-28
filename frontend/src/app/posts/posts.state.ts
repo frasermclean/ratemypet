@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Action, Selector, State, StateContext } from '@ngxs/store';
+import { Action, Selector, State, StateContext, StateToken } from '@ngxs/store';
 import { catchError, tap } from 'rxjs';
 
 import { PostsService } from '@services/posts.service';
@@ -13,8 +13,10 @@ interface PostsStateModel {
   currentPost: DetailedPost | null;
 }
 
+const POSTS_STATE_TOKEN = new StateToken<PostsStateModel>('posts');
+
 @State<PostsStateModel>({
-  name: 'posts',
+  name: POSTS_STATE_TOKEN,
   defaults: {
     status: 'initial',
     error: null,
@@ -58,13 +60,10 @@ export class PostsState {
   updatePostReaction(context: StateContext<PostsStateModel>, action: PostsActions.UpdatePostReaction) {
     return this.postsService.updatePostReaction(action.postId, action.reaction).pipe(
       tap((reactions) => {
-        const posts = context.getState().posts.map((post) => {
-          if (post.id === action.postId) {
-            return { ...post, reactions, userReaction: action.reaction };
-          }
-          return post;
-        });
-
+        const state = context.getState();
+        const posts = state.posts.map((post) =>
+          post.id === action.postId ? { ...post, reactions, userReaction: action.reaction } : post
+        );
         context.patchState({ status: 'ready', posts });
       }),
       catchError((error) => {
@@ -79,12 +78,10 @@ export class PostsState {
   removePostReaction(context: StateContext<PostsStateModel>, action: PostsActions.RemovePostReaction) {
     return this.postsService.removePostReaction(action.postId).pipe(
       tap((reactions) => {
-        const posts = context.getState().posts.map((post) => {
-          if (post.id === action.postId) {
-            return { ...post, reactions, userReaction: undefined };
-          }
-          return post;
-        });
+        const state = context.getState();
+        const posts = state.posts.map((post) =>
+          post.id === action.postId ? { ...post, reactions, userReaction: undefined } : post
+        );
         context.patchState({ status: 'ready', posts });
       }),
       catchError((error) => {
@@ -95,17 +92,17 @@ export class PostsState {
     );
   }
 
-  @Selector()
+  @Selector([POSTS_STATE_TOKEN])
   static status(state: PostsStateModel) {
     return state.status;
   }
 
-  @Selector()
+  @Selector([POSTS_STATE_TOKEN])
   static posts(state: PostsStateModel) {
     return state.posts;
   }
 
-  @Selector()
+  @Selector([POSTS_STATE_TOKEN])
   static currentPost(state: PostsStateModel) {
     return state.currentPost;
   }

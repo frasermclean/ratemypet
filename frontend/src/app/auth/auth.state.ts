@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store';
+import { Action, NgxsOnInit, Selector, State, StateContext, StateToken } from '@ngxs/store';
 
 import { AuthActions } from './auth.actions';
 import { AuthService } from '@services/auth.service';
@@ -14,8 +14,10 @@ interface AuthStateModel {
   refreshToken: string | null;
 }
 
+const AUTH_STATE_TOKEN = new StateToken<AuthStateModel>('auth');
+
 @State<AuthStateModel>({
-  name: 'auth',
+  name: AUTH_STATE_TOKEN,
   defaults: {
     status: 'initial',
     error: null,
@@ -96,17 +98,17 @@ export class AuthState implements NgxsOnInit {
     );
   }
 
-  @Selector()
+  @Selector([AUTH_STATE_TOKEN])
   static status(state: AuthStateModel) {
     return state.status;
   }
 
-  @Selector()
+  @Selector([AUTH_STATE_TOKEN])
   static emailAddress(state: AuthStateModel) {
     return state.emailAddress;
   }
 
-  @Selector()
+  @Selector([AUTH_STATE_TOKEN])
   static accessToken(state: AuthStateModel) {
     return state.accessToken;
   }
