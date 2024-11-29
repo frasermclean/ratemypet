@@ -1,10 +1,14 @@
 import { inject, Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Navigate } from '@ngxs/router-plugin';
 import { Action, Selector, State, StateContext, StateToken } from '@ngxs/store';
 import { catchError, tap } from 'rxjs';
 
 import { PostsService } from '@services/posts.service';
 import { PostsActions } from './posts.actions';
-import { DetailedPost, Post } from '@models/post.models';
+import { AddPostRequest, DetailedPost, Post } from '@models/post.models';
+import { PostEditComponent } from './post-edit/post-edit.component';
 
 interface PostsStateModel {
   status: 'initial' | 'busy' | 'error' | 'ready';
@@ -27,6 +31,8 @@ const POSTS_STATE_TOKEN = new StateToken<PostsStateModel>('posts');
 @Injectable()
 export class PostsState {
   private readonly postsService = inject(PostsService);
+  private readonly dialog = inject(MatDialog);
+  private readonly snackbar = inject(MatSnackBar);
 
   @Action(PostsActions.SearchPosts)
   searchPosts(context: StateContext<PostsStateModel>) {
@@ -48,6 +54,36 @@ export class PostsState {
     return this.postsService.getPost(action.postId).pipe(
       tap((post) => {
         context.patchState({ status: 'ready', currentPost: post });
+      }),
+      catchError((error) => {
+        context.patchState({ status: 'error', error });
+        return error;
+      })
+    );
+  }
+
+  @Action(PostsActions.OpenPostEditDialog)
+  openPostEditDialog(context: StateContext<PostsStateModel>) {
+    return this.dialog
+      .open<PostEditComponent, any, AddPostRequest>(PostEditComponent)
+      .afterClosed()
+      .pipe(
+        tap((request) => {
+          if (!request) return;
+          context.dispatch(new PostsActions.AddPost(request));
+        })
+      );
+  }
+
+  @Action(PostsActions.AddPost)
+  addPost(context: StateContext<PostsStateModel>, action: PostsActions.AddPost) {
+    context.patchState({ status: 'busy' });
+    return this.postsService.addPost(action.request).pipe(
+      tap((post) => {
+        const state = context.getState();
+        context.patchState({ status: 'ready', posts: [post, ...state.posts] });
+        context.dispatch(new Navigate(['/posts', post.id]));
+        this.snackbar.open('Post created successfully', 'Close', { duration: 3000 });
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });

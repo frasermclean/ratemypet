@@ -4,18 +4,15 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { MatIconRegistry } from '@angular/material/icon';
+import { withNgxsRouterPlugin } from '@ngxs/router-plugin';
 import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
-import { NgxsModuleOptions, provideStore } from '@ngxs/store';
+import { provideStore } from '@ngxs/store';
 
 import { routes } from './app.routes';
 import { AuthState } from './auth/auth.state';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { PostsState } from './posts/posts.state';
 import { environment } from '../environments/environment';
-
-const ngxsOptions: NgxsModuleOptions = {
-  developmentMode: environment.name === 'development',
-};
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,7 +22,8 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideStore(
       [AuthState, PostsState],
-      ngxsOptions,
+      { developmentMode: environment.name === 'development' },
+      withNgxsRouterPlugin(),
       withNgxsStoragePlugin({
         keys: ['auth.refreshToken', 'auth.emailAddress'],
       })

@@ -1,3 +1,15 @@
 .full-width {
   width: 100%;
 }
+
+.image-upload {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 16px;
+  font-size: large;
+}
+
+input[type="file"] {
+  display: none;
+}

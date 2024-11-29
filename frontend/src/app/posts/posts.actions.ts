@@ -1,4 +1,4 @@
-import { Reaction } from '@models/post.models';
+import { AddPostRequest, Reaction } from '@models/post.models';
 
 export namespace PostsActions {
   export class SearchPosts {
@@ -8,6 +8,15 @@ export namespace PostsActions {
   export class GetPost {
     static readonly type = '[Posts] Get Post';
     constructor(public postId: string) {}
+  }
+
+  export class OpenPostEditDialog {
+    static readonly type = '[Posts] Open Post Edit Dialog';
+  }
+
+  export class AddPost {
+    static readonly type = '[Posts] Add Post';
+    constructor(public request: AddPostRequest) {}
   }
 
   export class GetPostReactions {

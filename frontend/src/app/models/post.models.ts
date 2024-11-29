@@ -18,6 +18,13 @@ export interface PostReactions {
 
 export interface DetailedPost extends Post {}
 
+export interface AddPostRequest {
+  title: string;
+  description: string;
+  image: File;
+  speciesId: number;
+}
+
 export enum Reaction {
   Like = 'like',
   Funny = 'funny',

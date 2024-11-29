@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import { DetailedPost, Post, PostReactions, Reaction } from '@models/post.models';
+import { AddPostRequest, DetailedPost, Post, PostReactions, Reaction } from '@models/post.models';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +18,16 @@ export class PostsService {
 
   getPost(postId: string) {
     return this.httpClient.get<DetailedPost>(`${this.baseUrl}/${postId}`);
+  }
+
+  addPost(request: AddPostRequest) {
+    const formData = new FormData();
+    formData.append('title', request.title);
+    formData.append('description', request.description);
+    formData.append('image', request.image);
+    formData.append('speciesId', request.speciesId.toString());
+
+    return this.httpClient.post<Post>(this.baseUrl, formData);
   }
 
   updatePostReaction(postId: string, reaction: Reaction) {
