@@ -79,11 +79,26 @@ export class PostsState {
   addPost(context: StateContext<PostsStateModel>, action: PostsActions.AddPost) {
     context.patchState({ status: 'busy' });
     return this.postsService.addPost(action.request).pipe(
-      tap((post) => {
-        const state = context.getState();
-        context.patchState({ status: 'ready', posts: [post, ...state.posts] });
-        context.dispatch(new Navigate(['/posts', post.id]));
+      tap((postId) => {
+        context.patchState({ status: 'ready' });
+        context.dispatch(new Navigate(['/posts', postId]));
         this.snackbar.open('Post created successfully', 'Close', { duration: 3000 });
+      }),
+      catchError((error) => {
+        context.patchState({ status: 'error', error });
+        return error;
+      })
+    );
+  }
+
+  @Action(PostsActions.DeletePost)
+  deletePost(context: StateContext<PostsStateModel>, action: PostsActions.DeletePost) {
+    context.patchState({ status: 'busy' });
+    return this.postsService.deletePost(action.postId).pipe(
+      tap(() => {
+        context.patchState({ status: 'ready' });
+        context.dispatch(new Navigate(['/posts']));
+        this.snackbar.open('Post deleted successfully', 'Close', { duration: 3000 });
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });

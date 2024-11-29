@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import { AddPostRequest, DetailedPost, Post, PostReactions, Reaction } from '@models/post.models';
@@ -27,7 +27,16 @@ export class PostsService {
     formData.append('image', request.image);
     formData.append('speciesId', request.speciesId.toString());
 
-    return this.httpClient.post<Post>(this.baseUrl, formData);
+    return this.httpClient.post(this.baseUrl, formData, { observe: 'response' }).pipe(
+      map((response) => {
+        const location = response.headers.get('Location');
+        return location?.split('/').pop();
+      })
+    );
+  }
+
+  deletePost(postId: string) {
+    return this.httpClient.delete(`${this.baseUrl}/${postId}`);
   }
 
   updatePostReaction(postId: string, reaction: Reaction) {

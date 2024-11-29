@@ -33,8 +33,4 @@ export class PostListComponent implements OnInit {
   ngOnInit(): void {
     this.searchPosts();
   }
-
-  addPost() {
-    this.openPostEditDialog();
-  }
 }

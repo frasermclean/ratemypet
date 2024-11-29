@@ -19,6 +19,11 @@ export namespace PostsActions {
     constructor(public request: AddPostRequest) {}
   }
 
+  export class DeletePost {
+    static readonly type = '[Posts] Delete Post';
+    constructor(public postId: string) {}
+  }
+
   export class GetPostReactions {
     static readonly type = '[Posts] Get Post Reactions';
     constructor(public postId: string) {}
