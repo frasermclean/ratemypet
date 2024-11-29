@@ -1,8 +1,9 @@
-.welcome {
-  text-align: center;
-  margin: 16px 0;
-  padding: 1rem;
-  h1 {
-    margin-bottom: 1rem;
+:host {
+  display: grid;
+  height: 100%;
+  grid-template-rows: auto 1fr auto;
+
+  #main-content {
+    padding: 16px 16px 0;
   }
 }
