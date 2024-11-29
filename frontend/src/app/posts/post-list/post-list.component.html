@@ -1,6 +1,6 @@
-@switch (status$ | async) { @case ('busy') {
+@switch (status()) { @case ('busy') {
 <div class="centered-container">
-  <h2>Loading post</h2>
+  <h2>Loading posts</h2>
   <mat-spinner></mat-spinner>
 </div>
 } @case ('error') {
@@ -9,12 +9,19 @@
   <p>No posts could be loaded from the server. Please try again later.</p>
   <button mat-raised-button (click)="searchPosts()">Try again</button>
 </div>
-} @case ('ready') { @if (posts$ | async; as posts) { @for (post of posts; track post.id) {
-<app-post-list-item [post]="post" />
-} @empty {
-<div class="centered-container">
-  <h2>No posts found</h2>
-  <p>No posts found that match the search criteria.</p>
-  <button mat-raised-button (click)="searchPosts()">Try again</button>
-</div>
-} } } }
+} @case ('ready') { @if (posts(); as posts) {
+<section id="posts">
+  @for (post of posts; track post.id) {
+  <app-post-list-item [post]="post" />
+  } @empty {
+  <div class="centered-container">
+    <h2>No posts found</h2>
+    <p>No posts found that match the search criteria.</p>
+    <button mat-raised-button (click)="searchPosts()">Try again</button>
+  </div>
+  }
+  <button mat-fab matTooltip="Create Post" class="add-post-button" (click)="addPost()" title="Create Post">
+    <mat-icon>add</mat-icon>
+  </button>
+</section>
+} } }

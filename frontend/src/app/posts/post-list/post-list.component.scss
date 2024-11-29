@@ -1,13 +1,14 @@
-$card-width: 320px;
-$gap: 16px;
-
 :host {
-  display: flex;
-  max-width: $card-width * 3 + $gap * 2;
   margin: auto;
+  display: flex;
   justify-content: center;
+}
+
+#posts {
+  display: flex;
   flex-wrap: wrap;
-  gap: $gap;
+  justify-content: center;
+  gap: 16px;
 }
 
 .centered-container {
@@ -25,4 +26,10 @@ $gap: 16px;
   p {
     margin-bottom: 24px;
   }
+}
+
+.add-post-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
 }
