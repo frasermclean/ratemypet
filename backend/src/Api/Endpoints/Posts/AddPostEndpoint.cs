@@ -1,9 +1,6 @@
-﻿using Azure.Storage.Blobs;
-using FastEndpoints;
+﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using RateMyPet.Api.Extensions;
-using RateMyPet.Api.Mapping;
 using RateMyPet.Api.Services;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
@@ -15,9 +12,8 @@ public class AddPostEndpoint(
     ApplicationDbContext dbContext,
     ImageProcessor imageProcessor,
     [FromKeyedServices(BlobContainerNames.OriginalImages)]
-    IBlobContainerManager blobContainerManager,
-    PostResponseMapper mapper)
-    : Endpoint<AddPostRequest, Results<Created<PostResponse>, ErrorResponse>>
+    IBlobContainerManager blobContainerManager)
+    : Endpoint<AddPostRequest, Results<Created, ErrorResponse>>
 {
     public override void Configure()
     {
@@ -26,7 +22,7 @@ public class AddPostEndpoint(
         AllowFileUploads();
     }
 
-    public override async Task<Results<Created<PostResponse>, ErrorResponse>> ExecuteAsync(AddPostRequest request,
+    public override async Task<Results<Created, ErrorResponse>> ExecuteAsync(AddPostRequest request,
         CancellationToken cancellationToken)
     {
         var species = await dbContext.Species.FirstOrDefaultAsync(s => s.Id == request.SpeciesId, cancellationToken);
@@ -39,8 +35,7 @@ public class AddPostEndpoint(
         var imageResult = await ProcessAndUploadImageAsync(request, cancellationToken);
         var post = await CreatePostEntityAsync(request, species, imageResult, cancellationToken);
 
-        var response = mapper.MapToResponse(post);
-        return TypedResults.Created($"/posts/{response.Id}", response);
+        return TypedResults.Created($"/posts/{post.Id}");
     }
 
     private async Task<ProcessImageResult> ProcessAndUploadImageAsync(AddPostRequest request,

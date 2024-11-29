@@ -1,20 +1,19 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using RateMyPet.Api.Mapping;
 using RateMyPet.Persistence.Services;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class UpdatePostEndpoint(ApplicationDbContext dbContext, PostResponseMapper mapper)
-    : Endpoint<UpdatePostRequest, Results<Ok<PostResponse>, NotFound, ErrorResponse>>
+public class UpdatePostEndpoint(ApplicationDbContext dbContext)
+    : Endpoint<UpdatePostRequest, Results<NoContent, NotFound, ErrorResponse>>
 {
     public override void Configure()
     {
         Put("posts/{postId:guid}");
     }
 
-    public override async Task<Results<Ok<PostResponse>, NotFound, ErrorResponse>> ExecuteAsync(
+    public override async Task<Results<NoContent, NotFound, ErrorResponse>> ExecuteAsync(
         UpdatePostRequest request, CancellationToken cancellationToken)
     {
         var post = await dbContext.Posts.Where(p => p.Id == request.PostId)
@@ -41,7 +40,6 @@ public class UpdatePostEndpoint(ApplicationDbContext dbContext, PostResponseMapp
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        var response = mapper.MapToResponse(post);
-        return TypedResults.Ok(response);
+        return TypedResults.NoContent();
     }
 }

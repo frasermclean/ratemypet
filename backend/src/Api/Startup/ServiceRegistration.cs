@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Communication.Email;
 using Azure.Identity;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.Json;
@@ -54,6 +53,7 @@ public static class ServiceRegistration
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials()
+                    .WithExposedHeaders("Location")
                 );
             });
         }
