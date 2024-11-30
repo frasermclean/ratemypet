@@ -14,7 +14,7 @@ public class RegisterEndpoint(
     UserManager<User> userManager,
     IEmailSender<User> emailSender,
     IOptions<FrontendOptions> frontendOptions)
-    : Endpoint<RegisterRequest, Results<Ok, ErrorResponse>>
+    : Endpoint<RegisterRequest, Results<Ok, ValidationProblem>>
 {
     private readonly string frontendBaseUrl = frontendOptions.Value.BaseUrl;
 
@@ -24,7 +24,7 @@ public class RegisterEndpoint(
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok, ErrorResponse>> ExecuteAsync(
+    public override async Task<Results<Ok, ValidationProblem>> ExecuteAsync(
         RegisterRequest request,
         CancellationToken cancellationToken)
     {
@@ -37,7 +37,7 @@ public class RegisterEndpoint(
         var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
         {
-            return new ErrorResponse(result.Errors.ToValidationFailures());
+            return TypedResults.ValidationProblem(result.Errors.ToDictionary());
         }
 
         await SendConfirmationLinkAsync(user, request.EmailAddress);

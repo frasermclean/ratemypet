@@ -9,7 +9,7 @@ using RateMyPet.Persistence.Models;
 namespace RateMyPet.Api.Endpoints.Auth;
 
 public class ConfirmEmailEndpoint(UserManager<User> userManager)
-    : Endpoint<ConfirmEmailRequest, Results<Ok, NotFound, ErrorResponse>>
+    : Endpoint<ConfirmEmailRequest, Results<NoContent, NotFound, ValidationProblem>>
 {
     public override void Configure()
     {
@@ -17,7 +17,7 @@ public class ConfirmEmailEndpoint(UserManager<User> userManager)
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok, NotFound, ErrorResponse>> ExecuteAsync(ConfirmEmailRequest request,
+    public override async Task<Results<NoContent, NotFound, ValidationProblem>> ExecuteAsync(ConfirmEmailRequest request,
         CancellationToken cancellationToken)
     {
         var user = await userManager.FindByIdAsync(request.UserId.ToString());
@@ -30,7 +30,7 @@ public class ConfirmEmailEndpoint(UserManager<User> userManager)
         var result = await userManager.ConfirmEmailAsync(user, decodedToken);
 
         return result.Succeeded
-            ? TypedResults.Ok()
-            : new ErrorResponse(result.Errors.ToValidationFailures());
+            ? TypedResults.NoContent()
+            : TypedResults.ValidationProblem(result.Errors.ToDictionary());
     }
 }

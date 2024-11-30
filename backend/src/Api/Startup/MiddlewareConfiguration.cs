@@ -12,7 +12,12 @@ public static class MiddlewareConfiguration
             app.UseCors();
         }
 
-        app.UseFastEndpoints(config => config.Endpoints.RoutePrefix = "api");
+        app.UseFastEndpoints(config =>
+        {
+            config.Endpoints.RoutePrefix = "api";
+            config.Errors.UseProblemDetails();
+            config.Errors.ProducesMetadataType = typeof(ProblemDetails);
+        });
 
         // authentication endpoints provided by Identity
         var authGroup = app.MapGroup("auth");

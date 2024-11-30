@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 using Azure.Identity;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Azure;
@@ -22,6 +23,15 @@ public static class ServiceRegistration
             .AddPersistence(builder.Configuration)
             .AddIdentity()
             .AddFastEndpoints();
+
+        builder.Services.AddProblemDetails(options =>
+        {
+            options.CustomizeProblemDetails = context =>
+            {
+                context.ProblemDetails.Instance = context.HttpContext.Request.Path;
+                context.ProblemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
+            };
+        });
 
         builder.Services.AddAzureClients(factoryBuilder =>
         {
@@ -90,6 +100,8 @@ public static class ServiceRegistration
 
         services.AddIdentityApiEndpoints<User>(options =>
             {
+                options.Password.RequiredLength = 8;
+                options.SignIn.RequireConfirmedEmail = true;
                 options.User.RequireUniqueEmail = true;
             })
             .AddEntityFrameworkStores<ApplicationDbContext>();

@@ -7,8 +7,16 @@ public class RegisterValidator : Validator<RegisterRequest>
 {
     public RegisterValidator()
     {
-        RuleFor(request => request.UserName).NotEmpty();
-        RuleFor(request => request.EmailAddress).NotEmpty().EmailAddress();
-        RuleFor(request => request.Password).NotEmpty();
+        RuleFor(request => request.UserName)
+            .NotEmpty()
+            .MinimumLength(3)
+            .MaximumLength(30);
+
+        RuleFor(request => request.EmailAddress)
+            .NotEmpty()
+            .EmailAddress();
+
+        RuleFor(request => request.Password)
+            .NotEmpty();
     }
 }
