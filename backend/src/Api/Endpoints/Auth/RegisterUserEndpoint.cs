@@ -1,10 +1,10 @@
 ﻿using System.Text;
 using FastEndpoints;
-using FluentValidation.Results;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using RateMyPet.Api.Extensions;
 using RateMyPet.Api.Options;
 using RateMyPet.Persistence.Models;
 
@@ -33,13 +33,11 @@ public class RegisterUserEndpoint(
             UserName = request.Username,
             Email = request.EmailAddress
         };
-        var createResult = await userManager.CreateAsync(user, request.Password);
 
-        if (!createResult.Succeeded)
+        var result = await userManager.CreateAsync(user, request.Password);
+        if (!result.Succeeded)
         {
-            var failures = createResult.Errors.Select(error => new ValidationFailure(error.Code, error.Description))
-                .ToList();
-            return new ErrorResponse(failures);
+            return new ErrorResponse(result.Errors.ToValidationFailures());
         }
 
         await SendConfirmationLinkAsync(user, request.EmailAddress);
