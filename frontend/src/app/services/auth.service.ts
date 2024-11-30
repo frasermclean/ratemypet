@@ -16,8 +16,8 @@ export class AuthService {
   private readonly httpClient = inject(HttpClient);
   private readonly baseUrl = `${environment.apiBaseUrl}/auth`;
 
-  public login(email: string, password: string) {
-    return this.httpClient.post<AccessTokenResponse>(`${this.baseUrl}/login`, { email, password });
+  public login(emailOrPassword: string, password: string) {
+    return this.httpClient.post<AccessTokenResponse>(`${this.baseUrl}/login`, { emailOrPassword, password });
   }
 
   public logout() {

@@ -6,7 +6,7 @@ using RateMyPet.Persistence.Models;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
-public class LoginEndpoint(SignInManager<User> signInManager)
+public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> userManager)
     : Endpoint<LoginRequest, Results<Ok<AccessTokenResponse>, EmptyHttpResult, UnauthorizedHttpResult>>
 {
     public override void Configure()
@@ -18,18 +18,25 @@ public class LoginEndpoint(SignInManager<User> signInManager)
     public override async Task<Results<Ok<AccessTokenResponse>, EmptyHttpResult, UnauthorizedHttpResult>> ExecuteAsync(
         LoginRequest request, CancellationToken cancellationToken)
     {
+        var user = await userManager.FindByEmailAsync(request.EmailOrPassword)
+                   ?? await userManager.FindByNameAsync(request.EmailOrPassword);
+        if (user is null)
+        {
+            return TypedResults.Unauthorized();
+        }
+
         signInManager.AuthenticationScheme = request.UseCookies
             ? IdentityConstants.ApplicationScheme
             : IdentityConstants.BearerScheme;
 
-        var result = await signInManager.PasswordSignInAsync(request.UserName, request.Password, false, false);
+        var result = await signInManager.PasswordSignInAsync(user, request.Password, false, false);
 
         if (!result.Succeeded)
         {
             return TypedResults.Unauthorized();
         }
 
-        Logger.LogInformation("User {UserName} logged in", request.UserName);
+        Logger.LogInformation("User {EmailOrPassword} logged in", request.EmailOrPassword);
         return TypedResults.Empty;
     }
 }

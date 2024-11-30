@@ -88,7 +88,10 @@ public static class ServiceRegistration
     {
         services.AddAuthorization();
 
-        services.AddIdentityApiEndpoints<User>()
+        services.AddIdentityApiEndpoints<User>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+            })
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
         services.ConfigureApplicationCookie(options => { options.Cookie.Name = "RateMyPet"; });
