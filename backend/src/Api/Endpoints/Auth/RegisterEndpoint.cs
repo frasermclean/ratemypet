@@ -30,7 +30,7 @@ public class RegisterEndpoint(
     {
         var user = new User
         {
-            UserName = request.Username,
+            UserName = request.UserName,
             Email = request.EmailAddress
         };
 

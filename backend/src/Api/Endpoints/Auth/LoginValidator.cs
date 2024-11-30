@@ -3,12 +3,11 @@ using FluentValidation;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
-public class RegisterValidator : Validator<RegisterRequest>
+public class LoginValidator : Validator<LoginRequest>
 {
-    public RegisterValidator()
+    public LoginValidator()
     {
         RuleFor(request => request.UserName).NotEmpty();
-        RuleFor(request => request.EmailAddress).NotEmpty().EmailAddress();
         RuleFor(request => request.Password).NotEmpty();
     }
 }
