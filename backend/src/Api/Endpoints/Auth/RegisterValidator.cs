@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
-public class RegisterUserValidator : Validator<RegisterUserRequest>
+public class RegisterValidator : Validator<RegisterRequest>
 {
-    public RegisterUserValidator()
+    public RegisterValidator()
     {
         RuleFor(request => request.Username).NotEmpty();
         RuleFor(request => request.EmailAddress).NotEmpty().EmailAddress();

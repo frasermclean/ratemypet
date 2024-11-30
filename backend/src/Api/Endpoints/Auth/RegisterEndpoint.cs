@@ -10,11 +10,11 @@ using RateMyPet.Persistence.Models;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
-public class RegisterUserEndpoint(
+public class RegisterEndpoint(
     UserManager<User> userManager,
     IEmailSender<User> emailSender,
     IOptions<FrontendOptions> frontendOptions)
-    : Endpoint<RegisterUserRequest, Results<Ok, ErrorResponse>>
+    : Endpoint<RegisterRequest, Results<Ok, ErrorResponse>>
 {
     private readonly string frontendBaseUrl = frontendOptions.Value.BaseUrl;
 
@@ -25,7 +25,7 @@ public class RegisterUserEndpoint(
     }
 
     public override async Task<Results<Ok, ErrorResponse>> ExecuteAsync(
-        RegisterUserRequest request,
+        RegisterRequest request,
         CancellationToken cancellationToken)
     {
         var user = new User
