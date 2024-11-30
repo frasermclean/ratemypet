@@ -1,0 +1,72 @@
+<mat-card>
+  <form [formGroup]="formGroup" (ngSubmit)="register(formGroup.getRawValue())">
+    <mat-card-header>
+      <mat-card-title>Create a new account</mat-card-title>
+      <mat-card-subtitle>Enter your credentials below</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-form-field class="form-field">
+        <mat-label>Username</mat-label>
+        <input matInput placeholder="Your username" formControlName="userName" autocomplete="username" />
+        <mat-icon matSuffix>person</mat-icon>
+        <mat-hint>Your name on the site, cannot be changed later</mat-hint>
+        @if (formGroup.controls.userName.hasError('required')) {
+        <mat-error>Username is required</mat-error>
+        } @else if (formGroup.controls.userName.hasError('minlength')) {
+        <mat-error>Username must be at least 3 characters long</mat-error>
+        } @else if (formGroup.controls.userName.hasError('maxlength')) {
+        <mat-error>Username cannot be longer than 30 characters</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field class="form-field">
+        <mat-label>Email Address</mat-label>
+        <input matInput placeholder="name@example.com" formControlName="emailAddress" autocomplete="email" />
+        <mat-icon matSuffix>mail</mat-icon>
+        <mat-hint>Email address to receive confirmation</mat-hint>
+        @if (formGroup.controls.emailAddress.hasError('required')) {
+        <mat-error>Email address is required</mat-error>
+        } @else if (formGroup.controls.emailAddress.hasError('email')) {
+        <mat-error>Invalid email address provided</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field class="form-field">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          placeholder="Your current password"
+          formControlName="password"
+          type="password"
+          autocomplete="new-password"
+        />
+        <mat-icon matSuffix>password</mat-icon>
+        @if (formGroup.controls.password.hasError('required')) {
+        <mat-error>Password is required.</mat-error>
+        } @else if (formGroup.controls.password.hasError('minlength')) {
+        <mat-error>Password must be at least 8 characters long.</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field class="form-field">
+        <mat-label>Password (confirmation)</mat-label>
+        <input
+          matInput
+          placeholder="Re-enter your password"
+          formControlName="confirmPassword"
+          type="password"
+          autocomplete="new-password"
+        />
+        <mat-icon matSuffix>password</mat-icon>
+        @if (formGroup.controls.confirmPassword.hasError('mustMatch')) {
+        <mat-error>Entered password does not match</mat-error>
+        }
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions>
+      @switch (status()) { @case ('busy') {
+      <mat-progress-bar mode="indeterminate" />
+      } @default {
+      <button mat-flat-button type="submit" [disabled]="formGroup.invalid">Register</button>
+      <a mat-button routerLink="/auth/login">Login to your account</a>
+      } }
+    </mat-card-actions>
+  </form>
+</mat-card>

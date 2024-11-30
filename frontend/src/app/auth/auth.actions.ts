@@ -1,3 +1,5 @@
+import { RegisterRequest } from '@services/auth.service';
+
 export namespace AuthActions {
   export class Login {
     static readonly type = '[Auth] Login';
@@ -6,6 +8,11 @@ export namespace AuthActions {
 
   export class Logout {
     static readonly type = '[Auth] Logout';
+  }
+
+  export class Register {
+    static readonly type = '[Auth] Register';
+    constructor(public request: RegisterRequest) {}
   }
 
   export class ConfirmEmail {

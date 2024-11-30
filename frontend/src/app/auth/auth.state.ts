@@ -82,6 +82,23 @@ export class AuthState implements NgxsOnInit {
     );
   }
 
+  @Action(AuthActions.Register)
+  register(context: StateContext<AuthStateModel>, action: AuthActions.Register) {
+    context.patchState({ status: 'busy' });
+    return this.authService.register(action.request).pipe(
+      tap(() => {
+        this.snackBar.open('Registration successful. Please check your email for a confirmation link.', 'Close');
+        context.patchState({ status: 'loggedOut' });
+        context.dispatch(new Navigate(['/auth/login']));
+      }),
+      catchError((error) => {
+        this.snackBar.open('An error occured while trying to register.', 'Close');
+        context.patchState({ status: 'loggedOut', error });
+        throw error;
+      })
+    );
+  }
+
   @Action(AuthActions.ConfirmEmail)
   confirmEmail(context: StateContext<AuthStateModel>, action: AuthActions.ConfirmEmail) {
     context.patchState({ status: 'busy' });
@@ -95,7 +112,7 @@ export class AuthState implements NgxsOnInit {
         this.snackBar.open('An error occured while trying to confirm your email address.', 'Close');
         context.patchState({ status: 'loggedOut', error });
         context.dispatch(new Navigate(['/']));
-        return of([])
+        return of([]);
       })
     );
   }

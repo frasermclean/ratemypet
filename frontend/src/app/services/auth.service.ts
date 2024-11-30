@@ -9,6 +9,12 @@ interface AccessTokenResponse {
   refreshToken: string;
 }
 
+export interface RegisterRequest {
+  userName: string;
+  emailAddress: string;
+  password: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -22,6 +28,10 @@ export class AuthService {
 
   public logout() {
     return this.httpClient.post(`${this.baseUrl}/logout`, null);
+  }
+
+  public register(request: RegisterRequest) {
+    return this.httpClient.post(`${this.baseUrl}/register`, request);
   }
 
   public confirmEmail(userId: string, token: string) {
