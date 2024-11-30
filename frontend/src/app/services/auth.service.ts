@@ -14,7 +14,7 @@ interface AccessTokenResponse {
 })
 export class AuthService {
   private readonly httpClient = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiBaseUrl}/api/auth`;
+  private readonly baseUrl = `${environment.apiBaseUrl}/auth`;
 
   public login(email: string, password: string) {
     return this.httpClient.post<AccessTokenResponse>(`${this.baseUrl}/login`, { email, password });

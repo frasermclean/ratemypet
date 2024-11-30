@@ -15,7 +15,7 @@ public class RefreshTokenEndpoint(
 {
     public override void Configure()
     {
-        Post("/api/auth/refresh-token");
+        Post("auth/refresh-token");
         AllowAnonymous();
     }
 

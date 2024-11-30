@@ -11,7 +11,7 @@ public class LoginEndpoint(SignInManager<User> signInManager)
 {
     public override void Configure()
     {
-        Post("/api/auth/login");
+        Post("auth/login");
         AllowAnonymous();
     }
 

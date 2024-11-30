@@ -2,5 +2,5 @@ import { Environment } from "./environment.interface";
 
 export const environment: Environment = {
   name: 'development',
-  apiBaseUrl: 'https://localhost:5443'
+  apiBaseUrl: 'https://localhost:5443/api'
 };

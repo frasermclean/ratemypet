@@ -13,7 +13,7 @@ public class ConfirmEmailEndpoint(UserManager<User> userManager)
 {
     public override void Configure()
     {
-        Post("/api/auth/confirm-email");
+        Post("auth/confirm-email");
         AllowAnonymous();
     }
 
