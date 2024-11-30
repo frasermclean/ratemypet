@@ -49,7 +49,7 @@ public static class ServiceRegistration
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(policyBuilder => policyBuilder
-                    .WithOrigins("http://localhost:4200")
+                    .WithOrigins(builder.Configuration["Frontend:BaseUrl"]!)
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials()
@@ -73,6 +73,10 @@ public static class ServiceRegistration
 
         services.AddOptions<EmailSenderOptions>()
             .BindConfiguration(EmailSenderOptions.SectionName)
+            .ValidateDataAnnotations();
+
+        services.AddOptions<FrontendOptions>()
+            .BindConfiguration(FrontendOptions.SectionName)
             .ValidateDataAnnotations();
 
         services.AddSingleton<PostResponseMapper>();
