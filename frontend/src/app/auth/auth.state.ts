@@ -6,7 +6,7 @@ import { AuthService } from '@services/auth.service';
 import { catchError, tap } from 'rxjs';
 
 interface AuthStateModel {
-  status: 'initial' | 'busy' | 'error' | 'loggedIn' | 'loggedOut';
+  status: 'loggedOut' | 'busy' | 'loggedIn';
   error: any;
   emailAddress: string | null;
   accessToken: string | null;
@@ -19,7 +19,7 @@ const AUTH_STATE_TOKEN = new StateToken<AuthStateModel>('auth');
 @State<AuthStateModel>({
   name: AUTH_STATE_TOKEN,
   defaults: {
-    status: 'initial',
+    status: 'loggedOut',
     error: null,
     emailAddress: null,
     accessToken: null,
@@ -55,8 +55,8 @@ export class AuthState implements NgxsOnInit {
         });
       }),
       catchError((error) => {
-        context.patchState({ status: 'error', error });
-        return error;
+        context.patchState({ status: 'loggedOut', error });
+        throw error;
       })
     );
   }
@@ -92,8 +92,8 @@ export class AuthState implements NgxsOnInit {
         });
       }),
       catchError((error) => {
-        context.patchState({ status: 'error', error });
-        return error;
+        context.patchState({ error });
+        throw error;
       })
     );
   }

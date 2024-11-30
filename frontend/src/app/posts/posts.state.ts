@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Navigate } from '@ngxs/router-plugin';
 import { Action, Selector, State, StateContext, StateToken } from '@ngxs/store';
-import { catchError, tap } from 'rxjs';
+import { catchError, of, tap } from 'rxjs';
 
 import { PostsService } from '@services/posts.service';
 import { PostsActions } from './posts.actions';
@@ -43,7 +43,7 @@ export class PostsState {
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });
-        return error;
+        return of([]);
       })
     );
   }
@@ -57,7 +57,7 @@ export class PostsState {
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });
-        return error;
+        return of([]);
       })
     );
   }
@@ -86,7 +86,7 @@ export class PostsState {
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });
-        return error;
+        throw error;
       })
     );
   }
@@ -102,7 +102,7 @@ export class PostsState {
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });
-        return error;
+        throw error;
       })
     );
   }
@@ -118,9 +118,8 @@ export class PostsState {
         context.patchState({ status: 'ready', posts });
       }),
       catchError((error) => {
-        console.error('Error updating post reaction', error);
-        context.patchState({ status: 'error', error });
-        return error;
+        this.snackbar.open('Could not update post reaction', 'Close', { duration: 3000 });
+        return of([]);
       })
     );
   }
@@ -136,9 +135,8 @@ export class PostsState {
         context.patchState({ status: 'ready', posts });
       }),
       catchError((error) => {
-        console.error('Error removing post reaction', error);
-        context.patchState({ status: 'error', error });
-        return error;
+        this.snackbar.open('Could not remove post reaction', 'Close', { duration: 3000 });
+        return of([]);
       })
     );
   }
