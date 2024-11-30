@@ -8,6 +8,11 @@ export namespace AuthActions {
     static readonly type = '[Auth] Logout';
   }
 
+  export class ConfirmEmail {
+    static readonly type = '[Auth] Confirm Email';
+    constructor(public userId: string, public token: string) {}
+  }
+
   export class RefreshAccessToken {
     static readonly type = '[Auth] Refresh Access Token';
     constructor(public refreshToken: string) {}

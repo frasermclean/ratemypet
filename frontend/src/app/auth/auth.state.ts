@@ -3,7 +3,9 @@ import { Action, NgxsOnInit, Selector, State, StateContext, StateToken } from '@
 
 import { AuthActions } from './auth.actions';
 import { AuthService } from '@services/auth.service';
-import { catchError, tap } from 'rxjs';
+import { catchError, of, tap } from 'rxjs';
+import { Navigate } from '@ngxs/router-plugin';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 interface AuthStateModel {
   status: 'loggedOut' | 'busy' | 'loggedIn';
@@ -30,6 +32,7 @@ const AUTH_STATE_TOKEN = new StateToken<AuthStateModel>('auth');
 @Injectable()
 export class AuthState implements NgxsOnInit {
   private readonly authService = inject(AuthService);
+  private readonly snackBar = inject(MatSnackBar);
 
   ngxsOnInit(context: StateContext<AuthStateModel>): void {
     const refreshToken = context.getState().refreshToken;
@@ -66,6 +69,7 @@ export class AuthState implements NgxsOnInit {
     context.patchState({ status: 'busy' });
     return this.authService.logout().pipe(
       tap(() => {
+        this.snackBar.open('You have been logged out.', 'Close');
         context.patchState({
           status: 'loggedOut',
           emailAddress: null,
@@ -73,6 +77,25 @@ export class AuthState implements NgxsOnInit {
           accessTokenExpiry: null,
           refreshToken: null,
         });
+        context.dispatch(new Navigate(['/auth/login']));
+      })
+    );
+  }
+
+  @Action(AuthActions.ConfirmEmail)
+  confirmEmail(context: StateContext<AuthStateModel>, action: AuthActions.ConfirmEmail) {
+    context.patchState({ status: 'busy' });
+    return this.authService.confirmEmail(action.userId, action.token).pipe(
+      tap(() => {
+        this.snackBar.open('Email address confirmed.', 'Close');
+        context.patchState({ status: 'loggedOut' });
+        context.dispatch(new Navigate(['/auth/login']));
+      }),
+      catchError((error) => {
+        this.snackBar.open('An error occured while trying to confirm your email address.', 'Close');
+        context.patchState({ status: 'loggedOut', error });
+        context.dispatch(new Navigate(['/']));
+        return of([])
       })
     );
   }

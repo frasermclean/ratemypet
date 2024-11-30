@@ -4,6 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { MatIconRegistry } from '@angular/material/icon';
+import { withNgxsLoggerPlugin } from '@ngxs/logger-plugin';
 import { withNgxsRouterPlugin } from '@ngxs/router-plugin';
 import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { provideStore } from '@ngxs/store';
@@ -28,6 +29,9 @@ export const appConfig: ApplicationConfig = {
       withNgxsRouterPlugin(),
       withNgxsStoragePlugin({
         keys: ['auth.refreshToken', 'auth.emailAddress'],
+      }),
+      withNgxsLoggerPlugin({
+        disabled: environment.name !== 'development',
       })
     ),
     {

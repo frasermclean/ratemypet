@@ -24,6 +24,10 @@ export class AuthService {
     return this.httpClient.post(`${this.baseUrl}/logout`, null);
   }
 
+  public confirmEmail(userId: string, token: string) {
+    return this.httpClient.post(`${this.baseUrl}/confirm-email`, { userId, token });
+  }
+
   public refreshAccessToken(refreshToken: string) {
     return this.httpClient.post<AccessTokenResponse>(`${this.baseUrl}/refresh-token`, { refreshToken });
   }
