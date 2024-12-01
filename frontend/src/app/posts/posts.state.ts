@@ -7,14 +7,16 @@ import { catchError, of, tap } from 'rxjs';
 
 import { PostsService } from '@services/posts.service';
 import { PostsActions } from './posts.actions';
-import { AddPostRequest, DetailedPost, Post } from '@models/post.models';
+
 import { PostEditComponent } from './post-edit/post-edit.component';
+import { AddPostRequest, GetPostResponse, SearchPostsMatch } from '@models/post.models';
 
 interface PostsStateModel {
   status: 'initial' | 'busy' | 'error' | 'ready';
   error: any;
-  posts: Post[];
-  currentPost: DetailedPost | null;
+  matches: SearchPostsMatch[];
+  totalMatches: number;
+  currentPost: GetPostResponse | null;
 }
 
 const POSTS_STATE_TOKEN = new StateToken<PostsStateModel>('posts');
@@ -24,7 +26,8 @@ const POSTS_STATE_TOKEN = new StateToken<PostsStateModel>('posts');
   defaults: {
     status: 'initial',
     error: null,
-    posts: [],
+    matches: [],
+    totalMatches: 0,
     currentPost: null,
   },
 })
@@ -38,11 +41,11 @@ export class PostsState {
   searchPosts(context: StateContext<PostsStateModel>) {
     context.patchState({ status: 'busy' });
     return this.postsService.searchPosts().pipe(
-      tap((posts) => {
-        context.patchState({ status: 'ready', posts });
+      tap((paging) => {
+        context.patchState({ status: 'ready', matches: paging.data, totalMatches: paging.count });
       }),
       catchError((error) => {
-        context.patchState({ status: 'error', error });
+        context.patchState({ status: 'error', error, matches: [], totalMatches: 0 });
         return of([]);
       })
     );
@@ -112,12 +115,12 @@ export class PostsState {
     return this.postsService.updatePostReaction(action.postId, action.reaction).pipe(
       tap((reactions) => {
         const state = context.getState();
-        const posts = state.posts.map((post) =>
-          post.id === action.postId ? { ...post, reactions, userReaction: action.reaction } : post
+        const matches = state.matches.map((match) =>
+          match.id === action.postId ? { ...match, reactions, userReaction: action.reaction } : match
         );
-        context.patchState({ status: 'ready', posts });
+        context.patchState({ status: 'ready', matches });
       }),
-      catchError((error) => {
+      catchError(() => {
         this.snackbar.open('Could not update post reaction', 'Close', { duration: 3000 });
         return of([]);
       })
@@ -129,12 +132,12 @@ export class PostsState {
     return this.postsService.removePostReaction(action.postId).pipe(
       tap((reactions) => {
         const state = context.getState();
-        const posts = state.posts.map((post) =>
-          post.id === action.postId ? { ...post, reactions, userReaction: undefined } : post
+        const matches = state.matches.map((match) =>
+          match.id === action.postId ? { ...match, reactions, userReaction: undefined } : match
         );
-        context.patchState({ status: 'ready', posts });
+        context.patchState({ status: 'ready', matches });
       }),
-      catchError((error) => {
+      catchError(() => {
         this.snackbar.open('Could not remove post reaction', 'Close', { duration: 3000 });
         return of([]);
       })
@@ -147,8 +150,8 @@ export class PostsState {
   }
 
   @Selector([POSTS_STATE_TOKEN])
-  static posts(state: PostsStateModel) {
-    return state.posts;
+  static matches(state: PostsStateModel) {
+    return state.matches;
   }
 
   @Selector([POSTS_STATE_TOKEN])

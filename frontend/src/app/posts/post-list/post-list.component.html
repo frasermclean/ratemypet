@@ -9,10 +9,10 @@
   <p>No posts could be loaded from the server. Please try again later.</p>
   <button mat-raised-button (click)="searchPosts()">Try again</button>
 </div>
-} @case ('ready') { @if (posts(); as posts) {
+} @case ('ready') { @if (matches(); as matches) {
 <section id="posts">
-  @for (post of posts; track post.id) {
-  <app-post-list-item [post]="post" />
+  @for (match of matches; track match.id) {
+  <app-post-list-item [postMatch]="match" />
   } @empty {
   <div class="centered-container">
     <h2>No posts found</h2>

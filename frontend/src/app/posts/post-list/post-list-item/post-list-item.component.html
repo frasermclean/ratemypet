@@ -1,6 +1,7 @@
+@let post = postMatch();
 <mat-card>
   <mat-card-header>
-    <app-gravatar mat-card-avatar [emailOrHash]="post.authorEmailHash" shape="rounded"/>
+    <app-gravatar mat-card-avatar [emailOrHash]="post.authorEmailHash" shape="rounded" />
     <mat-card-title class="title">{{ post.title }}</mat-card-title>
     @if (post.description) {
     <mat-card-subtitle class="description">{{ post.description }}</mat-card-subtitle>

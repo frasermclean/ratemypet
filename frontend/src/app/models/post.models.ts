@@ -1,9 +1,27 @@
-export interface Post {
+export interface SearchPostsMatch {
   id: string;
   title: string;
   description?: string;
   imageUrl: string;
+  authorUserName: string;
   authorEmailHash: string;
+  speciesName: string;
+  createdAtUtc: string;
+  updatedAtUtc?: string;
+  userReaction?: Reaction;
+  reactions: PostReactions;
+}
+
+export interface GetPostResponse {
+  id: string;
+  title: string;
+  description?: string;
+  imageUrl: string;
+  authorUserName: string;
+  authorEmailHash: string;
+  speciesName: string;
+  createdAtUtc: string;
+  updatedAtUtc?: string;
   userReaction?: Reaction;
   reactions: PostReactions;
 }
@@ -15,8 +33,6 @@ export interface PostReactions {
   wow: number;
   sad: number;
 }
-
-export interface DetailedPost extends Post {}
 
 export interface AddPostRequest {
   title: string;

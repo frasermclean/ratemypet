@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,11 +6,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
-import { Store } from '@ngxs/store';
+import { dispatch, Store } from '@ngxs/store';
 
 import { GravatarComponent } from '@shared/gravatar/gravatar.component';
 import { PostsActions } from '../../posts.actions';
-import { allReactions, Post, Reaction } from '@models/post.models';
+import { allReactions, Reaction, SearchPostsMatch } from '@models/post.models';
 
 @Component({
   selector: 'app-post-list-item',
@@ -29,16 +29,17 @@ import { allReactions, Post, Reaction } from '@models/post.models';
   styleUrl: './post-list-item.component.scss',
 })
 export class PostItemComponent {
+  postMatch = input.required<SearchPostsMatch>();
   reactions = allReactions;
-
-  private readonly store = inject(Store);
-  @Input({ required: true }) post!: Post;
+  removePostReaction = dispatch(PostsActions.RemovePostReaction);
+  updatePostReaction = dispatch(PostsActions.UpdatePostReaction);
 
   handleReaction(reaction: Reaction) {
-    if (this.post.userReaction === reaction) {
-      this.store.dispatch(new PostsActions.RemovePostReaction(this.post.id));
+    const post = this.postMatch();
+    if (post.userReaction === reaction) {
+      this.removePostReaction(post.id);
     } else {
-      this.store.dispatch(new PostsActions.UpdatePostReaction(this.post.id, reaction));
+      this.updatePostReaction(post.id, reaction);
     }
   }
 }

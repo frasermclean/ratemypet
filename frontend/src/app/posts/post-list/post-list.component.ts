@@ -26,7 +26,7 @@ import { PostsActions } from '../posts.actions';
 export class PostListComponent implements OnInit {
 
   readonly status = select(PostsState.status);
-  readonly posts = select(PostsState.posts);
+  readonly matches = select(PostsState.matches);
   readonly searchPosts = dispatch(PostsActions.SearchPosts);
   readonly openPostEditDialog = dispatch(PostsActions.OpenPostEditDialog);
 

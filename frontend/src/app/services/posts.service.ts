@@ -1,9 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Paging } from 'gridify-client';
 import { map, Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import { AddPostRequest, DetailedPost, Post, PostReactions, Reaction } from '@models/post.models';
+import { AddPostRequest, GetPostResponse, PostReactions, Reaction, SearchPostsMatch } from '@models/post.models';
 
 @Injectable({
   providedIn: 'root',
@@ -12,15 +13,20 @@ export class PostsService {
   private readonly httpClient = inject(HttpClient);
   private readonly baseUrl = `${environment.apiBaseUrl}/posts`;
 
-  searchPosts(): Observable<Post[]> {
-    return this.httpClient.get<Post[]>(this.baseUrl);
+  searchPosts(): Observable<Paging<SearchPostsMatch>> {
+    return this.httpClient.get<Paging<SearchPostsMatch>>(this.baseUrl);
   }
 
-  getPost(postId: string) {
-    return this.httpClient.get<DetailedPost>(`${this.baseUrl}/${postId}`);
+  getPost(postId: string): Observable<GetPostResponse> {
+    return this.httpClient.get<GetPostResponse>(`${this.baseUrl}/${postId}`);
   }
 
-  addPost(request: AddPostRequest) {
+  /**
+   * Creates a new post
+   * @param request Data for the new post
+   * @returns Observable with the ID of the new post
+   */
+  addPost(request: AddPostRequest): Observable<string> {
     const formData = new FormData();
     formData.append('title', request.title);
     formData.append('description', request.description);
@@ -30,7 +36,11 @@ export class PostsService {
     return this.httpClient.post(this.baseUrl, formData, { observe: 'response' }).pipe(
       map((response) => {
         const location = response.headers.get('Location');
-        return location?.split('/').pop();
+        const postId = location?.split('/').pop();
+        if (!postId) {
+          throw new Error('Could not get the ID of the new post');
+        }
+        return postId;
       })
     );
   }
