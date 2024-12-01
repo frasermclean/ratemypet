@@ -20,11 +20,17 @@ namespace RateMyPet.Persistence.Migrations
                     Content = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "datetime2(2)", precision: 2, nullable: false, defaultValueSql: "getutcdate()"),
                     UpdatedAtUtc = table.Column<DateTime>(type: "datetime2(2)", precision: 2, nullable: true),
+                    ParentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PostComments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PostComments_PostComments_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "PostComments",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PostComments_Posts_PostId",
                         column: x => x.PostId,
@@ -37,6 +43,11 @@ namespace RateMyPet.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostComments_ParentId",
+                table: "PostComments",
+                column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PostComments_PostId",

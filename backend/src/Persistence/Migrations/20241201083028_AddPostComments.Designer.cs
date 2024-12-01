@@ -12,7 +12,7 @@ using RateMyPet.Persistence.Services;
 namespace RateMyPet.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241201080216_AddPostComments")]
+    [Migration("20241201083028_AddPostComments")]
     partial class AddPostComments
     {
         /// <inheritdoc />
@@ -193,6 +193,9 @@ namespace RateMyPet.Persistence.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("getutcdate()");
 
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("PostId")
                         .HasColumnType("uniqueidentifier");
 
@@ -204,6 +207,8 @@ namespace RateMyPet.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
 
                     b.HasIndex("PostId");
 
@@ -486,6 +491,10 @@ namespace RateMyPet.Persistence.Migrations
 
             modelBuilder.Entity("RateMyPet.Persistence.Models.PostComment", b =>
                 {
+                    b.HasOne("RateMyPet.Persistence.Models.PostComment", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId");
+
                     b.HasOne("RateMyPet.Persistence.Models.Post", null)
                         .WithMany("Comments")
                         .HasForeignKey("PostId");
@@ -495,6 +504,8 @@ namespace RateMyPet.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Parent");
 
                     b.Navigation("User");
                 });
@@ -523,6 +534,11 @@ namespace RateMyPet.Persistence.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Reactions");
+                });
+
+            modelBuilder.Entity("RateMyPet.Persistence.Models.PostComment", b =>
+                {
+                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("RateMyPet.Persistence.Models.Species", b =>
