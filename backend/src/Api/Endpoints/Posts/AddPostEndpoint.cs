@@ -5,6 +5,7 @@ using RateMyPet.Api.Services;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
 using RateMyPet.Persistence.Services;
+using SpeciesModel = RateMyPet.Persistence.Models.Species;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
@@ -54,7 +55,7 @@ public class AddPostEndpoint(
         return result;
     }
 
-    private async Task<Post> CreatePostEntityAsync(AddPostRequest request, Species species,
+    private async Task<Post> CreatePostEntityAsync(AddPostRequest request, SpeciesModel species,
         ProcessImageResult imageResult,
         CancellationToken cancellationToken)
     {
