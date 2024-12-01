@@ -19,6 +19,7 @@ public class UpdatePostReactionEndpoint(ApplicationDbContext dbContext)
     {
         var post = await dbContext.Posts.Where(post => post.Id == request.PostId)
             .Include(post => post.Reactions)
+            .ThenInclude(reaction => reaction.User)
             .FirstOrDefaultAsync(post => post.Id == request.PostId, cancellationToken);
         if (post is null)
         {
