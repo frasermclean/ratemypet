@@ -21,4 +21,5 @@ public class SearchPostsMatch
     public Reaction? UserReaction { get; init; }
 
     public required PostReactionsResponse Reactions { get; init; }
+    public required int CommentCount { get; init; }
 }

@@ -10,6 +10,7 @@ export interface SearchPostsMatch {
   updatedAtUtc?: string;
   userReaction?: Reaction;
   reactions: PostReactions;
+  commentCount: number;
 }
 
 export interface GetPostResponse {
