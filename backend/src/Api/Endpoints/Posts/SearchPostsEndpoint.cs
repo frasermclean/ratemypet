@@ -1,5 +1,8 @@
 ﻿using Azure.Storage.Blobs;
 using FastEndpoints;
+using Gridify;
+using Gridify.EntityFramework;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Api.Extensions;
 using RateMyPet.Api.Services;
@@ -13,7 +16,7 @@ public class SearchPostsEndpoint(
     ApplicationDbContext dbContext,
     EmailHasher emailHasher,
     BlobServiceClient blobServiceClient)
-    : EndpointWithoutRequest<IEnumerable<PostResponse>>
+    : Endpoint<GridifyQuery, Results<Ok<Paging<SearchPostsMatch>>, BadRequest>>
 {
     public override void Configure()
     {
@@ -21,17 +24,24 @@ public class SearchPostsEndpoint(
         AllowAnonymous();
     }
 
-    public override async Task<IEnumerable<PostResponse>> ExecuteAsync(CancellationToken cancellationToken)
+    public override async Task<Results<Ok<Paging<SearchPostsMatch>>, BadRequest>> ExecuteAsync(GridifyQuery query,
+        CancellationToken cancellationToken)
     {
+        if (!query.IsValid<SearchPostsMatch>())
+        {
+            return TypedResults.BadRequest();
+        }
+
         var userId = User.GetUserId();
-        return await dbContext.Posts
+        var paging = await dbContext.Posts
             .AsNoTracking()
-            .Select(post => new PostResponse
+            .Select(post => new SearchPostsMatch
             {
                 Id = post.Id,
                 Title = post.Title,
                 Description = post.Description,
                 ImageUrl = blobServiceClient.GetBlobUri(post.Image.BlobName, BlobContainerNames.OriginalImages),
+                AuthorUserName = post.User.UserName!,
                 AuthorEmailHash = emailHasher.GetSha256Hash(post.User.Email),
                 SpeciesName = post.Species.Name,
                 CreatedAtUtc = post.CreatedAtUtc,
@@ -46,6 +56,8 @@ public class SearchPostsEndpoint(
                 },
                 UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == userId)!.Reaction
             })
-            .ToListAsync(cancellationToken);
+            .GridifyAsync(query, cancellationToken);
+
+        return TypedResults.Ok(paging);
     }
 }

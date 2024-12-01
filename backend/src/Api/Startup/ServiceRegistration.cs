@@ -2,11 +2,9 @@
 using System.Text.Json.Serialization;
 using Azure.Identity;
 using FastEndpoints;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Azure;
-using RateMyPet.Api.Mapping;
 using RateMyPet.Api.Options;
 using RateMyPet.Api.Services;
 using RateMyPet.Persistence.Models;
@@ -88,8 +86,6 @@ public static class ServiceRegistration
         services.AddOptions<FrontendOptions>()
             .BindConfiguration(FrontendOptions.SectionName)
             .ValidateDataAnnotations();
-
-        services.AddSingleton<PostResponseMapper>();
 
         return services;
     }

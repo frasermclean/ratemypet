@@ -27,7 +27,7 @@ public class RefreshTokenEndpoint(
         var refreshTicket = protector.Unprotect(request.RefreshToken);
 
         // reject the refresh attempt if the token is expired or the security stamp validation fails
-        if (refreshTicket?.Properties?.ExpiresUtc is not { } expiresUtc ||
+        if (refreshTicket?.Properties.ExpiresUtc is not { } expiresUtc ||
             timeProvider.GetUtcNow() >= expiresUtc ||
             await signInManager.ValidateSecurityStampAsync(refreshTicket.Principal) is not { } user)
         {
