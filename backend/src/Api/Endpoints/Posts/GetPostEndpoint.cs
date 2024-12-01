@@ -14,7 +14,7 @@ public class GetPostEndpoint(
     ApplicationDbContext dbContext,
     EmailHasher emailHasher,
     BlobServiceClient blobServiceClient)
-    : EndpointWithoutRequest<Results<Ok<PostResponse>, NotFound>>
+    : EndpointWithoutRequest<Results<Ok<GetPostResponse>, NotFound>>
 {
     public override void Configure()
     {
@@ -22,7 +22,7 @@ public class GetPostEndpoint(
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok<PostResponse>, NotFound>> ExecuteAsync(CancellationToken cancellationToken)
+    public override async Task<Results<Ok<GetPostResponse>, NotFound>> ExecuteAsync(CancellationToken cancellationToken)
     {
         var postId = Route<Guid>("postId");
         var userId = User.GetUserId();
@@ -30,12 +30,13 @@ public class GetPostEndpoint(
         var response = await dbContext.Posts
             .AsNoTracking()
             .Where(post => post.Id == postId)
-            .Select(post => new PostResponse
+            .Select(post => new GetPostResponse
             {
                 Id = post.Id,
                 Title = post.Title,
                 Description = post.Description,
                 ImageUrl = blobServiceClient.GetBlobUri(post.Image.BlobName, BlobContainerNames.OriginalImages),
+                AuthorUserName = post.User.UserName!,
                 AuthorEmailHash = emailHasher.GetSha256Hash(post.User.Email),
                 SpeciesName = post.Species.Name,
                 CreatedAtUtc = post.CreatedAtUtc,
