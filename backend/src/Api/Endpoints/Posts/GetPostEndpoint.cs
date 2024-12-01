@@ -41,6 +41,7 @@ public class GetPostEndpoint(
                 SpeciesName = post.Species.Name,
                 CreatedAtUtc = post.CreatedAtUtc,
                 UpdatedAtUtc = post.UpdatedAtUtc,
+                UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == userId)!.Reaction,
                 Reactions = new PostReactionsResponse
                 {
                     LikeCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Like),
@@ -49,7 +50,13 @@ public class GetPostEndpoint(
                     WowCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Wow),
                     SadCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Sad)
                 },
-                UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == userId)!.Reaction
+                Comments = post.Comments.OrderBy(comment => comment.Parent)
+                    .Select(comment => new PostCommentResponse
+                    {
+                        Id = comment.Id,
+                        Content = comment.Content,
+                        ParentId = comment.Parent != null ? comment.Parent.Id : null
+                    })
             })
             .FirstOrDefaultAsync(cancellationToken);
 

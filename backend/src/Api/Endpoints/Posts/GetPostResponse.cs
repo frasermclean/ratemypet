@@ -21,4 +21,5 @@ public class GetPostResponse
     public Reaction? UserReaction { get; init; }
 
     public required PostReactionsResponse Reactions { get; init; }
+    public required IEnumerable<PostCommentResponse> Comments { get; init; }
 }
