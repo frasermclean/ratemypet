@@ -6,6 +6,7 @@ import { PostViewComponent } from './posts/post-view/post-view.component';
 import { ConfirmEmailComponent } from './auth/confirm-email/confirm-email.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { HomeComponent } from './core/home/home.component';
+import { NotFoundComponent } from './core/not-found/not-found.component';
 
 export const routes: Routes = [
   { path: 'auth/login', component: LoginComponent },
@@ -14,4 +15,5 @@ export const routes: Routes = [
   { path: 'posts/:postId', component: PostViewComponent },
   { path: 'posts', component: PostListComponent },
   { path: '', component: HomeComponent },
+  { path: '**', component: NotFoundComponent },
 ];

@@ -1,0 +1,13 @@
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  p {
+    font-size: 1.2rem;
+    margin-bottom: 24px;
+  }
+}
