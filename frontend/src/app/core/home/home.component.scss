@@ -1,0 +1,29 @@
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  .introduction {
+    max-width: 420px;
+    font-size: 1.2rem;
+    margin-bottom: 24px;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px;
+
+    .button {
+      width: 180px;
+    }
+
+    .sign-up {
+      color: #f08579;
+    }
+  }
+}
