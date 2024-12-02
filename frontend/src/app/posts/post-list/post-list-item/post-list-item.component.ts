@@ -6,11 +6,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
-import { dispatch, Store } from '@ngxs/store';
+import { dispatch } from '@ngxs/store';
 
 import { GravatarComponent } from '@shared/gravatar/gravatar.component';
 import { PostsActions } from '../../posts.actions';
-import { allReactions, Reaction, SearchPostsMatch } from '@models/post.models';
+import { allReactions, Reaction, SearchPostsMatch } from '../../post.models';
 
 @Component({
   selector: 'app-post-list-item',

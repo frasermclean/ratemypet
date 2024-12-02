@@ -1,4 +1,4 @@
-import { AddPostRequest, Reaction } from '@models/post.models';
+import { AddPostRequest, Reaction } from './post.models';
 
 export namespace PostsActions {
   export class SearchPosts {

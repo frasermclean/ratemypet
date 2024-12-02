@@ -4,7 +4,7 @@ import { Paging } from 'gridify-client';
 import { map, Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import { AddPostRequest, GetPostResponse, PostReactions, Reaction, SearchPostsMatch } from '@models/post.models';
+import { AddPostRequest, GetPostResponse, PostReactions, Reaction, SearchPostsMatch } from './post.models';
 
 @Injectable({
   providedIn: 'root',

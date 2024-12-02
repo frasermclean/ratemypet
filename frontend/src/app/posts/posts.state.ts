@@ -5,11 +5,11 @@ import { Navigate } from '@ngxs/router-plugin';
 import { Action, Selector, State, StateContext, StateToken } from '@ngxs/store';
 import { catchError, of, tap } from 'rxjs';
 
-import { PostsService } from '@services/posts.service';
 import { PostsActions } from './posts.actions';
+import { PostsService } from './posts.service';
 
 import { PostEditComponent } from './post-edit/post-edit.component';
-import { AddPostRequest, GetPostResponse, SearchPostsMatch } from '@models/post.models';
+import { AddPostRequest, GetPostResponse, SearchPostsMatch } from './post.models';
 
 interface PostsStateModel {
   status: 'initial' | 'busy' | 'error' | 'ready';

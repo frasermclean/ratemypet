@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 
-import { AddPostRequest } from '@models/post.models';
+import { AddPostRequest } from '../post.models';
 
 @Component({
   selector: 'app-post-edit',
