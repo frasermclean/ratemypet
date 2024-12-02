@@ -2,8 +2,9 @@ import { APP_INITIALIZER, ApplicationConfig, ErrorHandler, provideZoneChangeDete
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { provideRouter, TitleStrategy, withComponentInputBinding } from '@angular/router';
 import { MatIconRegistry } from '@angular/material/icon';
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { withNgxsLoggerPlugin } from '@ngxs/logger-plugin';
 import { withNgxsRouterPlugin } from '@ngxs/router-plugin';
 import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
@@ -15,7 +16,7 @@ import { authInterceptor } from './interceptors/auth.interceptor';
 import { PostsState } from './posts/posts.state';
 import { environment } from '../environments/environment';
 import { GlobalErrorHandler } from './errors/global-error-handler';
-import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
+import { AppTitleStrategy } from './core/app-title-strategy.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -38,6 +39,10 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       useFactory: initializeApp,
       deps: [MatIconRegistry, DomSanitizer],
+    },
+    {
+      provide: TitleStrategy,
+      useClass: AppTitleStrategy,
     },
     {
       provide: ErrorHandler,
