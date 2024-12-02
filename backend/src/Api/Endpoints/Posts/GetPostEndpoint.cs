@@ -55,7 +55,9 @@ public class GetPostEndpoint(
                     {
                         Id = comment.Id,
                         Content = comment.Content,
-                        UserName = comment.User.UserName!,
+                        AuthorUserName = comment.User.UserName!,
+                        CreatedAtUtc = comment.CreatedAtUtc,
+                        UpdatedAtUtc = comment.UpdatedAtUtc,
                         ParentId = comment.Parent == null ? null : comment.Parent.Id,
                     }).ToCommentTree(),
                 CommentCount = post.Comments.Count
