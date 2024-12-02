@@ -56,8 +56,8 @@ public class GetPostEndpoint(
                         Id = comment.Id,
                         Content = comment.Content,
                         UserName = comment.User.UserName!,
-                        ParentId = comment.Parent != null ? comment.Parent.Id : null
-                    })
+                        ParentId = comment.Parent == null ? null : comment.Parent.Id,
+                    }).ToCommentTree()
             })
             .FirstOrDefaultAsync(cancellationToken);
 
