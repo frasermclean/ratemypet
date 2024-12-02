@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { ToolbarComponent } from './shared/toolbar/toolbar.component';
-import { FooterComponent } from "./shared/footer/footer.component";
+import { ToolbarComponent } from './core/toolbar/toolbar.component';
+import { FooterComponent } from "./core/footer/footer.component";
 
 @Component({
   selector: 'app-root',

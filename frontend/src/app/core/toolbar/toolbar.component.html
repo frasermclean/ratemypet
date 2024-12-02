@@ -2,10 +2,10 @@
   <button mat-icon-button>
     <mat-icon>menu</mat-icon>
   </button>
-  <a class="title" routerLink="/">{{ title }}</a>
+  <a class="title" routerLink="/">{{ title() }}</a>
   <span class="spacer"></span>
   <div class="user-content">
-    @switch (status$ | async) { @case ('busy'){
+    @switch (status()) { @case ('busy'){
     <mat-spinner diameter="20" />
     } @case ('loggedIn') {
     <app-user-menu />

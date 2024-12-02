@@ -6,7 +6,7 @@ import { dispatch, select } from '@ngxs/store';
 
 import { AuthState } from '../../../auth/auth.state';
 import { AuthActions } from '../../../auth/auth.actions';
-import { GravatarComponent } from '../../gravatar/gravatar.component';
+import { GravatarComponent } from '@shared/gravatar/gravatar.component';
 import { PostsActions } from '../../../posts/posts.actions';
 
 @Component({
