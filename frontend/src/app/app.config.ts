@@ -13,7 +13,6 @@ import { provideStore } from '@ngxs/store';
 import { routes } from './app.routes';
 import { AuthState } from './auth/auth.state';
 import { authInterceptor } from './interceptors/auth.interceptor';
-import { PostsState } from './posts/posts.state';
 import { environment } from '../environments/environment';
 import { GlobalErrorHandler } from './errors/global-error-handler';
 import { AppTitleStrategy } from './core/app-title-strategy.service';
@@ -25,7 +24,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     provideAnimationsAsync(),
     provideStore(
-      [AuthState, PostsState],
+      [AuthState],
       { developmentMode: environment.name === 'development' },
       withNgxsRouterPlugin(),
       withNgxsStoragePlugin({
