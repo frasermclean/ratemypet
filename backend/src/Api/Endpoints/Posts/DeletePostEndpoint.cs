@@ -10,18 +10,18 @@ namespace RateMyPet.Api.Endpoints.Posts;
 public class DeletePostEndpoint(
     ApplicationDbContext dbContext,
     [FromKeyedServices(BlobContainerNames.OriginalImages)]
-    IBlobContainerManager blobContainerManager) : EndpointWithoutRequest<Results<NoContent, NotFound>>
+    IBlobContainerManager blobContainerManager) : Endpoint<DeletePostRequest, Results<NoContent, NotFound>>
 {
     public override void Configure()
     {
         Delete("posts/{postId:guid}");
+        PreProcessor<ModifyPostPreProcessor>();
     }
 
-    public override async Task<Results<NoContent, NotFound>> ExecuteAsync(CancellationToken cancellationToken)
+    public override async Task<Results<NoContent, NotFound>> ExecuteAsync(DeletePostRequest request,
+        CancellationToken cancellationToken)
     {
-        var postId = Route<Guid>("postId");
-
-        var post = await dbContext.Posts.FirstOrDefaultAsync(post => post.Id == postId, cancellationToken);
+        var post = await dbContext.Posts.FirstOrDefaultAsync(post => post.Id == request.PostId, cancellationToken);
         if (post is null)
         {
             return TypedResults.NotFound();

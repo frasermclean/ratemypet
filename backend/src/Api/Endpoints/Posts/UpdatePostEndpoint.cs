@@ -6,14 +6,15 @@ using RateMyPet.Persistence.Services;
 namespace RateMyPet.Api.Endpoints.Posts;
 
 public class UpdatePostEndpoint(ApplicationDbContext dbContext)
-    : Endpoint<UpdatePostRequest, Results<NoContent, NotFound, ErrorResponse>>
+    : Endpoint<UpdatePostRequest, Results<NoContent, NotFound, ErrorResponse, ForbidHttpResult>>
 {
     public override void Configure()
     {
         Put("posts/{postId:guid}");
+        PreProcessor<ModifyPostPreProcessor>();
     }
 
-    public override async Task<Results<NoContent, NotFound, ErrorResponse>> ExecuteAsync(
+    public override async Task<Results<NoContent, NotFound, ErrorResponse, ForbidHttpResult>> ExecuteAsync(
         UpdatePostRequest request, CancellationToken cancellationToken)
     {
         var post = await dbContext.Posts.Where(p => p.Id == request.PostId)
