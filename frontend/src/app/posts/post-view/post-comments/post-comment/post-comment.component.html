@@ -1,0 +1,6 @@
+@let data = comment();
+
+<p class="content">{{ data.content }}</p>
+<p class="info">
+  Posted by <span class="author">{{ data.authorUserName }}</span> at {{ data.createdAtUtc | date}}
+</p>

@@ -1,20 +1,22 @@
 import { Component, inject, input, OnDestroy, OnInit } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { dispatch, select } from '@ngxs/store';
+import { filter, Subject, takeUntil } from 'rxjs';
 
 import { PostsActions } from '../posts.actions';
 import { PostsState } from '../posts.state';
 import { ConfirmationComponent, ConfirmationData } from '@shared/confirmation/confirmation.component';
-import { filter, Subject, takeUntil } from 'rxjs';
+import { PostCommentsComponent } from './post-comments/post-comments.component';
 
 @Component({
   selector: 'app-post-view',
   standalone: true,
-  imports: [MatButtonModule, MatCardModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [DatePipe, MatButtonModule, MatCardModule, MatIconModule, MatProgressSpinnerModule, PostCommentsComponent],
   templateUrl: './post-view.component.html',
   styleUrl: './post-view.component.scss',
 })

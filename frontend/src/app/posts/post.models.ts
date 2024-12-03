@@ -25,6 +25,8 @@ export interface GetPostResponse {
   updatedAtUtc?: string;
   userReaction?: Reaction;
   reactions: PostReactions;
+  comments: PostComment[];
+  commentCount: number;
 }
 
 export interface PostReactions {
@@ -33,6 +35,15 @@ export interface PostReactions {
   crazy: number;
   wow: number;
   sad: number;
+}
+
+export interface PostComment {
+  id: string;
+  content: string;
+  authorUserName: string;
+  createdAtUtc: string;
+  updatedAtUtc?: string;
+  replies?: PostComment[];
 }
 
 export interface AddPostRequest {

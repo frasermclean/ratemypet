@@ -12,18 +12,21 @@
     min-width: 320px;
 
     mat-card-header {
-      margin-bottom: 16px;
-    }
-
-    img.full-image {
-      width: inherit;
-      height: auto;
-      max-height: 600px;
-      object-fit: cover;
+      .title {
+        font-size: 28px;
+      }
     }
 
     mat-card-content {
       margin-top: 1rem;
     }
   }
+}
+
+img.full-image {
+  width: inherit;
+  height: auto;
+  max-height: 600px;
+  object-fit: cover;
+  border-radius: 16px;
 }
