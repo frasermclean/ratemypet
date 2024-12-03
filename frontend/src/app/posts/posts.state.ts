@@ -9,14 +9,14 @@ import { PostsActions } from './posts.actions';
 import { PostsService } from './posts.service';
 
 import { PostEditComponent } from './post-edit/post-edit.component';
-import { AddPostRequest, GetPostResponse, SearchPostsMatch } from './post.models';
+import { AddPostRequest, Post, SearchPostsMatch } from './post.models';
 
 interface PostsStateModel {
   status: 'initial' | 'busy' | 'error' | 'ready';
   error: any;
   matches: SearchPostsMatch[];
   totalMatches: number;
-  currentPost: GetPostResponse | null;
+  currentPost: Post | null;
 }
 
 const POSTS_STATE_TOKEN = new StateToken<PostsStateModel>('posts');
@@ -150,12 +150,36 @@ export class PostsState {
       tap((comment) => {
         const currentPost = context.getState().currentPost;
         if (currentPost) {
-          context.patchState({ currentPost: { ...currentPost, comments: [...currentPost.comments, comment] } });
+          context.patchState({
+            currentPost: {
+              ...currentPost,
+              commentCount: currentPost.commentCount + 1,
+              comments: [...currentPost.comments, comment],
+            },
+          });
         }
         this.snackbar.open('Comment added successfully', 'Close');
       }),
       catchError(() => {
         this.snackbar.open('Could not add comment', 'Close');
+        return of([]);
+      })
+    );
+  }
+
+  @Action(PostsActions.DeletePostComment)
+  deletePostComment(context: StateContext<PostsStateModel>, action: PostsActions.DeletePostComment) {
+    return this.postsService.deletePostComment(action.postId, action.commentId).pipe(
+      tap(() => {
+        const currentPost = context.getState().currentPost;
+        if (currentPost) {
+          const comments = currentPost.comments.filter((comment) => comment.id !== action.commentId);
+          context.patchState({ currentPost: { ...currentPost, commentCount: currentPost.commentCount - 1, comments } });
+        }
+        this.snackbar.open('Comment deleted successfully', 'Close');
+      }),
+      catchError(() => {
+        this.snackbar.open('Could not delete comment', 'Close');
         return of([]);
       })
     );

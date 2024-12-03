@@ -1,9 +1,10 @@
 import { Component, input, TrackByFunction } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTreeModule } from '@angular/material/tree';
 
-import { PostComment } from '../../post.models';
-import { MatIconModule } from '@angular/material/icon';
+import { Post, PostComment } from '../../post.models';
+
 import { PostCommentComponent } from './post-comment/post-comment.component';
 import { AddCommentComponent } from './add-comment/add-comment.component';
 
@@ -15,8 +16,7 @@ import { AddCommentComponent } from './add-comment/add-comment.component';
   styleUrl: './post-comments.component.scss',
 })
 export class PostCommentsComponent {
-  comments = input.required<PostComment[]>();
-  total = input.required<number>();
+  post = input.required<Post>();
 
   getReplies = (comment: PostComment) => comment.replies ?? [];
   hasReplies = (_: number, comment: PostComment) => !!comment.replies && comment.replies.length > 0;

@@ -1,10 +1,10 @@
-@if (total()) {
-<h6>Comments ({{ total() }})</h6>
-<mat-tree #tree [dataSource]="comments()" [childrenAccessor]="getReplies" [trackBy]="trackBy">
+@let p = post(); @if (p.commentCount > 0) {
+<h6>Comments ({{ p.commentCount }})</h6>
+<mat-tree #tree [dataSource]="p.comments" [childrenAccessor]="getReplies" [trackBy]="trackBy">
   <!-- template for leaf nodes -->
   <mat-tree-node *matTreeNodeDef="let comment" matTreeNodePadding>
     <button mat-icon-button disabled></button>
-    <app-post-comment [comment]="comment" />
+    <app-post-comment [comment]="comment" [postId]="p.id" />
   </mat-tree-node>
 
   <!-- template for expandable nodes -->
@@ -14,11 +14,11 @@
         {{ tree.isExpanded(comment) ? "expand_more" : "chevron_right" }}
       </mat-icon>
     </button>
-    <app-post-comment [comment]="comment" />
+    <app-post-comment [comment]="comment" [postId]="p.id" />
   </mat-tree-node>
 </mat-tree>
 } @else {
 <h6>No comments yet</h6>
 }
 
-<app-add-comment />
+<app-add-comment [post]="p" />

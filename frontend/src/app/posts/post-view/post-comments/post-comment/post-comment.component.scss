@@ -1,9 +1,14 @@
 :host {
   margin: 8px 0;
   width: 100%;
+  display: flex;
+
+  .text {
+    flex-grow: 1;
+  }
 }
 
-p {
+p.content {
   margin: 0;
 }
 
@@ -12,7 +17,6 @@ p {
 }
 
 .info {
-  text-align: right;
   font-size: 12px;
   color: #ce876a;
   .author {

@@ -13,7 +13,7 @@ export interface SearchPostsMatch {
   commentCount: number;
 }
 
-export interface GetPostResponse {
+export interface Post {
   id: string;
   title: string;
   description?: string;

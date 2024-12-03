@@ -2,7 +2,7 @@ form {
   display: flex;
   gap: 12px;
 
-  button[type="submit"] {
-    margin-top: 8px;
+  mat-form-field {
+    padding: 0 40px;
   }
 }

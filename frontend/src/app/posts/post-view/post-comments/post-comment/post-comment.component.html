@@ -1,6 +1,11 @@
-@let data = comment();
-
-<p class="content">{{ data.content }}</p>
-<p class="info">
-  Posted by <span class="author">{{ data.authorUserName }}</span> at {{ data.createdAtUtc | date}}
-</p>
+<div class="text">
+  <p class="content">{{ comment().content }}</p>
+  <p class="info">
+    Posted by <span class="author">{{ comment().authorUserName }}</span> at {{ comment().createdAtUtc | date }}
+  </p>
+</div>
+<div class="actions">
+  <button mat-icon-button (click)="onDelete()" matTooltip="Delete comment">
+    <mat-icon>delete</mat-icon>
+  </button>
+</div>
