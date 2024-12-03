@@ -1,4 +1,4 @@
-import { RegisterRequest } from '@services/auth.service';
+import { RegisterRequest } from './auth.models';
 
 export namespace AuthActions {
   export class Login {

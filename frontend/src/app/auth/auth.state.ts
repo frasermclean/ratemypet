@@ -1,11 +1,11 @@
 import { inject, Injectable } from '@angular/core';
+import { Navigate } from '@ngxs/router-plugin';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Action, NgxsOnInit, Selector, State, StateContext, StateToken } from '@ngxs/store';
 
 import { AuthActions } from './auth.actions';
-import { AuthService } from '@services/auth.service';
+import { AuthService } from './auth.service';
 import { catchError, of, tap } from 'rxjs';
-import { Navigate } from '@ngxs/router-plugin';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 interface AuthStateModel {
   status: 'loggedOut' | 'busy' | 'loggedIn';

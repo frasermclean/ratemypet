@@ -1,6 +1,5 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { Store } from '@ngxs/store';
+import { select } from '@ngxs/store';
 import { AuthState } from '../auth/auth.state';
 import { environment } from '../../environments/environment';
 
@@ -10,10 +9,9 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
     return next(request);
   }
 
-  const store = inject(Store);
-
   // get the access token from the store
-  const accessToken = store.selectSnapshot(AuthState.accessToken);
+  const accessToken = select(AuthState.accessToken)();
+
   if (!accessToken) {
     return next(request);
   }

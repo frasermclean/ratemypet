@@ -1,19 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-
-interface AccessTokenResponse {
-  tokenType: string;
-  accessToken: string;
-  expiresIn: number;
-  refreshToken: string;
-}
-
-export interface RegisterRequest {
-  userName: string;
-  emailAddress: string;
-  password: string;
-}
+import { AccessTokenResponse, RegisterRequest } from './auth.models';
 
 @Injectable({
   providedIn: 'root',

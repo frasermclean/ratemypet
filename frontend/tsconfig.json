@@ -20,7 +20,6 @@
     "target": "ES2022",
     "module": "ES2022",
     "paths": {
-      "@services/*": ["./src/app/services/*"],
       "@shared/*": ["./src/app/shared/*"]
     },
     "lib": ["ES2022", "dom"]

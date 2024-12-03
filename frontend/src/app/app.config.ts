@@ -12,7 +12,7 @@ import { provideStore } from '@ngxs/store';
 
 import { routes } from './app.routes';
 import { AuthState } from './auth/auth.state';
-import { authInterceptor } from './interceptors/auth.interceptor';
+import { authInterceptor } from './auth/auth.interceptor';
 import { environment } from '../environments/environment';
 import { GlobalErrorHandler } from './errors/global-error-handler';
 import { AppTitleStrategy } from './core/app-title-strategy.service';
