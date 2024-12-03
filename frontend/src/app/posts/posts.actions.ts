@@ -38,4 +38,9 @@ export namespace PostsActions {
     static readonly type = '[Posts] Remove Post Reaction';
     constructor(public postId: string) {}
   }
+
+  export class AddPostComment {
+    static readonly type = '[Posts] Add Post Comment';
+    constructor(public postId: string, public content: string, public parentId?: string) {}
+  }
 }

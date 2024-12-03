@@ -27,9 +27,7 @@ public class GetPostEndpoint(
         var postId = Route<Guid>("postId");
         var userId = User.GetUserId();
 
-        var response = await dbContext.Posts
-            .AsNoTracking()
-            .Where(post => post.Id == postId)
+        var response = await dbContext.Posts.Where(post => post.Id == postId)
             .Select(post => new GetPostResponse
             {
                 Id = post.Id,
@@ -51,6 +49,7 @@ public class GetPostEndpoint(
                     SadCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Sad)
                 },
                 Comments = post.Comments.OrderBy(comment => comment.Parent)
+                    .ThenBy(comment => comment.CreatedAtUtc)
                     .Select(comment => new PostCommentResponse
                     {
                         Id = comment.Id,
@@ -62,6 +61,7 @@ public class GetPostEndpoint(
                     }).ToCommentTree(),
                 CommentCount = post.Comments.Count
             })
+            .AsNoTracking()
             .FirstOrDefaultAsync(cancellationToken);
 
         return response is not null

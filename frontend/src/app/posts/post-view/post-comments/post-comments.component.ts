@@ -5,11 +5,12 @@ import { MatTreeModule } from '@angular/material/tree';
 import { PostComment } from '../../post.models';
 import { MatIconModule } from '@angular/material/icon';
 import { PostCommentComponent } from './post-comment/post-comment.component';
+import { AddCommentComponent } from './add-comment/add-comment.component';
 
 @Component({
   selector: 'app-post-comments',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, MatTreeModule, PostCommentComponent],
+  imports: [MatButtonModule, MatIconModule, MatTreeModule, PostCommentComponent, AddCommentComponent],
   templateUrl: './post-comments.component.html',
   styleUrl: './post-comments.component.scss',
 })

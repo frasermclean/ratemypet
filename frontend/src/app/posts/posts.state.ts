@@ -144,6 +144,23 @@ export class PostsState {
     );
   }
 
+  @Action(PostsActions.AddPostComment)
+  addPostComment(context: StateContext<PostsStateModel>, action: PostsActions.AddPostComment) {
+    return this.postsService.addPostComment(action.postId, action.content, action.parentId).pipe(
+      tap((comment) => {
+        const currentPost = context.getState().currentPost;
+        if (currentPost) {
+          context.patchState({ currentPost: { ...currentPost, comments: [...currentPost.comments, comment] } });
+        }
+        this.snackbar.open('Comment added successfully', 'Close');
+      }),
+      catchError(() => {
+        this.snackbar.open('Could not add comment', 'Close');
+        return of([]);
+      })
+    );
+  }
+
   @Selector([POSTS_STATE_TOKEN])
   static status(state: PostsStateModel) {
     return state.status;

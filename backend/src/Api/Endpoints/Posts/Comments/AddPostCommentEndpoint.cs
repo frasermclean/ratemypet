@@ -7,14 +7,14 @@ using RateMyPet.Persistence.Services;
 namespace RateMyPet.Api.Endpoints.Posts.Comments;
 
 public class AddPostCommentEndpoint(ApplicationDbContext dbContext)
-    : Endpoint<AddPostCommentRequest, Results<NoContent, NotFound>>
+    : Endpoint<AddPostCommentRequest, Results<Ok<PostCommentResponse>, NotFound>>
 {
     public override void Configure()
     {
         Post("posts/{postId:guid}/comments");
     }
 
-    public override async Task<Results<NoContent, NotFound>> ExecuteAsync(AddPostCommentRequest request,
+    public override async Task<Results<Ok<PostCommentResponse>, NotFound>> ExecuteAsync(AddPostCommentRequest request,
         CancellationToken cancellationToken)
     {
         var post = await dbContext.Posts.FirstOrDefaultAsync(p => p.Id == request.PostId, cancellationToken);
@@ -39,6 +39,12 @@ public class AddPostCommentEndpoint(ApplicationDbContext dbContext)
         Logger.LogInformation("Added comment with ID {CommentId} to post with ID {PostId} by user with ID {UserId}",
             comment.Id, post.Id, comment.User.Id);
 
-        return TypedResults.NoContent();
+        return TypedResults.Ok(new PostCommentResponse
+        {
+            Id = comment.Id,
+            Content = comment.Content,
+            AuthorUserName = comment.User.UserName!,
+            CreatedAtUtc = comment.CreatedAtUtc
+        });
     }
 }
