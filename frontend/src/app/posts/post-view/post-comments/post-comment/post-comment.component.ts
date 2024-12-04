@@ -9,10 +9,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-post-comment',
-  standalone: true,
   imports: [DatePipe, MatButtonModule, MatIconModule, MatTooltipModule],
   templateUrl: './post-comment.component.html',
-  styleUrl: './post-comment.component.scss',
+  styleUrl: './post-comment.component.scss'
 })
 export class PostCommentComponent {
   postId = input.required<string>();

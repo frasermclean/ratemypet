@@ -6,7 +6,8 @@
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-@include mat.core();
+@include mat.elevation-classes();
+@include mat.app-background();
 
 // Define the theme object.
 $theme: mat.define-theme(
@@ -14,18 +15,18 @@ $theme: mat.define-theme(
     color: (
       theme-type: dark,
       primary: mat.$magenta-palette,
-      tertiary: mat.$orange-palette,
+      tertiary: mat.$orange-palette
     ),
     typography: (
       plain-family: "Quicksand",
       brand-family: "Bebas Neue",
       bold-weight: 700,
       medium-weight: 500,
-      regular-weight: 300,
+      regular-weight: 300
     ),
     density: (
-      scale: 0,
-    ),
+      scale: 0
+    )
   )
 );
 

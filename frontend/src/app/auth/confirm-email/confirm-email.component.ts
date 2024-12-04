@@ -5,7 +5,6 @@ import { dispatch } from '@ngxs/store';
 import { AuthActions } from '../auth.actions';
 
 @Component({
-  standalone: true,
   template: ''
 })
 export class ConfirmEmailComponent implements OnInit {

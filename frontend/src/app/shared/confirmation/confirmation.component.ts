@@ -12,7 +12,6 @@ export interface ConfirmationData {
 
 @Component({
   selector: 'app-confirmation',
-  standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule],
   templateUrl: './confirmation.component.html'
 })

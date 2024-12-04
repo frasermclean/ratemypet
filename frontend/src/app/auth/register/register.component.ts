@@ -39,7 +39,6 @@ function mustMatch(controlName: string, matchingControlName: string) {
 
 @Component({
   selector: 'app-register',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     RouterLink,
@@ -48,10 +47,10 @@ function mustMatch(controlName: string, matchingControlName: string) {
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatProgressBarModule,
+    MatProgressBarModule
   ],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss',
+  styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
   private readonly formBuilder = inject(NonNullableFormBuilder);
@@ -60,10 +59,10 @@ export class RegisterComponent {
       userName: ['', [Validators.required, Validators.minLength(3), Validators.minLength(3), Validators.maxLength(30)]],
       emailAddress: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', Validators.required],
+      confirmPassword: ['', Validators.required]
     },
     {
-      validators: mustMatch('password', 'confirmPassword'),
+      validators: mustMatch('password', 'confirmPassword')
     }
   );
 

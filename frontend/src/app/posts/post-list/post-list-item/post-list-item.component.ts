@@ -14,7 +14,6 @@ import { allReactions, Reaction, SearchPostsMatch } from '../../post.models';
 
 @Component({
   selector: 'app-post-list-item',
-  standalone: true,
   imports: [
     TitleCasePipe,
     MatBadgeModule,
@@ -23,10 +22,10 @@ import { allReactions, Reaction, SearchPostsMatch } from '../../post.models';
     MatIconModule,
     MatTooltipModule,
     RouterLink,
-    GravatarComponent,
+    GravatarComponent
   ],
   templateUrl: './post-list-item.component.html',
-  styleUrl: './post-list-item.component.scss',
+  styleUrl: './post-list-item.component.scss'
 })
 export class PostItemComponent {
   postMatch = input.required<SearchPostsMatch>();

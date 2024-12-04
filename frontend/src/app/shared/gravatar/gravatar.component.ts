@@ -2,10 +2,8 @@ import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-gravatar',
-  standalone: true,
-  imports: [],
   templateUrl: './gravatar.component.html',
-  styleUrl: './gravatar.component.scss',
+  styleUrl: './gravatar.component.scss'
 })
 export class GravatarComponent {
   emailHash = input.required<string>();

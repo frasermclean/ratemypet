@@ -15,7 +15,6 @@ import { AuthState } from '../auth.state';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     RouterLink,
@@ -28,13 +27,13 @@ import { AuthState } from '../auth.state';
     MatProgressBarModule
   ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
+  styleUrl: './login.component.scss'
 })
 export class LoginComponent {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   formGroup = this.formBuilder.group({
     email: ['', Validators.email],
-    password: ['', Validators.required],
+    password: ['', Validators.required]
   });
 
   private readonly router = inject(Router);

@@ -10,10 +10,9 @@ import { AddCommentComponent } from './add-comment/add-comment.component';
 
 @Component({
   selector: 'app-post-comments',
-  standalone: true,
   imports: [MatButtonModule, MatIconModule, MatTreeModule, PostCommentComponent, AddCommentComponent],
   templateUrl: './post-comments.component.html',
-  styleUrl: './post-comments.component.scss',
+  styleUrl: './post-comments.component.scss'
 })
 export class PostCommentsComponent {
   post = input.required<Post>();

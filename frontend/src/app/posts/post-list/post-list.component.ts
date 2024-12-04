@@ -13,10 +13,9 @@ import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-post-list',
-  standalone: true,
   imports: [RouterLink, PostItemComponent, MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatTooltipModule],
   templateUrl: './post-list.component.html',
-  styleUrl: './post-list.component.scss',
+  styleUrl: './post-list.component.scss'
 })
 export class PostListComponent implements OnInit {
   readonly status = select(PostsState.status);

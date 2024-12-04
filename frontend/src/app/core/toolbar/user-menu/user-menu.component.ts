@@ -11,10 +11,9 @@ import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-user-menu',
-  standalone: true,
   imports: [RouterLink, MatButtonModule, MatIconModule, MatMenuModule, GravatarComponent],
   templateUrl: './user-menu.component.html',
-  styleUrl: './user-menu.component.scss',
+  styleUrl: './user-menu.component.scss'
 })
 export class UserMenuComponent {
   emailAddress = select(AuthState.emailAddress);

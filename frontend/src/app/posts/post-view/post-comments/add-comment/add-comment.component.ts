@@ -10,16 +10,15 @@ import { Post } from '../../../post.models';
 
 @Component({
   selector: 'app-add-comment',
-  standalone: true,
   imports: [ReactiveFormsModule, MatButtonModule, MatFormFieldModule, MatInputModule],
   templateUrl: './add-comment.component.html',
-  styleUrl: './add-comment.component.scss',
+  styleUrl: './add-comment.component.scss'
 })
 export class AddCommentComponent {
   post = input.required<Post>();
   formBuilder = inject(NonNullableFormBuilder);
   formGroup = this.formBuilder.group({
-    content: ['', Validators.required],
+    content: ['', Validators.required]
   });
 
   addPostComment = dispatch(PostsActions.AddPostComment);

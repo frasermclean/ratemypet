@@ -15,10 +15,9 @@ import { PostCommentsComponent } from './post-comments/post-comments.component';
 
 @Component({
   selector: 'app-post-view',
-  standalone: true,
   imports: [DatePipe, MatButtonModule, MatCardModule, MatIconModule, MatProgressSpinnerModule, PostCommentsComponent],
   templateUrl: './post-view.component.html',
-  styleUrl: './post-view.component.scss',
+  styleUrl: './post-view.component.scss'
 })
 export class PostViewComponent implements OnInit, OnDestroy {
   readonly postId = input.required<string>();
@@ -46,8 +45,8 @@ export class PostViewComponent implements OnInit, OnDestroy {
           title: 'Delete Post',
           message: 'Are you sure you want to delete this post?',
           confirmText: 'Yes, delete it',
-          cancelText: 'No, keep it',
-        },
+          cancelText: 'No, keep it'
+        }
       })
       .afterClosed()
       .pipe(
