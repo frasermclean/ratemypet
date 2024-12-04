@@ -7,17 +7,16 @@ import { dispatch, select } from '@ngxs/store';
 import { AuthState } from '../../../auth/auth.state';
 import { AuthActions } from '../../../auth/auth.actions';
 import { GravatarComponent } from '@shared/gravatar/gravatar.component';
-import { PostsActions } from '../../../posts/posts.actions';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-user-menu',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, MatMenuModule, GravatarComponent],
+  imports: [RouterLink, MatButtonModule, MatIconModule, MatMenuModule, GravatarComponent],
   templateUrl: './user-menu.component.html',
   styleUrl: './user-menu.component.scss',
 })
 export class UserMenuComponent {
   emailAddress = select(AuthState.emailAddress);
   logout = dispatch(AuthActions.Logout);
-  openPostEditDialog = dispatch(PostsActions.OpenPostEditDialog);
 }

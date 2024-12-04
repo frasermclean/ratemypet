@@ -65,19 +65,6 @@ export class PostsState {
     );
   }
 
-  @Action(PostsActions.OpenPostEditDialog)
-  openPostEditDialog(context: StateContext<PostsStateModel>) {
-    return this.dialog
-      .open<PostEditComponent, any, AddPostRequest>(PostEditComponent)
-      .afterClosed()
-      .pipe(
-        tap((request) => {
-          if (!request) return;
-          context.dispatch(new PostsActions.AddPost(request));
-        })
-      );
-  }
-
   @Action(PostsActions.AddPost)
   addPost(context: StateContext<PostsStateModel>, action: PostsActions.AddPost) {
     context.patchState({ status: 'busy' });

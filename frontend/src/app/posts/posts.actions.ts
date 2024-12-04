@@ -10,10 +10,6 @@ export namespace PostsActions {
     constructor(public postId: string) {}
   }
 
-  export class OpenPostEditDialog {
-    static readonly type = '[Posts] Open Post Edit Dialog';
-  }
-
   export class AddPost {
     static readonly type = '[Posts] Add Post';
     constructor(public request: AddPostRequest) {}

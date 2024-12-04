@@ -7,10 +7,10 @@
 </button>
 
 <mat-menu #menu="matMenu">
-  <button mat-menu-item (click)="openPostEditDialog()">
+  <a mat-menu-item routerLink="/posts/add">
     <mat-icon>add</mat-icon>
     <span>Create Post</span>
-  </button>
+  </a>
   <button mat-menu-item (click)="logout()">
     <mat-icon>logout</mat-icon>
     <span>Logout</span>

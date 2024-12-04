@@ -1,23 +1,25 @@
 import { Component, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 
 import { AddPostRequest } from '../post.models';
+import { dispatch } from '@ngxs/store';
+import { PostsActions } from '../posts.actions';
 
 @Component({
   selector: 'app-post-edit',
   standalone: true,
-  imports: [ReactiveFormsModule, MatButtonModule, MatDialogModule, MatFormFieldModule, MatIconModule, MatInputModule],
+  imports: [ReactiveFormsModule, MatButtonModule, MatCardModule, MatFormFieldModule, MatIconModule, MatInputModule],
   templateUrl: './post-edit.component.html',
   styleUrl: './post-edit.component.scss',
 })
 export class PostEditComponent {
   private readonly formBuilder = inject(NonNullableFormBuilder);
-  private readonly dialogRef = inject(MatDialogRef<PostEditComponent, AddPostRequest>);
+  addPost = dispatch(PostsActions.AddPost);
 
   formGroup = this.formBuilder.group({
     title: ['', [Validators.required, Validators.maxLength(50)]],
@@ -31,9 +33,8 @@ export class PostEditComponent {
     this.formGroup.patchValue({ image: file });
   }
 
-  onSave() {
+  onSubmit() {
     const formValue = this.formGroup.getRawValue();
-    const request: AddPostRequest = { ...formValue, image: formValue.image!, speciesId: 1 };
-    this.dialogRef.close(request);
+    this.addPost({ ...formValue, image: formValue.image!, speciesId: 1 });
   }
 }

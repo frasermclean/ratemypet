@@ -20,8 +20,8 @@
     <button mat-raised-button (click)="searchPosts()">Try again</button>
   </div>
   }
-  <button mat-fab matTooltip="Create Post" class="add-post-button" (click)="openPostEditDialog()" title="Create Post">
+  <a mat-fab matTooltip="Create Post" class="add-post-button" routerLink="add" title="Create Post">
     <mat-icon>add</mat-icon>
-  </button>
+  </a>
 </section>
 } } }
