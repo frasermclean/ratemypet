@@ -1,4 +1,10 @@
-import { APP_INITIALIZER, ApplicationConfig, ErrorHandler, provideZoneChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  ErrorHandler,
+  inject,
+  provideAppInitializer,
+  provideZoneChangeDetection
+} from '@angular/core';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -23,39 +29,37 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     provideAnimationsAsync(),
+    provideAppInitializer(initializeApp),
     provideStore(
       [AuthState],
       { developmentMode: environment.name === 'development' },
       withNgxsRouterPlugin(),
       withNgxsStoragePlugin({
-        keys: ['auth.refreshToken', 'auth.emailAddress'],
+        keys: ['auth.refreshToken', 'auth.emailAddress']
       }),
       withNgxsLoggerPlugin({
-        disabled: environment.name !== 'development',
+        disabled: environment.name !== 'development'
       })
     ),
     {
-      provide: APP_INITIALIZER,
-      useFactory: initializeApp,
-      deps: [MatIconRegistry, DomSanitizer],
-    },
-    {
       provide: TitleStrategy,
-      useClass: AppTitleStrategy,
+      useClass: AppTitleStrategy
     },
     {
       provide: ErrorHandler,
-      useClass: GlobalErrorHandler,
+      useClass: GlobalErrorHandler
     },
     {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
-      useValue: { duration: 5000 },
-    },
-  ],
+      useValue: { duration: 5000 }
+    }
+  ]
 };
 
-function initializeApp(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {
-  // register SVG icons
+function initializeApp() {
+  const iconRegistry = inject(MatIconRegistry);
+  const sanitizer = inject(DomSanitizer);
+
   iconRegistry.addSvgIconResolver((name, namespace) => {
     const path = `icons/${namespace}/${name}.svg`;
     return sanitizer.bypassSecurityTrustResourceUrl(path);
