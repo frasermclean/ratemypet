@@ -3,7 +3,15 @@
   height: 100%;
   grid-template-rows: auto 1fr auto;
 
-  #main-content {
+  #app-container {
+    width: 100%;
     padding: 16px 16px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    #app-content {
+      max-width: 1920px;
+    }
   }
 }
