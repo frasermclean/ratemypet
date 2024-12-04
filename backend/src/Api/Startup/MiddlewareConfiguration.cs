@@ -19,10 +19,6 @@ public static class MiddlewareConfiguration
             config.Errors.ProducesMetadataType = typeof(ProblemDetails);
         });
 
-        // authentication endpoints provided by Identity
-        var authGroup = app.MapGroup("auth");
-        authGroup.MapIdentityApi<User>();
-
         return app;
     }
 }
