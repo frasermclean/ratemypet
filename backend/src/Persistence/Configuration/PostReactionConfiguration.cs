@@ -21,5 +21,9 @@ public class PostReactionConfiguration : IEntityTypeConfiguration<PostReaction>
 
         builder.Property(postReaction => postReaction.Reaction)
             .HasConversion<ReactionConverter>();
+
+        builder.Property(postReaction => postReaction.RowVersion)
+            .IsRowVersion()
+            .HasConversion<byte[]>();
     }
 }

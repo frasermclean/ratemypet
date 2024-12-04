@@ -9,5 +9,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.ToTable("Users");
+
+        builder.Property(user => user.RowVersion)
+            .IsRowVersion()
+            .HasConversion<byte[]>();
     }
 }
