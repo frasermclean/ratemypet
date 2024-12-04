@@ -1,15 +1,12 @@
-
 mat-card {
   max-width: 800px;
-}
-.image-upload {
-  display: flex;
-  justify-content: end;
-  align-items: center;
-  gap: 16px;
-  font-size: large;
-}
+  mat-card-content {
+    .image-upload-container {
+      width: 100%;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: center;
 
-input[type="file"] {
-  display: none;
+    }
+  }
 }

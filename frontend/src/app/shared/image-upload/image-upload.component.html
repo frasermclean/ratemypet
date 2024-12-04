@@ -1,0 +1,20 @@
+<div
+  class=""
+  [class]="'file-container ' + imagePreview().state"
+  (dragover)="onDragOver($event)"
+  (drop)="onFileDrop($event)"
+>
+  <input type="file" (change)="onFileChange($event)" accept="image/*" #fileInput hidden title="Hidden file input" />
+  @if (imagePreview().url; as imagePreviewUrl) {
+  <img [src]="imagePreviewUrl" alt="Preview of the image" (click)="fileInput.click()" [class]="imagePreview().state" />
+  } @else { @if (imagePreview().state === 'invalid') {
+  <p class="invalid">Invalid file selected. Please choose an image file.</p>
+  } @else {
+  <p>Drag and drop an image or click the button</p>
+  }
+  <button mat-raised-button (click)="fileInput.click()" type="button">
+    <mat-icon>attach_file</mat-icon>
+    Upload image
+  </button>
+  }
+</div>

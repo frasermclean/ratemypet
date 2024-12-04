@@ -1,0 +1,54 @@
+$border-radius: 16px;
+$size: 256px;
+$invalid-color: #f44336;
+$valid-color: #4caf50;
+
+.file-container {
+  width: $size;
+  height: $size;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: $border-radius;
+  border: 2px dashed #ccc;
+
+  &.valid {
+    border: 2px solid $valid-color;
+  }
+
+  &.invalid {
+    border: 2px solid $invalid-color;
+  }
+
+  p {
+    width: 200px;
+    text-align: center;
+    font-size: smaller;
+  }
+
+  img {
+    width: $size;
+    height: $size;
+    border-radius: $border-radius;
+    object-fit: cover;
+
+    &.valid {
+      border: 2px solid $valid-color;
+    }
+
+    &.invalid {
+      border: 2px solid $invalid-color;
+    }
+  }
+
+}
+
+.valid {
+  color: $valid-color;
+}
+
+.invalid {
+  color: $invalid-color;
+}
+
