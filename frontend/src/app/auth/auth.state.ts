@@ -5,15 +5,17 @@ import { Action, NgxsOnInit, Selector, State, StateContext, StateToken } from '@
 
 import { AuthActions } from './auth.actions';
 import { AuthService } from './auth.service';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, of, switchMap, tap } from 'rxjs';
+import { CurrentUser } from '../users/users.models';
+import { UsersService } from '../users/users.service';
 
 interface AuthStateModel {
   status: 'loggedOut' | 'busy' | 'loggedIn';
   error: any;
-  emailAddress: string | null;
   accessToken: string | null;
   accessTokenExpiry: Date | null;
   refreshToken: string | null;
+  currentUser: CurrentUser | null;
 }
 
 const AUTH_STATE_TOKEN = new StateToken<AuthStateModel>('auth');
@@ -23,15 +25,16 @@ const AUTH_STATE_TOKEN = new StateToken<AuthStateModel>('auth');
   defaults: {
     status: 'loggedOut',
     error: null,
-    emailAddress: null,
     accessToken: null,
     accessTokenExpiry: null,
     refreshToken: null,
-  },
+    currentUser: null
+  }
 })
 @Injectable()
 export class AuthState implements NgxsOnInit {
   private readonly authService = inject(AuthService);
+  private readonly usersService = inject(UsersService);
   private readonly snackBar = inject(MatSnackBar);
 
   ngxsOnInit(context: StateContext<AuthStateModel>): void {
@@ -45,17 +48,22 @@ export class AuthState implements NgxsOnInit {
 
   @Action(AuthActions.Login)
   login(context: StateContext<AuthStateModel>, action: AuthActions.Login) {
-    context.patchState({ status: 'busy', emailAddress: action.email });
+    context.patchState({ status: 'busy' });
     return this.authService.login(action.email, action.password).pipe(
-      tap((response) => {
+      switchMap((response) => {
         const accessTokenExpiry = new Date();
         accessTokenExpiry.setSeconds(accessTokenExpiry.getSeconds() + response.expiresIn);
         context.patchState({
-          status: 'loggedIn',
           accessToken: response.accessToken,
           accessTokenExpiry,
-          refreshToken: response.refreshToken,
+          refreshToken: response.refreshToken
         });
+        return this.usersService.getCurrentUser();
+      }),
+      tap((currentUser) => {
+        context.patchState({ status: 'loggedIn', currentUser });
+        this.snackBar.open('You have been logged in.', 'Close');
+        context.dispatch(new Navigate(['/']));
       }),
       catchError((error) => {
         context.patchState({ status: 'loggedOut', error });
@@ -72,10 +80,10 @@ export class AuthState implements NgxsOnInit {
         this.snackBar.open('You have been logged out.', 'Close');
         context.patchState({
           status: 'loggedOut',
-          emailAddress: null,
           accessToken: null,
           accessTokenExpiry: null,
           refreshToken: null,
+          currentUser: null
         });
         context.dispatch(new Navigate(['/auth/login']));
       })
@@ -121,14 +129,20 @@ export class AuthState implements NgxsOnInit {
   refreshAccessToken(context: StateContext<AuthStateModel>, action: AuthActions.RefreshAccessToken) {
     context.patchState({ status: 'busy' });
     return this.authService.refreshAccessToken(action.refreshToken).pipe(
-      tap((response) => {
+      switchMap((response) => {
         const accessTokenExpiry = new Date();
         accessTokenExpiry.setSeconds(accessTokenExpiry.getSeconds() + response.expiresIn);
         context.patchState({
-          status: 'loggedIn',
           accessToken: response.accessToken,
           accessTokenExpiry,
-          refreshToken: response.refreshToken,
+          refreshToken: response.refreshToken
+        });
+        return this.usersService.getCurrentUser();
+      }),
+      tap((currentUser) => {
+        context.patchState({
+          status: 'loggedIn',
+          currentUser
         });
       }),
       catchError((error) => {
@@ -144,12 +158,12 @@ export class AuthState implements NgxsOnInit {
   }
 
   @Selector([AUTH_STATE_TOKEN])
-  static emailAddress(state: AuthStateModel) {
-    return state.emailAddress;
+  static accessToken(state: AuthStateModel) {
+    return state.accessToken;
   }
 
   @Selector([AUTH_STATE_TOKEN])
-  static accessToken(state: AuthStateModel) {
-    return state.accessToken;
+  static currentUser(state: AuthStateModel) {
+    return state.currentUser;
   }
 }

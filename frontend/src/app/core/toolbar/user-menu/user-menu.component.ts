@@ -16,6 +16,6 @@ import { RouterLink } from '@angular/router';
   styleUrl: './user-menu.component.scss'
 })
 export class UserMenuComponent {
-  emailAddress = select(AuthState.emailAddress);
+  currentUser = select(AuthState.currentUser);
   logout = dispatch(AuthActions.Logout);
 }
