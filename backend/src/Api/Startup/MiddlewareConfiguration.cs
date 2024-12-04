@@ -1,5 +1,4 @@
 ﻿using FastEndpoints;
-using RateMyPet.Persistence.Models;
 
 namespace RateMyPet.Api.Startup;
 

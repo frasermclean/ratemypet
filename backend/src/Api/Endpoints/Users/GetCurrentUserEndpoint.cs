@@ -1,6 +1,7 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using RateMyPet.Api.Extensions;
 using RateMyPet.Persistence.Models;
 
 namespace RateMyPet.Api.Endpoints.Users;
@@ -26,7 +27,8 @@ public class GetCurrentUserEndpoint(UserManager<User> userManager)
         {
             Id = user.Id,
             UserName = user.UserName!,
-            EmailAddress = user.Email!
+            EmailAddress = user.Email!,
+            EmailHash = user.Email.ToSha256Hash()
         };
 
         return TypedResults.Ok(response);

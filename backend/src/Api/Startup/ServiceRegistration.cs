@@ -71,9 +71,7 @@ public static class ServiceRegistration
 
     private static IServiceCollection AddApiServices(this IServiceCollection services)
     {
-        services.AddSingleton<EmailHasher>()
-            .AddSingleton<ImageProcessor>()
-            .AddTransient<IEmailSender, EmailSender>();
+        services.AddSingleton<ImageProcessor>();
 
         services.AddOptions<ImageProcessorOptions>()
             .BindConfiguration(ImageProcessorOptions.SectionName)
@@ -101,6 +99,8 @@ public static class ServiceRegistration
                 options.User.RequireUniqueEmail = true;
             })
             .AddEntityFrameworkStores<ApplicationDbContext>();
+
+        services.AddTransient<IEmailSender, IdentityEmailSender>();
 
         services.ConfigureApplicationCookie(options => { options.Cookie.Name = "RateMyPet"; });
 

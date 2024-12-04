@@ -5,17 +5,13 @@ using Gridify.EntityFramework;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Api.Extensions;
-using RateMyPet.Api.Services;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
 using RateMyPet.Persistence.Services;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class SearchPostsEndpoint(
-    ApplicationDbContext dbContext,
-    EmailHasher emailHasher,
-    BlobServiceClient blobServiceClient)
+public class SearchPostsEndpoint(ApplicationDbContext dbContext, BlobServiceClient blobServiceClient)
     : Endpoint<GridifyQuery, Results<Ok<Paging<SearchPostsMatch>>, BadRequest>>
 {
     public override void Configure()
@@ -42,7 +38,7 @@ public class SearchPostsEndpoint(
                 Description = post.Description,
                 ImageUrl = blobServiceClient.GetBlobUri(post.Image.BlobName, BlobContainerNames.OriginalImages),
                 AuthorUserName = post.User.UserName!,
-                AuthorEmailHash = emailHasher.GetSha256Hash(post.User.Email),
+                AuthorEmailHash = post.User.Email.ToSha256Hash(),
                 SpeciesName = post.Species.Name,
                 CreatedAtUtc = post.CreatedAtUtc,
                 UpdatedAtUtc = post.UpdatedAtUtc,

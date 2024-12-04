@@ -6,7 +6,10 @@ using RateMyPet.Api.Options;
 
 namespace RateMyPet.Api.Services;
 
-public class EmailSender(ILogger<EmailSender> logger, IOptions<EmailSenderOptions> options, EmailClient emailClient)
+public class IdentityEmailSender(
+    IOptions<EmailSenderOptions> options,
+    ILogger<IdentityEmailSender> logger,
+    EmailClient emailClient)
     : IEmailSender
 {
     private readonly string senderAddress = options.Value.SenderAddress;
