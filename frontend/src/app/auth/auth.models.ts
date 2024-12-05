@@ -26,4 +26,5 @@ export interface CurrentUserResponse {
   userName: string;
   emailAddress: string;
   emailHash: string;
+  roles: string[];
 }
