@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Api.Services;
+using RateMyPet.Core;
 using RateMyPet.Persistence;
-using RateMyPet.Persistence.Models;
 using RateMyPet.Persistence.Services;
-using SpeciesModel = RateMyPet.Persistence.Models.Species;
-using PostsPermissions = RateMyPet.Api.Security.Permissions.Posts;
+using SpeciesModel = RateMyPet.Core.Species;
+using PostsPermissions = RateMyPet.Core.Security.Permissions.Posts;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 

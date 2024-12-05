@@ -1,8 +1,6 @@
 ﻿using FastEndpoints;
-using Microsoft.AspNetCore.Authentication.BearerToken;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
-using RateMyPet.Persistence.Models;
+using RateMyPet.Core;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 

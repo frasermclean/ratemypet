@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using RateMyPet.Api.Extensions;
 using RateMyPet.Api.Options;
-using RateMyPet.Persistence.Models;
+using RateMyPet.Core;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 

@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-using RateMyPet.Api.Security;
-using RateMyPet.Persistence.Models;
+using RateMyPet.Core;
+using RateMyPet.Core.Security;
 
 namespace RateMyPet.Api.Services;
 
@@ -13,28 +13,28 @@ public class SecurityInitializer(IServiceScopeFactory serviceScopeFactory, ILogg
         await EnsureRoleExistsAsync(Roles.User);
     }
 
-    private async Task EnsureRoleExistsAsync(string roleName)
+    private async Task EnsureRoleExistsAsync(RoleDefinition roleDefinition)
     {
         using var scope = serviceScopeFactory.CreateScope();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
 
-        var userRole = await roleManager.FindByNameAsync(roleName);
+        var userRole = await roleManager.FindByNameAsync(roleDefinition.Name);
         if (userRole is null)
         {
-            userRole = new Role { Name = roleName };
+            userRole = new Role { Name = roleDefinition.Name };
             await roleManager.CreateAsync(userRole);
-            logger.LogInformation("Created role {RoleName}", roleName);
+            logger.LogInformation("Created role {RoleName}", roleDefinition.Name);
         }
 
         var existingClaims = await roleManager.GetClaimsAsync(userRole);
 
-        var claimsToAdd = Roles.PermissionsMap[Roles.User].Except(existingClaims.Select(claim => claim.Value))
+        var claimsToAdd = Roles.PermissionsMap[roleDefinition].Except(existingClaims.Select(claim => claim.Value))
             .Select(permission => new Claim(Claims.Permissions, permission));
 
         foreach (var claim in claimsToAdd)
         {
             logger.LogInformation("Adding claim {ClaimType} with value {ClaimValue} to role {RoleName}",
-                claim.Type, claim.Value, roleName);
+                claim.Type, claim.Value, roleDefinition.Name);
             await roleManager.AddClaimAsync(userRole, claim);
         }
     }

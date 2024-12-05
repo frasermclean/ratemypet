@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using RateMyPet.Core;
 using RateMyPet.Persistence.Converters;
-using RateMyPet.Persistence.Models;
 
 namespace RateMyPet.Persistence.Configuration;
 

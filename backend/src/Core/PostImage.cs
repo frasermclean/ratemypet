@@ -1,4 +1,4 @@
-﻿namespace RateMyPet.Persistence.Models;
+﻿namespace RateMyPet.Core;
 
 public class PostImage
 {

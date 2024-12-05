@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace RateMyPet.Persistence.Models;
+namespace RateMyPet.Core;
 
 public class Role : IdentityRole<Guid>;

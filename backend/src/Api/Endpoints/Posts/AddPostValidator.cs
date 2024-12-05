@@ -1,6 +1,6 @@
 using FastEndpoints;
 using FluentValidation;
-using RateMyPet.Persistence.Models;
+using RateMyPet.Core;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 

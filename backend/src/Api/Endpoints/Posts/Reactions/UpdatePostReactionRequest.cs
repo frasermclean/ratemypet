@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using FastEndpoints;
-using RateMyPet.Persistence.Models;
+using RateMyPet.Core;
 
 namespace RateMyPet.Api.Endpoints.Posts.Reactions;
 

@@ -1,5 +1,5 @@
 ﻿using FastEndpoints;
-using RateMyPet.Api.Security;
+using RateMyPet.Core.Security;
 
 namespace RateMyPet.Api.Startup;
 

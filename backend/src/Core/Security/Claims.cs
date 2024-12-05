@@ -1,4 +1,4 @@
-﻿namespace RateMyPet.Api.Security;
+﻿namespace RateMyPet.Core.Security;
 
 public static class Claims
 {

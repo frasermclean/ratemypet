@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using RateMyPet.Persistence.Models;
+using RateMyPet.Core;
 
 namespace RateMyPet.Persistence.Services;
 

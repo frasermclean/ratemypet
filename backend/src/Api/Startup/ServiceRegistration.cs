@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Azure;
 using RateMyPet.Api.Options;
 using RateMyPet.Api.Services;
-using RateMyPet.Persistence.Models;
+using RateMyPet.Core;
 using RateMyPet.Persistence.Services;
 
 namespace RateMyPet.Api.Startup;
