@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Azure.Identity;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Azure;
 using RateMyPet.Api.Options;
@@ -90,19 +91,22 @@ public static class ServiceRegistration
 
     private static IServiceCollection AddIdentity(this IServiceCollection services)
     {
+        services.AddAuthentication(IdentityConstants.BearerScheme)
+            .AddBearerToken(IdentityConstants.BearerScheme);
+
         services.AddAuthorization();
 
-        services.AddIdentityApiEndpoints<User>(options =>
+        services.AddIdentityCore<User>(options =>
             {
                 options.Password.RequiredLength = 8;
                 options.SignIn.RequireConfirmedEmail = true;
                 options.User.RequireUniqueEmail = true;
             })
+            .AddRoles<Role>()
+            .AddApiEndpoints()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
         services.AddTransient<IEmailSender, IdentityEmailSender>();
-
-        services.ConfigureApplicationCookie(options => { options.Cookie.Name = "RateMyPet"; });
 
         return services;
     }
