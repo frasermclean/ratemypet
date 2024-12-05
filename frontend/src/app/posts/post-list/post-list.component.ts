@@ -10,6 +10,7 @@ import { PostItemComponent } from './post-list-item/post-list-item.component';
 
 import { PostsActions } from '../posts.actions';
 import { RouterLink } from '@angular/router';
+import { AuthState } from '../../auth/auth.state';
 
 @Component({
   selector: 'app-post-list',
@@ -20,6 +21,7 @@ import { RouterLink } from '@angular/router';
 export class PostListComponent implements OnInit {
   readonly status = select(PostsState.status);
   readonly matches = select(PostsState.matches);
+  readonly isLoggedIn = select(AuthState.isLoggedIn);
   readonly searchPosts = dispatch(PostsActions.SearchPosts);
 
   ngOnInit(): void {

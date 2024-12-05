@@ -158,6 +158,11 @@ export class AuthState implements NgxsOnInit {
   }
 
   @Selector([AUTH_STATE_TOKEN])
+  static isLoggedIn(state: AuthStateModel) {
+    return state.status === 'loggedIn';
+  }
+
+  @Selector([AUTH_STATE_TOKEN])
   static accessToken(state: AuthStateModel) {
     return state.accessToken;
   }
