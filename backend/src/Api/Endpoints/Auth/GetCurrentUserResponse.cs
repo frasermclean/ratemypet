@@ -1,6 +1,6 @@
-﻿namespace RateMyPet.Api.Endpoints.Users;
+﻿namespace RateMyPet.Api.Endpoints.Auth;
 
-public class UserResponse
+public class GetCurrentUserResponse
 {
     public required Guid Id { get; init; }
     public required string UserName { get; init; }

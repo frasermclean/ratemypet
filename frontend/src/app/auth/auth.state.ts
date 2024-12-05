@@ -3,9 +3,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Navigate } from '@ngxs/router-plugin';
 import { Action, NgxsOnInit, Selector, State, StateContext, StateToken } from '@ngxs/store';
 import { catchError, of, switchMap, tap } from 'rxjs';
-import { CurrentUser } from '../users/users.models';
-import { UsersService } from '../users/users.service';
 import { AuthActions } from './auth.actions';
+import { CurrentUserResponse } from './auth.models';
 import { AuthService } from './auth.service';
 
 interface AuthStateModel {
@@ -14,7 +13,7 @@ interface AuthStateModel {
   accessToken: string | null;
   accessTokenExpiry: Date | null;
   refreshToken: string | null;
-  currentUser: CurrentUser | null;
+  currentUser: CurrentUserResponse | null;
 }
 
 const AUTH_STATE_TOKEN = new StateToken<AuthStateModel>('auth');
@@ -33,7 +32,6 @@ const AUTH_STATE_TOKEN = new StateToken<AuthStateModel>('auth');
 @Injectable()
 export class AuthState implements NgxsOnInit {
   private readonly authService = inject(AuthService);
-  private readonly usersService = inject(UsersService);
   private readonly snackBar = inject(MatSnackBar);
 
   ngxsOnInit(context: StateContext<AuthStateModel>): void {
@@ -57,7 +55,7 @@ export class AuthState implements NgxsOnInit {
           accessTokenExpiry,
           refreshToken: response.refreshToken
         });
-        return this.usersService.getCurrentUser();
+        return this.authService.getCurrentUser();
       }),
       tap((currentUser) => {
         context.patchState({ status: 'loggedIn', currentUser });
@@ -135,7 +133,7 @@ export class AuthState implements NgxsOnInit {
           accessTokenExpiry,
           refreshToken: response.refreshToken
         });
-        return this.usersService.getCurrentUser();
+        return this.authService.getCurrentUser();
       }),
       tap((currentUser) => {
         context.patchState({

@@ -20,3 +20,10 @@ export interface ConfirmEmailRequest {
   userId: string;
   token: string;
 }
+
+export interface CurrentUserResponse {
+  id: string;
+  userName: string;
+  emailAddress: string;
+  emailHash: string;
+}

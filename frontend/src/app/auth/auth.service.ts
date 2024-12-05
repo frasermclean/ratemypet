@@ -1,7 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { AccessTokenResponse, ConfirmEmailRequest, LoginRequest, RegisterRequest } from './auth.models';
+import {
+  AccessTokenResponse,
+  ConfirmEmailRequest,
+  CurrentUserResponse,
+  LoginRequest,
+  RegisterRequest
+} from './auth.models';
 
 @Injectable({
   providedIn: 'root'
@@ -28,5 +34,9 @@ export class AuthService {
 
   public refreshAccessToken(refreshToken: string) {
     return this.httpClient.post<AccessTokenResponse>(`${this.baseUrl}/refresh-token`, { refreshToken });
+  }
+
+  public getCurrentUser() {
+    return this.httpClient.get<CurrentUserResponse>(`${this.baseUrl}/current-user`);
   }
 }

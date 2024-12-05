@@ -4,17 +4,17 @@ using Microsoft.AspNetCore.Identity;
 using RateMyPet.Api.Extensions;
 using RateMyPet.Persistence.Models;
 
-namespace RateMyPet.Api.Endpoints.Users;
+namespace RateMyPet.Api.Endpoints.Auth;
 
 public class GetCurrentUserEndpoint(UserManager<User> userManager)
-    : EndpointWithoutRequest<Results<Ok<UserResponse>, NotFound>>
+    : EndpointWithoutRequest<Results<Ok<GetCurrentUserResponse>, NotFound>>
 {
     public override void Configure()
     {
-        Get("/users/me");
+        Get("/auth/current-user");
     }
 
-    public override async Task<Results<Ok<UserResponse>, NotFound>> ExecuteAsync(CancellationToken cancellationToken)
+    public override async Task<Results<Ok<GetCurrentUserResponse>, NotFound>> ExecuteAsync(CancellationToken cancellationToken)
     {
         var user = await userManager.GetUserAsync(User);
         if (user is null)
@@ -22,7 +22,7 @@ public class GetCurrentUserEndpoint(UserManager<User> userManager)
             return TypedResults.NotFound();
         }
 
-        var response = new UserResponse
+        var response = new GetCurrentUserResponse
         {
             Id = user.Id,
             UserName = user.UserName!,
