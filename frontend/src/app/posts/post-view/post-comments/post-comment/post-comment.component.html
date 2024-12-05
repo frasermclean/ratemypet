@@ -5,7 +5,9 @@
   </p>
 </div>
 <div class="actions">
+  @if (currentUser()?.userName === comment().authorUserName) {
   <button mat-icon-button (click)="onDelete()" matTooltip="Delete comment">
     <mat-icon>delete</mat-icon>
   </button>
+  }
 </div>

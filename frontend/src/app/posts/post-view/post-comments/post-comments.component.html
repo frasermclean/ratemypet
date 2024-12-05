@@ -19,6 +19,8 @@
 </mat-tree>
 } @else {
 <h6>No comments yet</h6>
-}
-
+} @if (isLoggedIn()) {
 <app-add-comment [post]="p" />
+} @else {
+<p>You must be logged in to comment.</p>
+}

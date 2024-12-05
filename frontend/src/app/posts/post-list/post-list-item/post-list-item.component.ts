@@ -1,16 +1,17 @@
-import { Component, input } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
+import { Component, inject, input } from '@angular/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
-import { dispatch } from '@ngxs/store';
-
+import { dispatch, select } from '@ngxs/store';
 import { GravatarComponent } from '@shared/gravatar/gravatar.component';
-import { PostsActions } from '../../posts.actions';
+import { AuthState } from '../../../auth/auth.state';
 import { allReactions, Reaction, SearchPostsMatch } from '../../post.models';
+import { PostsActions } from '../../posts.actions';
 
 @Component({
   selector: 'app-post-list-item',
@@ -28,12 +29,18 @@ import { allReactions, Reaction, SearchPostsMatch } from '../../post.models';
   styleUrl: './post-list-item.component.scss'
 })
 export class PostItemComponent {
+  private readonly snackbar = inject(MatSnackBar);
   postMatch = input.required<SearchPostsMatch>();
   reactions = allReactions;
   removePostReaction = dispatch(PostsActions.RemovePostReaction);
   updatePostReaction = dispatch(PostsActions.UpdatePostReaction);
+  isLoggedIn = select(AuthState.isLoggedIn);
 
   handleReaction(reaction: Reaction) {
+    if (!this.isLoggedIn()) {
+      this.snackbar.open('You must be logged in to react to a post', 'OK');
+      return;
+    }
     const post = this.postMatch();
     if (post.userReaction === reaction) {
       this.removePostReaction(post.id);

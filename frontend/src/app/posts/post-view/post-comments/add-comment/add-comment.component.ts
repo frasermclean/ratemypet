@@ -4,9 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { dispatch } from '@ngxs/store';
-
-import { PostsActions } from '../../../posts.actions';
 import { Post } from '../../../post.models';
+import { PostsActions } from '../../../posts.actions';
 
 @Component({
   selector: 'app-add-comment',

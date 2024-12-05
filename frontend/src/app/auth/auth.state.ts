@@ -1,13 +1,12 @@
 import { inject, Injectable } from '@angular/core';
-import { Navigate } from '@ngxs/router-plugin';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Navigate } from '@ngxs/router-plugin';
 import { Action, NgxsOnInit, Selector, State, StateContext, StateToken } from '@ngxs/store';
-
-import { AuthActions } from './auth.actions';
-import { AuthService } from './auth.service';
 import { catchError, of, switchMap, tap } from 'rxjs';
 import { CurrentUser } from '../users/users.models';
 import { UsersService } from '../users/users.service';
+import { AuthActions } from './auth.actions';
+import { AuthService } from './auth.service';
 
 interface AuthStateModel {
   status: 'loggedOut' | 'busy' | 'loggedIn';
@@ -85,7 +84,6 @@ export class AuthState implements NgxsOnInit {
           refreshToken: null,
           currentUser: null
         });
-        context.dispatch(new Navigate(['/auth/login']));
       })
     );
   }
