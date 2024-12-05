@@ -12,6 +12,10 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
     {
         builder.ToTable("Roles");
 
+        builder.HasIndex(role => role.NormalizedName)
+            .HasDatabaseName("IX_Roles_NormalizedName")
+            .IsUnique();
+
         builder.HasData([
             Roles.User.ToRole(),
             Roles.Administrator.ToRole()

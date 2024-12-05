@@ -13,5 +13,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(user => user.RowVersion)
             .IsRowVersion()
             .HasConversion<byte[]>();
+
+        builder.HasIndex(user => user.NormalizedUserName)
+            .HasDatabaseName("IX_Users_NormalizedUserName")
+            .IsUnique();
+
+        builder.HasIndex(user => user.NormalizedEmail)
+            .HasDatabaseName("IX_Users_NormalizedEmail")
+            .IsUnique();
     }
 }

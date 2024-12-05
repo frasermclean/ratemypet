@@ -44,6 +44,29 @@ namespace RateMyPet.Persistence.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("RoleClaims", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ClaimType = "Permissions",
+                            ClaimValue = "Posts.Add",
+                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ClaimType = "Permissions",
+                            ClaimValue = "Posts.Edit.Owned",
+                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ClaimType = "Permissions",
+                            ClaimValue = "Posts.Delete.Owned",
+                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
@@ -125,7 +148,7 @@ namespace RateMyPet.Persistence.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("RateMyPet.Persistence.Models.Post", b =>
+            modelBuilder.Entity("RateMyPet.Core.Post", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -172,7 +195,7 @@ namespace RateMyPet.Persistence.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("RateMyPet.Persistence.Models.PostComment", b =>
+            modelBuilder.Entity("RateMyPet.Core.PostComment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -220,7 +243,7 @@ namespace RateMyPet.Persistence.Migrations
                     b.ToTable("PostComments");
                 });
 
-            modelBuilder.Entity("RateMyPet.Persistence.Models.PostReaction", b =>
+            modelBuilder.Entity("RateMyPet.Core.PostReaction", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -253,7 +276,7 @@ namespace RateMyPet.Persistence.Migrations
                     b.ToTable("PostReactions", (string)null);
                 });
 
-            modelBuilder.Entity("RateMyPet.Persistence.Models.Role", b =>
+            modelBuilder.Entity("RateMyPet.Core.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -275,7 +298,7 @@ namespace RateMyPet.Persistence.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
+                        .HasDatabaseName("IX_Roles_NormalizedName")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("Roles", (string)null);
@@ -295,7 +318,7 @@ namespace RateMyPet.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RateMyPet.Persistence.Models.Species", b =>
+            modelBuilder.Entity("RateMyPet.Core.Species", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -339,7 +362,7 @@ namespace RateMyPet.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RateMyPet.Persistence.Models.User", b =>
+            modelBuilder.Entity("RateMyPet.Core.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -401,11 +424,13 @@ namespace RateMyPet.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
+                        .IsUnique()
+                        .HasDatabaseName("IX_Users_NormalizedEmail")
+                        .HasFilter("[NormalizedEmail] IS NOT NULL");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
+                        .HasDatabaseName("IX_Users_NormalizedUserName")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
@@ -413,7 +438,7 @@ namespace RateMyPet.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("RateMyPet.Persistence.Models.Role", null)
+                    b.HasOne("RateMyPet.Core.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -422,7 +447,7 @@ namespace RateMyPet.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("RateMyPet.Persistence.Models.User", null)
+                    b.HasOne("RateMyPet.Core.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -431,7 +456,7 @@ namespace RateMyPet.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("RateMyPet.Persistence.Models.User", null)
+                    b.HasOne("RateMyPet.Core.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -440,13 +465,13 @@ namespace RateMyPet.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("RateMyPet.Persistence.Models.Role", null)
+                    b.HasOne("RateMyPet.Core.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RateMyPet.Persistence.Models.User", null)
+                    b.HasOne("RateMyPet.Core.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -455,28 +480,28 @@ namespace RateMyPet.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("RateMyPet.Persistence.Models.User", null)
+                    b.HasOne("RateMyPet.Core.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RateMyPet.Persistence.Models.Post", b =>
+            modelBuilder.Entity("RateMyPet.Core.Post", b =>
                 {
-                    b.HasOne("RateMyPet.Persistence.Models.Species", "Species")
+                    b.HasOne("RateMyPet.Core.Species", "Species")
                         .WithMany("Posts")
                         .HasForeignKey("SpeciesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RateMyPet.Persistence.Models.User", "User")
+                    b.HasOne("RateMyPet.Core.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("RateMyPet.Persistence.Models.PostImage", "Image", b1 =>
+                    b.OwnsOne("RateMyPet.Core.PostImage", "Image", b1 =>
                         {
                             b1.Property<Guid>("PostId")
                                 .ValueGeneratedOnAdd()
@@ -518,17 +543,17 @@ namespace RateMyPet.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("RateMyPet.Persistence.Models.PostComment", b =>
+            modelBuilder.Entity("RateMyPet.Core.PostComment", b =>
                 {
-                    b.HasOne("RateMyPet.Persistence.Models.PostComment", "Parent")
+                    b.HasOne("RateMyPet.Core.PostComment", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId");
 
-                    b.HasOne("RateMyPet.Persistence.Models.Post", null)
+                    b.HasOne("RateMyPet.Core.Post", null)
                         .WithMany("Comments")
                         .HasForeignKey("PostId");
 
-                    b.HasOne("RateMyPet.Persistence.Models.User", "User")
+                    b.HasOne("RateMyPet.Core.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -539,15 +564,15 @@ namespace RateMyPet.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("RateMyPet.Persistence.Models.PostReaction", b =>
+            modelBuilder.Entity("RateMyPet.Core.PostReaction", b =>
                 {
-                    b.HasOne("RateMyPet.Persistence.Models.Post", "Post")
+                    b.HasOne("RateMyPet.Core.Post", "Post")
                         .WithMany("Reactions")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("RateMyPet.Persistence.Models.User", "User")
+                    b.HasOne("RateMyPet.Core.User", "User")
                         .WithMany("PostReactions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -558,24 +583,24 @@ namespace RateMyPet.Persistence.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("RateMyPet.Persistence.Models.Post", b =>
+            modelBuilder.Entity("RateMyPet.Core.Post", b =>
                 {
                     b.Navigation("Comments");
 
                     b.Navigation("Reactions");
                 });
 
-            modelBuilder.Entity("RateMyPet.Persistence.Models.PostComment", b =>
+            modelBuilder.Entity("RateMyPet.Core.PostComment", b =>
                 {
                     b.Navigation("Children");
                 });
 
-            modelBuilder.Entity("RateMyPet.Persistence.Models.Species", b =>
+            modelBuilder.Entity("RateMyPet.Core.Species", b =>
                 {
                     b.Navigation("Posts");
                 });
 
-            modelBuilder.Entity("RateMyPet.Persistence.Models.User", b =>
+            modelBuilder.Entity("RateMyPet.Core.User", b =>
                 {
                     b.Navigation("PostReactions");
 
