@@ -9,6 +9,13 @@
 @include mat.elevation-classes();
 @include mat.app-background();
 
+// workaround until https://github.com/angular/components/issues/26094 is resolved
+@for $i from 0 through 24 {
+  mat-card.mat-elevation-z#{$i} {
+      @include mat.elevation($i);
+  }
+}
+
 // Define the theme object.
 $theme: mat.define-theme(
   (

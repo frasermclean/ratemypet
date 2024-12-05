@@ -11,7 +11,7 @@
 } @case ('ready') { @if(post(); as post) {
 <div id="post-container">
   <img class="full-image mat-elevation-z8" [src]="post.imageUrl" [alt]="post.title" />
-  <mat-card>
+  <mat-card class="mat-elevation-z8">
     <mat-card-header>
       <mat-card-title class="title">{{ post.title }}</mat-card-title>
       <mat-card-subtitle>Posted by: {{ post.authorUserName }} on {{ post.createdAtUtc | date }}</mat-card-subtitle>

@@ -1,5 +1,4 @@
 $card-width: 320px;
-$image-height: 240px;
 
 mat-card {
   max-width: $card-width;
@@ -18,7 +17,7 @@ mat-card {
   img.preview-image {
     object-fit: cover;
     width: $card-width;
-    height: $image-height;
+    height: $card-width;
   }
 }
 
