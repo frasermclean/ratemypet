@@ -6,6 +6,7 @@ using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
 using RateMyPet.Persistence.Services;
 using SpeciesModel = RateMyPet.Persistence.Models.Species;
+using PostsPermissions = RateMyPet.Api.Security.Permissions.Posts;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
@@ -19,6 +20,7 @@ public class AddPostEndpoint(
     public override void Configure()
     {
         Post("posts");
+        Permissions(PostsPermissions.Add);
         AllowFormData();
         AllowFileUploads();
     }

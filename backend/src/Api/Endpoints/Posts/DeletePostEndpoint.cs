@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Models;
 using RateMyPet.Persistence.Services;
+using PostsPermissions = RateMyPet.Api.Security.Permissions.Posts;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
@@ -15,6 +16,7 @@ public class DeletePostEndpoint(
     public override void Configure()
     {
         Delete("posts/{postId:guid}");
+        Permissions(PostsPermissions.DeleteOwned);
         PreProcessor<ModifyPostPreProcessor>();
     }
 

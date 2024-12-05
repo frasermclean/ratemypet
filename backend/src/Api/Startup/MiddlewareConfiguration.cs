@@ -1,4 +1,5 @@
 ﻿using FastEndpoints;
+using RateMyPet.Api.Security;
 
 namespace RateMyPet.Api.Startup;
 
@@ -16,6 +17,7 @@ public static class MiddlewareConfiguration
             config.Endpoints.RoutePrefix = "api";
             config.Errors.UseProblemDetails();
             config.Errors.ProducesMetadataType = typeof(ProblemDetails);
+            config.Security.PermissionsClaimType = Claims.Permissions;
         });
 
         return app;
