@@ -14,7 +14,11 @@ public class LogoutEndpoint(SignInManager<User> signInManager) : EndpointWithout
 
     public override async Task<NoContent> ExecuteAsync(CancellationToken ct)
     {
+        signInManager.AuthenticationScheme = IdentityConstants.BearerScheme;
         await signInManager.SignOutAsync();
+
+        Logger.LogInformation("User {UserName} logged out", User.Identity!.Name);
+
         return TypedResults.NoContent();
     }
 }

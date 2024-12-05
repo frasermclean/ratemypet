@@ -17,7 +17,6 @@ public class GetCurrentUserEndpoint(UserManager<User> userManager)
     public override async Task<Results<Ok<UserResponse>, NotFound>> ExecuteAsync(CancellationToken cancellationToken)
     {
         var user = await userManager.GetUserAsync(User);
-
         if (user is null)
         {
             return TypedResults.NotFound();
@@ -28,7 +27,8 @@ public class GetCurrentUserEndpoint(UserManager<User> userManager)
             Id = user.Id,
             UserName = user.UserName!,
             EmailAddress = user.Email!,
-            EmailHash = user.Email.ToSha256Hash()
+            EmailHash = user.Email.ToSha256Hash(),
+            Roles = await userManager.GetRolesAsync(user)
         };
 
         return TypedResults.Ok(response);

@@ -7,7 +7,7 @@ public class LoginValidator : Validator<LoginRequest>
 {
     public LoginValidator()
     {
-        RuleFor(request => request.EmailOrPassword).NotEmpty();
+        RuleFor(request => request.EmailOrUserName).NotEmpty();
         RuleFor(request => request.Password).NotEmpty();
     }
 }

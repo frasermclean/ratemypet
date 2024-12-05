@@ -7,7 +7,7 @@ using RateMyPet.Persistence.Models;
 namespace RateMyPet.Api.Endpoints.Auth;
 
 public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> userManager)
-    : Endpoint<LoginRequest, Results<Ok<AccessTokenResponse>, EmptyHttpResult, UnauthorizedHttpResult>>
+    : Endpoint<LoginRequest>
 {
     public override void Configure()
     {
@@ -15,28 +15,29 @@ public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> 
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok<AccessTokenResponse>, EmptyHttpResult, UnauthorizedHttpResult>> ExecuteAsync(
-        LoginRequest request, CancellationToken cancellationToken)
+    public override async Task HandleAsync(LoginRequest request, CancellationToken cancellationToken)
     {
-        var user = await userManager.FindByEmailAsync(request.EmailOrPassword)
-                   ?? await userManager.FindByNameAsync(request.EmailOrPassword);
+        var isEmailAddress = request.EmailOrUserName.Contains('@');
+        var user = isEmailAddress
+            ? await userManager.FindByEmailAsync(request.EmailOrUserName)
+            : await userManager.FindByNameAsync(request.EmailOrUserName);
+
         if (user is null)
         {
-            return TypedResults.Unauthorized();
+            Logger.LogWarning("Could not find user with email or username {EmailOrUserName}", request.EmailOrUserName);
+            await SendUnauthorizedAsync(cancellationToken);
+            return;
         }
 
-        signInManager.AuthenticationScheme = request.UseCookies
-            ? IdentityConstants.ApplicationScheme
-            : IdentityConstants.BearerScheme;
-
+        signInManager.AuthenticationScheme = IdentityConstants.BearerScheme;
         var result = await signInManager.PasswordSignInAsync(user, request.Password, false, false);
-
         if (!result.Succeeded)
         {
-            return TypedResults.Unauthorized();
+            Logger.LogError("Failed to log in user {UserName}", user.UserName);
+            await SendUnauthorizedAsync(cancellationToken);
+            return;
         }
 
-        Logger.LogInformation("User {EmailOrPassword} logged in", request.EmailOrPassword);
-        return TypedResults.Empty;
+        Logger.LogInformation("User {UserName} logged in", user.UserName);
     }
 }
