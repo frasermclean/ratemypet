@@ -48,7 +48,7 @@ export class AuthState implements NgxsOnInit {
   @Action(AuthActions.Login)
   login(context: StateContext<AuthStateModel>, action: AuthActions.Login) {
     context.patchState({ status: 'busy' });
-    return this.authService.login(action.email, action.password).pipe(
+    return this.authService.login(action.request).pipe(
       switchMap((response) => {
         const accessTokenExpiry = new Date();
         accessTokenExpiry.setSeconds(accessTokenExpiry.getSeconds() + response.expiresIn);
@@ -108,7 +108,7 @@ export class AuthState implements NgxsOnInit {
   @Action(AuthActions.ConfirmEmail)
   confirmEmail(context: StateContext<AuthStateModel>, action: AuthActions.ConfirmEmail) {
     context.patchState({ status: 'busy' });
-    return this.authService.confirmEmail(action.userId, action.token).pipe(
+    return this.authService.confirmEmail(action.request).pipe(
       tap(() => {
         this.snackBar.open('Email address confirmed.', 'Close');
         context.patchState({ status: 'loggedOut' });

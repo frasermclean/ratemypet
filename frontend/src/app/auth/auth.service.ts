@@ -1,17 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { AccessTokenResponse, RegisterRequest } from './auth.models';
+import { AccessTokenResponse, ConfirmEmailRequest, LoginRequest, RegisterRequest } from './auth.models';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuthService {
   private readonly httpClient = inject(HttpClient);
   private readonly baseUrl = `${environment.apiBaseUrl}/auth`;
 
-  public login(emailOrPassword: string, password: string) {
-    return this.httpClient.post<AccessTokenResponse>(`${this.baseUrl}/login`, { emailOrPassword, password });
+  public login(request: LoginRequest) {
+    return this.httpClient.post<AccessTokenResponse>(`${this.baseUrl}/login`, request);
   }
 
   public logout() {
@@ -22,8 +22,8 @@ export class AuthService {
     return this.httpClient.post(`${this.baseUrl}/register`, request);
   }
 
-  public confirmEmail(userId: string, token: string) {
-    return this.httpClient.post(`${this.baseUrl}/confirm-email`, { userId, token });
+  public confirmEmail(request: ConfirmEmailRequest) {
+    return this.httpClient.post(`${this.baseUrl}/confirm-email`, request);
   }
 
   public refreshAccessToken(refreshToken: string) {

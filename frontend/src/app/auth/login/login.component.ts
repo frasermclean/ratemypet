@@ -1,13 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Router, RouterLink } from '@angular/router';
 import { select, Store } from '@ngxs/store';
 import { catchError, of, tap } from 'rxjs';
 import { AuthActions } from '../auth.actions';
@@ -32,7 +32,7 @@ import { AuthState } from '../auth.state';
 export class LoginComponent {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   formGroup = this.formBuilder.group({
-    email: ['', Validators.email],
+    emailOrUserName: ['', Validators.required],
     password: ['', Validators.required]
   });
 
@@ -48,7 +48,7 @@ export class LoginComponent {
     }
     const formValue = this.formGroup.getRawValue();
     this.store
-      .dispatch(new AuthActions.Login(formValue.email, formValue.password))
+      .dispatch(new AuthActions.Login(formValue))
       .pipe(
         tap(() => {
           this.snackBar.open('Welcome back!', 'Thanks');

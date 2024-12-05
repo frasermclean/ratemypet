@@ -1,9 +1,9 @@
-import { RegisterRequest } from './auth.models';
+import { ConfirmEmailRequest, LoginRequest, RegisterRequest } from './auth.models';
 
 export namespace AuthActions {
   export class Login {
     static readonly type = '[Auth] Login';
-    constructor(public email: string, public password: string) {}
+    constructor(public request: LoginRequest) {}
   }
 
   export class Logout {
@@ -17,7 +17,7 @@ export namespace AuthActions {
 
   export class ConfirmEmail {
     static readonly type = '[Auth] Confirm Email';
-    constructor(public userId: string, public token: string) {}
+    constructor(public request: ConfirmEmailRequest) {}
   }
 
   export class RefreshAccessToken {

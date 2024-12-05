@@ -18,6 +18,6 @@ export class ConfirmEmailComponent implements OnInit {
       throw new Error('Missing userId or token.');
     }
 
-    this.confirmEmail(userId, token);
+    this.confirmEmail({ userId, token });
   }
 }
