@@ -108,6 +108,8 @@ public static class ServiceRegistration
 
         services.AddTransient<IEmailSender, IdentityEmailSender>();
 
+        services.AddHostedService<SecurityInitializer>();
+
         return services;
     }
 }
