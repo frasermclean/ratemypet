@@ -1,11 +1,13 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Azure.Storage.Blobs;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
+using OpenTelemetry.Resources;
 using RateMyPet.Api.Options;
 using RateMyPet.Api.Services;
 using RateMyPet.Core;
@@ -36,6 +38,18 @@ public static class ServiceRegistration
         builder.Services.AddOptions<FrontendOptions>()
             .BindConfiguration(FrontendOptions.SectionName)
             .ValidateDataAnnotations();
+
+        // open telemetry
+        builder.Services.AddOpenTelemetry()
+            .UseAzureMonitor(options => options.Credential = TokenCredentialFactory.Create())
+            .ConfigureResource(resourceBuilder =>
+            {
+                resourceBuilder.AddAttributes(new Dictionary<string, object>()
+                {
+                    { "service.name", "api" },
+                    { "service.namespace", "ratemypet" }
+                });
+            });
 
         // problem details service
         builder.Services.AddProblemDetails(options =>
