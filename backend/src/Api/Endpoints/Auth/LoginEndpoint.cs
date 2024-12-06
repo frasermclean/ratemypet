@@ -1,5 +1,6 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
+using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 
 namespace RateMyPet.Api.Endpoints.Auth;
@@ -15,7 +16,7 @@ public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> 
 
     public override async Task HandleAsync(LoginRequest request, CancellationToken cancellationToken)
     {
-        var isEmailAddress = request.EmailOrUserName.Contains('@');
+        var isEmailAddress = request.EmailOrUserName.IsEmailAddress();
         var user = isEmailAddress
             ? await userManager.FindByEmailAsync(request.EmailOrUserName)
             : await userManager.FindByNameAsync(request.EmailOrUserName);
