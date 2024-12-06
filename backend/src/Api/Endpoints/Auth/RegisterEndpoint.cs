@@ -6,13 +6,14 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using RateMyPet.Api.Extensions;
 using RateMyPet.Api.Options;
+using RateMyPet.Api.Services;
 using RateMyPet.Core;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
 public class RegisterEndpoint(
     UserManager<User> userManager,
-    IEmailSender<User> emailSender,
+    IEmailSender emailSender,
     IOptions<FrontendOptions> frontendOptions)
     : Endpoint<RegisterRequest, Results<Ok, ValidationProblem>>
 {
@@ -40,17 +41,12 @@ public class RegisterEndpoint(
             return TypedResults.ValidationProblem(result.Errors.ToDictionary());
         }
 
-        await SendConfirmationLinkAsync(user, request.EmailAddress);
-
-        return TypedResults.Ok();
-    }
-
-    private async Task SendConfirmationLinkAsync(User user, string emailAddress)
-    {
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
         var confirmationToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
         var confirmationLink = $"{frontendBaseUrl}/auth/confirm-email?userId={user.Id}&token={confirmationToken}";
 
-        await emailSender.SendConfirmationLinkAsync(user, emailAddress, confirmationLink);
+        await emailSender.SendConfirmationLinkAsync(user.Email, confirmationLink);
+
+        return TypedResults.Ok();
     }
 }

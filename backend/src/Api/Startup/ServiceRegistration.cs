@@ -4,7 +4,6 @@ using Azure.Storage.Blobs;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using RateMyPet.Api.Options;
@@ -103,10 +102,11 @@ public static class ServiceRegistration
                 options.User.RequireUniqueEmail = true;
             })
             .AddRoles<Role>()
-            .AddApiEndpoints()
+            .AddSignInManager()
+            .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
-        services.AddTransient<IEmailSender, IdentityEmailSender>();
+        services.AddTransient<IEmailSender, EmailSender>();
 
         services.AddHostedService<SecurityInitializer>();
 
