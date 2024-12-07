@@ -4,10 +4,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { dispatch, select } from '@ngxs/store';
 
-import { AuthState } from '../../../auth/auth.state';
-import { AuthActions } from '../../../auth/auth.actions';
-import { GravatarComponent } from '@shared/gravatar/gravatar.component';
 import { RouterLink } from '@angular/router';
+import { GravatarComponent } from '@shared/components/gravatar/gravatar.component';
+import { AuthActions } from '../../../auth/auth.actions';
+import { AuthState } from '../../../auth/auth.state';
 
 @Component({
   selector: 'app-user-menu',

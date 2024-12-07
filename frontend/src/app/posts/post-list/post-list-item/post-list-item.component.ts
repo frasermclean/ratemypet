@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { dispatch, select } from '@ngxs/store';
-import { GravatarComponent } from '@shared/gravatar/gravatar.component';
+import { GravatarComponent } from '@shared/components/gravatar/gravatar.component';
 import { NotificationService } from '@shared/services/notification.service';
 import { AuthState } from '../../../auth/auth.state';
 import { allReactions, Reaction, SearchPostsMatch } from '../../post.models';

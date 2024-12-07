@@ -6,7 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { dispatch, select } from '@ngxs/store';
-import { ConfirmationComponent, ConfirmationData } from '@shared/confirmation/confirmation.component';
+import { ConfirmationComponent, ConfirmationData } from '@shared/components/confirmation/confirmation.component';
 import { filter, Subject, takeUntil } from 'rxjs';
 import { AuthState } from '../../auth/auth.state';
 import { PostsActions } from '../posts.actions';

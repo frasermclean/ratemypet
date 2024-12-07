@@ -6,9 +6,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { dispatch } from '@ngxs/store';
-
+import { ImageUploadComponent } from '@shared/components/image-upload/image-upload.component';
 import { PostsActions } from '../posts.actions';
-import { ImageUploadComponent } from '@shared/image-upload/image-upload.component';
 
 @Component({
   selector: 'app-post-edit',
