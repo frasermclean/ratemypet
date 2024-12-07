@@ -35,3 +35,13 @@ module databaseModule 'database.bicep' = {
     allowedExternalIpAddresses: allowedExternalIpAddresses
   }
 }
+
+module storageModule 'storage.bicep' = {
+  name: 'storage'
+  params: {
+    workload: workload
+    appEnv: appEnv
+    location: location
+    tags: tags
+  }
+}
