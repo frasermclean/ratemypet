@@ -12,6 +12,8 @@ public static class MiddlewareConfiguration
             app.UseCors();
         }
 
+        app.UseAuthorization();
+
         app.UseFastEndpoints(config =>
         {
             config.Endpoints.RoutePrefix = "api";
