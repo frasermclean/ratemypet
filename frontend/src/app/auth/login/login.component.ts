@@ -6,10 +6,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Router, RouterLink } from '@angular/router';
-import { select, Store } from '@ngxs/store';
-import { catchError, of, tap } from 'rxjs';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { RouterLink } from '@angular/router';
+import { dispatch, select } from '@ngxs/store';
 import { AuthActions } from '../auth.actions';
 import { AuthState } from '../auth.state';
 
@@ -36,29 +35,11 @@ export class LoginComponent {
     password: ['', Validators.required]
   });
 
-  private readonly router = inject(Router);
-  private readonly store = inject(Store);
-  private readonly snackBar = inject(MatSnackBar);
-
+  login = dispatch(AuthActions.Login);
   status = select(AuthState.status);
 
   onSubmit() {
-    if (this.formGroup.invalid) {
-      return;
-    }
     const formValue = this.formGroup.getRawValue();
-    this.store
-      .dispatch(new AuthActions.Login(formValue))
-      .pipe(
-        tap(() => {
-          this.snackBar.open('Welcome back!', 'Thanks');
-          this.router.navigate(['/']);
-        }),
-        catchError(() => {
-          this.snackBar.open('Invalid credentials. Please check and try again.', 'Close');
-          return of([]);
-        })
-      )
-      .subscribe();
+    this.login(formValue);
   }
 }

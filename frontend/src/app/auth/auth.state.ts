@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Navigate } from '@ngxs/router-plugin';
 import { Action, NgxsOnInit, Selector, State, StateContext, StateToken } from '@ngxs/store';
+import { NotificationService } from '@shared/services/notification.service';
 import { TelemetryService } from '@shared/services/telemetry.service';
-import { catchError, switchMap, tap } from 'rxjs';
+import { catchError, of, switchMap, tap } from 'rxjs';
 import { AuthActions } from './auth.actions';
 import { CurrentUserResponse } from './auth.models';
 import { AuthService } from './auth.service';
@@ -34,7 +34,7 @@ const AUTH_STATE_TOKEN = new StateToken<AuthStateModel>('auth');
 export class AuthState implements NgxsOnInit {
   private readonly authService = inject(AuthService);
   private readonly telemetryService = inject(TelemetryService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly notificationService = inject(NotificationService);
 
   ngxsOnInit(context: StateContext<AuthStateModel>): void {
     const refreshToken = context.getState().refreshToken;
@@ -61,12 +61,16 @@ export class AuthState implements NgxsOnInit {
       }),
       tap((currentUser) => {
         context.patchState({ status: 'loggedIn', currentUser });
-        this.snackBar.open('You have been logged in.', 'Close');
+        this.notificationService.showInformation(`Welcome back, ${currentUser.userName}!`);
         this.telemetryService.setTrackedUser(currentUser.id);
         context.dispatch(new Navigate(['/']));
       }),
       catchError((error) => {
         context.patchState({ status: 'loggedOut', error });
+        if (error?.status === 401) {
+          this.notificationService.showError('Invalid username or password.');
+          return of(null);
+        }
         throw error;
       })
     );
@@ -77,7 +81,7 @@ export class AuthState implements NgxsOnInit {
     context.patchState({ status: 'busy' });
     return this.authService.logout().pipe(
       tap(() => {
-        this.snackBar.open('You have been logged out.', 'Close');
+        this.notificationService.showInformation('You have been logged out.');
         this.telemetryService.clearTrackedUser();
         context.patchState({
           status: 'loggedOut',
@@ -95,12 +99,14 @@ export class AuthState implements NgxsOnInit {
     context.patchState({ status: 'busy' });
     return this.authService.register(action.request).pipe(
       tap(() => {
-        this.snackBar.open('Registration successful. Please check your email for a confirmation link.', 'Close');
+        this.notificationService.showInformation(
+          'Registration successful. Please check your email for a confirmation link.'
+        );
         context.patchState({ status: 'loggedOut' });
         context.dispatch(new Navigate(['/auth/login']));
       }),
       catchError((error) => {
-        this.snackBar.open('An error occured while trying to register.', 'Close');
+        this.notificationService.showError('An error occured while trying to register.');
         context.patchState({ status: 'loggedOut', error });
         throw error;
       })
@@ -112,12 +118,12 @@ export class AuthState implements NgxsOnInit {
     context.patchState({ status: 'busy' });
     return this.authService.confirmEmail(action.request).pipe(
       tap(() => {
-        this.snackBar.open('Email address confirmed.', 'Close');
+        this.notificationService.showInformation('Email address confirmed.');
         context.patchState({ status: 'loggedOut' });
         context.dispatch(new Navigate(['/auth/login']));
       }),
       catchError((error) => {
-        this.snackBar.open('An error occured while trying to confirm your email address.', 'Close');
+        this.notificationService.showError('An error occured while trying to confirm your email address.');
         context.patchState({ status: 'loggedOut', error });
         context.dispatch(new Navigate(['/']));
         throw error;
@@ -155,7 +161,7 @@ export class AuthState implements NgxsOnInit {
           refreshToken: null
         });
         this.telemetryService.clearTrackedUser();
-        this.snackBar.open('An error occurred, and you have been logged out.', 'Close');
+        this.notificationService.showError('An error occurred, and you have been logged out.');
         throw error;
       })
     );
