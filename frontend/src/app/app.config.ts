@@ -12,7 +12,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, TitleStrategy, withComponentInputBinding } from '@angular/router';
 import { ApplicationinsightsAngularpluginErrorService } from '@microsoft/applicationinsights-angularplugin-js';
-import { withNgxsLoggerPlugin } from '@ngxs/logger-plugin';
 import { withNgxsRouterPlugin } from '@ngxs/router-plugin';
 import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { provideStore } from '@ngxs/store';
@@ -33,13 +32,13 @@ export const appConfig: ApplicationConfig = {
     provideStore(
       [AuthState],
       { developmentMode: environment.name === 'development' },
-      withNgxsRouterPlugin(),
-      withNgxsStoragePlugin({
-        keys: ['auth.refreshToken', 'auth.emailAddress']
-      }),
-      withNgxsLoggerPlugin({
-        disabled: environment.name !== 'development'
-      })
+      ...[
+        withNgxsRouterPlugin(),
+        withNgxsStoragePlugin({
+          keys: ['auth.refreshToken']
+        }),
+        ...environment.ngxsPlugins
+      ]
     ),
     {
       provide: TitleStrategy,

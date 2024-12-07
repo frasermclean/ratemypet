@@ -5,5 +5,6 @@ export const environment: Environment = {
   apiBaseUrl: '',
   applicationInsights: {
     connectionString: ''
-  }
+  },
+  ngxsPlugins: []
 };
