@@ -4,19 +4,24 @@ import { AngularPlugin } from '@microsoft/applicationinsights-angularplugin-js';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import { filter } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { ErrorService } from './error.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TelemetryService {
   private readonly router = inject(Router);
+  private readonly errorService = inject(ErrorService);
   private readonly angularPlugin = new AngularPlugin();
   private readonly appInsights = new ApplicationInsights({
     config: {
       connectionString: environment.applicationInsights.connectionString,
       extensions: [this.angularPlugin],
       extensionConfig: {
-        [this.angularPlugin.identifier]: { router: this.router }
+        [this.angularPlugin.identifier]: {
+          router: this.router,
+          errorServices: [this.errorService]
+        }
       },
       enableCorsCorrelation: true,
       enableRequestHeaderTracking: true,

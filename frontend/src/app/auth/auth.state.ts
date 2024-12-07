@@ -3,7 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Navigate } from '@ngxs/router-plugin';
 import { Action, NgxsOnInit, Selector, State, StateContext, StateToken } from '@ngxs/store';
 import { TelemetryService } from '@shared/services/telemetry.service';
-import { catchError, of, switchMap, tap } from 'rxjs';
+import { catchError, switchMap, tap } from 'rxjs';
 import { AuthActions } from './auth.actions';
 import { CurrentUserResponse } from './auth.models';
 import { AuthService } from './auth.service';
@@ -120,7 +120,7 @@ export class AuthState implements NgxsOnInit {
         this.snackBar.open('An error occured while trying to confirm your email address.', 'Close');
         context.patchState({ status: 'loggedOut', error });
         context.dispatch(new Navigate(['/']));
-        return of([]);
+        throw error;
       })
     );
   }
@@ -156,7 +156,7 @@ export class AuthState implements NgxsOnInit {
         });
         this.telemetryService.clearTrackedUser();
         this.snackBar.open('An error occurred, and you have been logged out.', 'Close');
-        return of([]);
+        throw error;
       })
     );
   }
