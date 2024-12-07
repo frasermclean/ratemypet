@@ -6,7 +6,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 import { dispatch, select } from '@ngxs/store';
 import { AuthActions } from '../auth.actions';
@@ -22,7 +21,6 @@ import { AuthState } from '../auth.state';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    MatSnackBarModule,
     MatProgressBarModule
   ],
   templateUrl: './login.component.html',

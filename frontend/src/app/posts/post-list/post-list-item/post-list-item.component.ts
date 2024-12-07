@@ -4,11 +4,11 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { dispatch, select } from '@ngxs/store';
 import { GravatarComponent } from '@shared/gravatar/gravatar.component';
+import { NotificationService } from '@shared/services/notification.service';
 import { AuthState } from '../../../auth/auth.state';
 import { allReactions, Reaction, SearchPostsMatch } from '../../post.models';
 import { PostsActions } from '../../posts.actions';
@@ -29,7 +29,7 @@ import { PostsActions } from '../../posts.actions';
   styleUrl: './post-list-item.component.scss'
 })
 export class PostItemComponent {
-  private readonly snackbar = inject(MatSnackBar);
+  private readonly notificationService = inject(NotificationService);
   postMatch = input.required<SearchPostsMatch>();
   reactions = allReactions;
   removePostReaction = dispatch(PostsActions.RemovePostReaction);
@@ -38,7 +38,7 @@ export class PostItemComponent {
 
   handleReaction(reaction: Reaction) {
     if (!this.isLoggedIn()) {
-      this.snackbar.open('You must be logged in to react to a post', 'OK');
+      this.notificationService.showInformation('You must be logged in to react to a post');
       return;
     }
     const post = this.postMatch();

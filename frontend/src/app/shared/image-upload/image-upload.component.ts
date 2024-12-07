@@ -1,7 +1,7 @@
 import { Component, effect, inject, output, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '@shared/services/notification.service';
 
 interface ImageInfo {
   url: string;
@@ -17,7 +17,7 @@ interface ImageInfo {
   styleUrl: './image-upload.component.scss'
 })
 export class ImageUploadComponent {
-  private readonly snackbar = inject(MatSnackBar);
+  private readonly notificationService = inject(NotificationService);
   private readonly file = signal<File | null>(null);
   readonly imageInfo = signal<ImageInfo>({ url: '', state: '' });
   readonly fileChange = output<File | null>();
@@ -37,7 +37,7 @@ export class ImageUploadComponent {
 
       if (!file.type.startsWith('image/')) {
         this.imageInfo.set({ url: '', state: 'invalid', fileName, sizeInKb });
-        this.snackbar.open('Only image files are allowed', 'Close');
+        this.notificationService.showError('Only image files are allowed');
         this.fileChange.emit(null);
         return;
       }

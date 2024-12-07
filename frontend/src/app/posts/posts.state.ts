@@ -1,15 +1,11 @@
 import { inject, Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Navigate } from '@ngxs/router-plugin';
 import { Action, Selector, State, StateContext, StateToken } from '@ngxs/store';
+import { NotificationService } from '@shared/services/notification.service';
 import { catchError, of, tap } from 'rxjs';
-
+import { Post, SearchPostsMatch } from './post.models';
 import { PostsActions } from './posts.actions';
 import { PostsService } from './posts.service';
-
-import { PostEditComponent } from './post-edit/post-edit.component';
-import { AddPostRequest, Post, SearchPostsMatch } from './post.models';
 
 interface PostsStateModel {
   status: 'initial' | 'busy' | 'error' | 'ready';
@@ -28,14 +24,13 @@ const POSTS_STATE_TOKEN = new StateToken<PostsStateModel>('posts');
     error: null,
     matches: [],
     totalMatches: 0,
-    currentPost: null,
-  },
+    currentPost: null
+  }
 })
 @Injectable()
 export class PostsState {
   private readonly postsService = inject(PostsService);
-  private readonly dialog = inject(MatDialog);
-  private readonly snackbar = inject(MatSnackBar);
+  private readonly notificationService = inject(NotificationService);
 
   @Action(PostsActions.SearchPosts)
   searchPosts(context: StateContext<PostsStateModel>) {
@@ -72,7 +67,7 @@ export class PostsState {
       tap((postId) => {
         context.patchState({ status: 'ready' });
         context.dispatch(new Navigate(['/posts', postId]));
-        this.snackbar.open('Post created successfully', 'Close', { duration: 3000 });
+        this.notificationService.showInformation('Post created successfully');
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });
@@ -88,7 +83,7 @@ export class PostsState {
       tap(() => {
         context.patchState({ status: 'ready' });
         context.dispatch(new Navigate(['/posts']));
-        this.snackbar.open('Post deleted successfully', 'Close', { duration: 3000 });
+        this.notificationService.showInformation('Post deleted successfully');
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });
@@ -106,10 +101,6 @@ export class PostsState {
           match.id === action.postId ? { ...match, reactions, userReaction: action.reaction } : match
         );
         context.patchState({ status: 'ready', matches });
-      }),
-      catchError(() => {
-        this.snackbar.open('Could not update post reaction', 'Close', { duration: 3000 });
-        return of([]);
       })
     );
   }
@@ -123,10 +114,6 @@ export class PostsState {
           match.id === action.postId ? { ...match, reactions, userReaction: undefined } : match
         );
         context.patchState({ status: 'ready', matches });
-      }),
-      catchError(() => {
-        this.snackbar.open('Could not remove post reaction', 'Close', { duration: 3000 });
-        return of([]);
       })
     );
   }
@@ -141,15 +128,11 @@ export class PostsState {
             currentPost: {
               ...currentPost,
               commentCount: currentPost.commentCount + 1,
-              comments: [...currentPost.comments, comment],
-            },
+              comments: [...currentPost.comments, comment]
+            }
           });
         }
-        this.snackbar.open('Comment added successfully', 'Close');
-      }),
-      catchError(() => {
-        this.snackbar.open('Could not add comment', 'Close');
-        return of([]);
+        this.notificationService.showInformation('Comment added successfully.');
       })
     );
   }
@@ -163,11 +146,7 @@ export class PostsState {
           const comments = currentPost.comments.filter((comment) => comment.id !== action.commentId);
           context.patchState({ currentPost: { ...currentPost, commentCount: currentPost.commentCount - 1, comments } });
         }
-        this.snackbar.open('Comment deleted successfully', 'Close');
-      }),
-      catchError(() => {
-        this.snackbar.open('Could not delete comment', 'Close');
-        return of([]);
+        this.notificationService.showInformation('Comment has been removed.');
       })
     );
   }
