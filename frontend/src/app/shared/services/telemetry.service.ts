@@ -1,7 +1,8 @@
 import { inject, Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRouteSnapshot, ResolveEnd, Router } from '@angular/router';
 import { AngularPlugin } from '@microsoft/applicationinsights-angularplugin-js';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
+import { filter } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -29,5 +30,23 @@ export class TelemetryService {
       item.tags = item.tags ?? [];
       item.tags['ai.cloud.role'] = 'frontend';
     });
+
+    // enable page view tracking with active component name
+    this.router.events.pipe(filter((event): event is ResolveEnd => event instanceof ResolveEnd)).subscribe((event) => {
+      const activatedComponent = this.getActivatedComponent(event.state.root);
+      if (activatedComponent) {
+        this.appInsights.trackPageView({
+          name: activatedComponent.name,
+          uri: event.urlAfterRedirects
+        });
+      }
+    });
+  }
+
+  private getActivatedComponent(snapshot: ActivatedRouteSnapshot): any {
+    if (snapshot.firstChild) {
+      return this.getActivatedComponent(snapshot.firstChild);
+    }
+    return snapshot.component;
   }
 }
