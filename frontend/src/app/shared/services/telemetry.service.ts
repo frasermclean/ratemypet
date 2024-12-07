@@ -43,6 +43,14 @@ export class TelemetryService {
     });
   }
 
+  public setTrackedUser(userId: string) {
+    this.appInsights.setAuthenticatedUserContext(userId);
+  }
+
+  public clearTrackedUser() {
+    this.appInsights.clearAuthenticatedUserContext();
+  }
+
   private getActivatedComponent(snapshot: ActivatedRouteSnapshot): any {
     if (snapshot.firstChild) {
       return this.getActivatedComponent(snapshot.firstChild);

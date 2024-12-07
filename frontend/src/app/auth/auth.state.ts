@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Navigate } from '@ngxs/router-plugin';
 import { Action, NgxsOnInit, Selector, State, StateContext, StateToken } from '@ngxs/store';
+import { TelemetryService } from '@shared/services/telemetry.service';
 import { catchError, of, switchMap, tap } from 'rxjs';
 import { AuthActions } from './auth.actions';
 import { CurrentUserResponse } from './auth.models';
@@ -32,6 +33,7 @@ const AUTH_STATE_TOKEN = new StateToken<AuthStateModel>('auth');
 @Injectable()
 export class AuthState implements NgxsOnInit {
   private readonly authService = inject(AuthService);
+  private readonly telemetryService = inject(TelemetryService);
   private readonly snackBar = inject(MatSnackBar);
 
   ngxsOnInit(context: StateContext<AuthStateModel>): void {
@@ -60,6 +62,7 @@ export class AuthState implements NgxsOnInit {
       tap((currentUser) => {
         context.patchState({ status: 'loggedIn', currentUser });
         this.snackBar.open('You have been logged in.', 'Close');
+        this.telemetryService.setTrackedUser(currentUser.id);
         context.dispatch(new Navigate(['/']));
       }),
       catchError((error) => {
@@ -75,6 +78,7 @@ export class AuthState implements NgxsOnInit {
     return this.authService.logout().pipe(
       tap(() => {
         this.snackBar.open('You have been logged out.', 'Close');
+        this.telemetryService.clearTrackedUser();
         context.patchState({
           status: 'loggedOut',
           accessToken: null,
@@ -140,6 +144,7 @@ export class AuthState implements NgxsOnInit {
           status: 'loggedIn',
           currentUser
         });
+        this.telemetryService.setTrackedUser(currentUser.id);
       }),
       catchError((error) => {
         context.patchState({
@@ -149,6 +154,7 @@ export class AuthState implements NgxsOnInit {
           accessTokenExpiry: null,
           refreshToken: null
         });
+        this.telemetryService.clearTrackedUser();
         this.snackBar.open('An error occurred, and you have been logged out.', 'Close');
         return of([]);
       })
