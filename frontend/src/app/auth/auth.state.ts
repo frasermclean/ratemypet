@@ -142,8 +142,15 @@ export class AuthState implements NgxsOnInit {
         });
       }),
       catchError((error) => {
-        context.patchState({ error });
-        throw error;
+        context.patchState({
+          status: 'loggedOut',
+          error,
+          accessToken: null,
+          accessTokenExpiry: null,
+          refreshToken: null
+        });
+        this.snackBar.open('An error occurred, and you have been logged out.', 'Close');
+        return of([]);
       })
     );
   }
