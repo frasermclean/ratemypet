@@ -44,10 +44,10 @@ public static class ServiceRegistration
             .UseAzureMonitor(options => options.Credential = TokenCredentialFactory.Create())
             .ConfigureResource(resourceBuilder =>
             {
-                resourceBuilder.AddAttributes(new Dictionary<string, object>()
+                resourceBuilder.AddAttributes(new Dictionary<string, object>
                 {
                     { "service.name", "api" },
-                    { "service.namespace", "ratemypet" }
+                    { "service.namespace", "backend" }
                 });
             });
 
