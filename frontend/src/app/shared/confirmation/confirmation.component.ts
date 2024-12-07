@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -12,7 +11,7 @@ export interface ConfirmationData {
 
 @Component({
   selector: 'app-confirmation',
-  imports: [CommonModule, MatDialogModule, MatButtonModule],
+  imports: [MatDialogModule, MatButtonModule],
   templateUrl: './confirmation.component.html'
 })
 export class ConfirmationComponent {
