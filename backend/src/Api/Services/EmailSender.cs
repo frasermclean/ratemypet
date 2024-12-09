@@ -5,23 +5,24 @@ using Azure.Communication.Email;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using RateMyPet.Api.Options;
+using RateMyPet.Core;
 
 namespace RateMyPet.Api.Services;
 
 public interface IEmailSender
 {
+
     Task SendConfirmationLinkAsync(string emailAddress, string confirmationLink);
-    Task SendPasswordResetLinkAsync(string emailAddress, string token);
+
+    Task SendPasswordResetLinkAsync(string emailAddress, string resetLink);
 }
 
 public class EmailSender(
-    IOptions<EmailSenderOptions> emailSenderOptions,
-    IOptions<FrontendOptions> frontendOptions,
+    IOptions<EmailSenderOptions> options,
     ILogger<EmailSender> logger,
     EmailClient emailClient) : IEmailSender
 {
-    private readonly string senderAddress = emailSenderOptions.Value.SenderAddress;
-    private readonly string frontendBaseUrl = frontendOptions.Value.BaseUrl;
+    private readonly string senderAddress = options.Value.SenderAddress;
 
     public Task SendConfirmationLinkAsync(string emailAddress, string confirmationLink)
     {
@@ -36,12 +37,9 @@ public class EmailSender(
         return SendEmailAsync(emailAddress, subject, htmlMessage);
     }
 
-    public Task SendPasswordResetLinkAsync(string emailAddress, string token)
+    public Task SendPasswordResetLinkAsync(string emailAddress, string resetLink)
     {
         const string subject = "Password reset";
-
-        var resetCode = HtmlEncoder.Default.Encode(WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token)));
-        var resetLink = $"{frontendBaseUrl}/auth/reset-password?emailAddress={emailAddress}&resetCode={resetCode}";
 
         var htmlMessage = $"""
                            <html><body>
