@@ -1,9 +1,5 @@
-﻿using System.Text;
-using System.Text.Encodings.Web;
-using FastEndpoints;
+﻿using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.WebUtilities;
-using RateMyPet.Api.Extensions;
 using RateMyPet.Api.Services;
 using RateMyPet.Core;
 
@@ -24,18 +20,25 @@ public class ForgotPasswordEndpoint(UserManager<User> userManager, IEmailSender 
         if (user is null)
         {
             Logger.LogWarning("Could not find user with email address: {EmailAddress}", request.EmailAddress);
-            await Task.Delay(Random.Shared.Next(2500, 8000), cancellationToken); // delay to prevent timing attacks
+            await CreateRandomDelayAsync(cancellationToken); // delay to prevent timing attacks
+            return;
+        }
+
+        if (!await userManager.IsEmailConfirmedAsync(user))
+        {
+            Logger.LogWarning("User {UserName} has not confirmed their email address", user.UserName);
+            await CreateRandomDelayAsync(cancellationToken); // delay to prevent timing attacks
             return;
         }
 
         if (await userManager.IsEmailConfirmedAsync(user))
         {
             var token = await userManager.GeneratePasswordResetTokenAsync(user);
-            var resetCode = HtmlEncoder.Default.Encode(WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token)));
-
-            await emailSender.SendPasswordResetCodeAsync(user.Email!, resetCode);
-
-            Logger.LogInformation("Sent password reset code for user {UserName}", user.UserName);
+            await emailSender.SendPasswordResetLinkAsync(request.EmailAddress, token);
+            Logger.LogInformation("Sent password reset link for user {UserName}", user.UserName);
         }
     }
+
+    private static Task CreateRandomDelayAsync(CancellationToken cancellationToken) =>
+        Task.Delay(Random.Shared.Next(2500, 8000), cancellationToken);
 }
