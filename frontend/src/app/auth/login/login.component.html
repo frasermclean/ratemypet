@@ -1,3 +1,4 @@
+<h2>Account login</h2>
 <mat-card>
   <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
     <mat-card-header>
@@ -29,7 +30,7 @@
       <mat-progress-bar mode="indeterminate" />
       } @default {
       <button mat-flat-button type="submit" [disabled]="formGroup.invalid">Log in</button>
-      <a mat-button routerLink="/auth/register">Register new account</a>
+      <a mat-button routerLink="/auth/forgot-password">Forgot password?</a>
       } }
     </mat-card-actions>
   </form>
