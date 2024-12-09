@@ -42,7 +42,7 @@ public class EmailSender(
         const string subject = "Password reset";
 
         var resetCode = HtmlEncoder.Default.Encode(WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token)));
-        var resetLink = $"{frontendBaseUrl}/auth/resetPassword?emailAddress={emailAddress}&resetCode={resetCode}";
+        var resetLink = $"{frontendBaseUrl}/auth/reset-password?emailAddress={emailAddress}&resetCode={resetCode}";
 
         var htmlMessage =
             $"""
