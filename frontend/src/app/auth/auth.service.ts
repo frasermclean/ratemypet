@@ -39,4 +39,8 @@ export class AuthService {
   public getCurrentUser() {
     return this.httpClient.get<CurrentUserResponse>(`${this.baseUrl}/current-user`);
   }
+
+  public forgotPassword(emailAddress: string) {
+    return this.httpClient.post(`${this.baseUrl}/forgot-password`, { emailAddress });
+  }
 }

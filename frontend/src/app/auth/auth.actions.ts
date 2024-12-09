@@ -24,4 +24,9 @@ export namespace AuthActions {
     static readonly type = '[Auth] Refresh Access Token';
     constructor(public refreshToken: string) {}
   }
+
+  export class ForgotPassword {
+    static readonly type = '[Auth] Forgot Password';
+    constructor(public emailAddress: string) {}
+  }
 }

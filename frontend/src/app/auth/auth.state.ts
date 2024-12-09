@@ -167,6 +167,22 @@ export class AuthState implements NgxsOnInit {
     );
   }
 
+  @Action(AuthActions.ForgotPassword)
+  forgotPassword(context: StateContext<AuthStateModel>, action: AuthActions.ForgotPassword) {
+    context.patchState({ status: 'busy' });
+    return this.authService.forgotPassword(action.emailAddress).pipe(
+      tap(() => {
+        this.notificationService.showInformation('Password reset instructions have been sent to your email address.');
+        context.patchState({ status: 'loggedOut' });
+      }),
+      catchError((error) => {
+        this.notificationService.showError('An error occurred while trying to reset your password.');
+        context.patchState({ status: 'loggedOut', error });
+        throw error;
+      })
+    );
+  }
+
   @Selector([AUTH_STATE_TOKEN])
   static status(state: AuthStateModel) {
     return state.status;
