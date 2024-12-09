@@ -7,6 +7,6 @@ public class ForgotPasswordValidator : Validator<ForgotPasswordRequest>
 {
     public ForgotPasswordValidator()
     {
-        RuleFor(request => request.EmailOrUserName).NotEmpty();
+        RuleFor(request => request.EmailAddress).NotEmpty().EmailAddress();
     }
 }

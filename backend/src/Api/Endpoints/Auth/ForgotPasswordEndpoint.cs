@@ -20,15 +20,10 @@ public class ForgotPasswordEndpoint(UserManager<User> userManager, IEmailSender 
 
     public override async Task HandleAsync(ForgotPasswordRequest request, CancellationToken cancellationToken)
     {
-        var isEmailAddress = request.EmailOrUserName.IsEmailAddress();
-
-        var user = isEmailAddress
-            ? await userManager.FindByEmailAsync(request.EmailOrUserName)
-            : await userManager.FindByNameAsync(request.EmailOrUserName);
-
+        var user = await userManager.FindByEmailAsync(request.EmailAddress);
         if (user is null)
         {
-            Logger.LogWarning("Could not find user with email or username {EmailOrUserName}", request.EmailOrUserName);
+            Logger.LogWarning("Could not find user with email address: {EmailAddress}", request.EmailAddress);
             await Task.Delay(Random.Shared.Next(2500, 8000), cancellationToken); // delay to prevent timing attacks
             return;
         }
