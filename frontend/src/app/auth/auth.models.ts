@@ -28,3 +28,9 @@ export interface CurrentUserResponse {
   emailHash: string;
   roles: string[];
 }
+
+export interface ResetPasswordRequest {
+  emailAddress: string;
+  resetCode: string;
+  newPassword: string;
+}

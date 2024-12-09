@@ -4,6 +4,7 @@ import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 const routes: Routes = [
   {
@@ -18,7 +19,8 @@ const routes: Routes = [
         component: ForgotPasswordComponent,
         title: 'Forgot Password',
         canActivate: [isAnonymous]
-      }
+      },
+      { path: 'reset-password', component: ResetPasswordComponent, title: 'Reset Password', canActivate: [isAnonymous] }
     ]
   }
 ];

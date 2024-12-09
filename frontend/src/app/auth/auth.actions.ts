@@ -1,4 +1,4 @@
-import { ConfirmEmailRequest, LoginRequest, RegisterRequest } from './auth.models';
+import { ConfirmEmailRequest, LoginRequest, RegisterRequest, ResetPasswordRequest } from './auth.models';
 
 export namespace AuthActions {
   export class Login {
@@ -28,5 +28,10 @@ export namespace AuthActions {
   export class ForgotPassword {
     static readonly type = '[Auth] Forgot Password';
     constructor(public emailAddress: string) {}
+  }
+
+  export class ResetPassword {
+    static readonly type = '[Auth] Reset Password';
+    constructor(public request: ResetPasswordRequest) {}
   }
 }

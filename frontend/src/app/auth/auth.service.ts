@@ -6,7 +6,8 @@ import {
   ConfirmEmailRequest,
   CurrentUserResponse,
   LoginRequest,
-  RegisterRequest
+  RegisterRequest,
+  ResetPasswordRequest
 } from './auth.models';
 
 @Injectable({
@@ -42,5 +43,9 @@ export class AuthService {
 
   public forgotPassword(emailAddress: string) {
     return this.httpClient.post(`${this.baseUrl}/forgot-password`, { emailAddress });
+  }
+
+  public resetPassword(request: ResetPasswordRequest) {
+    return this.httpClient.post(`${this.baseUrl}/reset-password`, request);
   }
 }
