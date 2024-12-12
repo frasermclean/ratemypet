@@ -21,5 +21,18 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(user => user.NormalizedEmail)
             .HasDatabaseName("IX_Users_NormalizedEmail")
             .IsUnique();
+
+        builder.HasData(
+            new User
+            {
+                Id = new Guid("fb8ad061-3a62-45f9-2202-08dd15f6fc85"),
+                UserName = "frasermclean",
+                NormalizedUserName = "FRASERMCLEAN",
+                Email = "dev@frasermclean.com",
+                NormalizedEmail = "DEV@FRASERMCLEAN.COM",
+                EmailConfirmed = true,
+                ConcurrencyStamp = "initial",
+                SecurityStamp = "initial",
+            });
     }
 }
