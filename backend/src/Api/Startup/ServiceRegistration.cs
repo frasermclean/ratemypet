@@ -122,8 +122,6 @@ public static class ServiceRegistration
 
         services.AddTransient<IEmailSender, EmailSender>();
 
-        services.AddHostedService<SecurityInitializer>();
-
         return services;
     }
 
