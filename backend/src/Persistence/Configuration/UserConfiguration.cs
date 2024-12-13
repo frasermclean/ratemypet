@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RateMyPet.Core;
 
@@ -17,6 +18,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(user => user.RowVersion)
             .IsRowVersion()
             .HasConversion<byte[]>();
+
+        builder.HasMany(user => user.Roles)
+            .WithMany(role => role.Users)
+            .UsingEntity<IdentityUserRole<Guid>>();
 
         builder.HasIndex(user => user.NormalizedUserName)
             .HasDatabaseName("IX_Users_NormalizedUserName")

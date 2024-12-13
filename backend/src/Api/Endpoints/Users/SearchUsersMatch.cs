@@ -7,4 +7,5 @@ public class SearchUsersMatch
     public required string EmailAddress { get; init; }
     public required bool IsEmailConfirmed { get; init; }
     public required DateTime? LastSeen { get; init; }
+    public required IEnumerable<string> Roles { get; init; }
 }

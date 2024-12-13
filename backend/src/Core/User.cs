@@ -7,5 +7,6 @@ public class User : IdentityUser<Guid>
     public ICollection<Post> Posts { get; } = [];
     public ICollection<PostReaction> PostReactions { get; } = [];
     public DateTime? LastSeen { get; set; }
+    public ICollection<Role> Roles { get; } = [];
     public ulong RowVersion { get; init; }
 }
