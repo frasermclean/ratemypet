@@ -1,20 +1,17 @@
-﻿using System.Text;
-using System.Text.Encodings.Web;
-using Azure;
+﻿using Azure;
 using Azure.Communication.Email;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using RateMyPet.Api.Options;
-using RateMyPet.Core;
 
 namespace RateMyPet.Api.Services;
 
 public interface IEmailSender
 {
+    Task SendConfirmationLinkAsync(string emailAddress, string confirmationLink,
+        CancellationToken cancellationToken = default);
 
-    Task SendConfirmationLinkAsync(string emailAddress, string confirmationLink);
-
-    Task SendPasswordResetLinkAsync(string emailAddress, string resetLink);
+    Task SendPasswordResetLinkAsync(string emailAddress, string resetLink,
+        CancellationToken cancellationToken = default);
 }
 
 public class EmailSender(
@@ -24,7 +21,8 @@ public class EmailSender(
 {
     private readonly string senderAddress = options.Value.SenderAddress;
 
-    public Task SendConfirmationLinkAsync(string emailAddress, string confirmationLink)
+    public Task SendConfirmationLinkAsync(string emailAddress, string confirmationLink,
+        CancellationToken cancellationToken)
     {
         const string subject = "Confirm your email";
         var htmlMessage = $"""
@@ -34,10 +32,10 @@ public class EmailSender(
                            </body></html>
                            """;
 
-        return SendEmailAsync(emailAddress, subject, htmlMessage);
+        return SendEmailAsync(emailAddress, subject, htmlMessage, cancellationToken);
     }
 
-    public Task SendPasswordResetLinkAsync(string emailAddress, string resetLink)
+    public Task SendPasswordResetLinkAsync(string emailAddress, string resetLink, CancellationToken cancellationToken)
     {
         const string subject = "Password reset";
 
@@ -52,27 +50,28 @@ public class EmailSender(
                            </body></html>
                            """;
 
-        return SendEmailAsync(emailAddress, subject, htmlMessage);
+        return SendEmailAsync(emailAddress, subject, htmlMessage, cancellationToken);
     }
 
-    private async Task SendEmailAsync(string recipientAddress, string subject, string htmlMessage)
+    private async Task SendEmailAsync(string recipientAddress, string subject, string htmlMessage,
+        CancellationToken cancellationToken)
     {
         var content = new EmailContent(subject) { Html = htmlMessage };
         var message = new EmailMessage(senderAddress, recipientAddress, content);
 
-        var operation = await emailClient.SendAsync(WaitUntil.Started, message);
+        var operation = await emailClient.SendAsync(WaitUntil.Started, message, cancellationToken);
 
         try
         {
             while (true)
             {
-                await operation.UpdateStatusAsync();
+                await operation.UpdateStatusAsync(cancellationToken);
                 if (operation.HasCompleted)
                 {
                     break;
                 }
 
-                await Task.Delay(100);
+                await Task.Delay(100, cancellationToken);
             }
 
             if (operation.HasValue)

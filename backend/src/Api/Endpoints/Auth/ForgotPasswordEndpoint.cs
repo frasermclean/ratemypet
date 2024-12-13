@@ -47,7 +47,7 @@ public class ForgotPasswordEndpoint(
             var resetCode = HtmlEncoder.Default.Encode(WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token)));
             var resetLink = $"{frontendBaseUrl}/auth/reset-password?emailAddress={user.Email}&resetCode={resetCode}";
 
-            await emailSender.SendPasswordResetLinkAsync(request.EmailAddress, resetLink);
+            await emailSender.SendPasswordResetLinkAsync(request.EmailAddress, resetLink, cancellationToken);
             Logger.LogInformation("Sent password reset link for user {UserName}", user.UserName);
         }
     }

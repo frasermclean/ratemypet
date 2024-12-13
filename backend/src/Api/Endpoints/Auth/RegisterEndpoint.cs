@@ -45,7 +45,7 @@ public class RegisterEndpoint(
         var confirmationToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
         var confirmationLink = $"{frontendBaseUrl}/auth/confirm-email?userId={user.Id}&token={confirmationToken}";
 
-        await emailSender.SendConfirmationLinkAsync(user.Email, confirmationLink);
+        await emailSender.SendConfirmationLinkAsync(user.Email, confirmationLink, cancellationToken);
 
         return TypedResults.Ok();
     }
