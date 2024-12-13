@@ -37,6 +37,9 @@ public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> 
             return;
         }
 
+        user.LastSeen = DateTime.UtcNow;
+        await userManager.UpdateAsync(user);
+
         Logger.LogInformation("User {UserName} logged in", user.UserName);
     }
 }

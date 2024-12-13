@@ -10,6 +10,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         builder.ToTable("Users");
 
+        builder.Property(user => user.LastSeen)
+            .HasPrecision(2)
+            .HasColumnName("LastSeenUtc");
+
         builder.Property(user => user.RowVersion)
             .IsRowVersion()
             .HasConversion<byte[]>();
@@ -32,7 +36,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 NormalizedEmail = "DEV@FRASERMCLEAN.COM",
                 EmailConfirmed = true,
                 ConcurrencyStamp = "initial",
-                SecurityStamp = "initial",
+                SecurityStamp = "initial"
             });
     }
 }

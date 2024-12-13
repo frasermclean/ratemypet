@@ -9,6 +9,7 @@ namespace RateMyPet.Api.Endpoints.Auth;
 
 public class RefreshTokenEndpoint(
     SignInManager<User> signInManager,
+    UserManager<User> userManager,
     IOptionsMonitor<BearerTokenOptions> bearerTokenOptions,
     TimeProvider timeProvider)
     : Endpoint<RefreshTokenRequest, Results<Ok<AccessTokenResponse>, ChallengeHttpResult, SignInHttpResult>>
@@ -33,6 +34,9 @@ public class RefreshTokenEndpoint(
         {
             return TypedResults.Challenge();
         }
+
+        user.LastSeen = DateTime.UtcNow;
+        await userManager.UpdateAsync(user);
 
         var principal = await signInManager.CreateUserPrincipalAsync(user);
         return TypedResults.SignIn(principal, authenticationScheme: IdentityConstants.BearerScheme);
