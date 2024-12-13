@@ -3,7 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { RouterStateSnapshot, TitleStrategy } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
-export class AppTitleStrategy extends TitleStrategy {
+export class PageTitleService extends TitleStrategy {
   private readonly baseTitle = 'Rate My Pet';
 
   constructor(private readonly titleService: Title) {

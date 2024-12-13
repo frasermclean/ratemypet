@@ -15,12 +15,12 @@ import { ApplicationinsightsAngularpluginErrorService } from '@microsoft/applica
 import { withNgxsRouterPlugin } from '@ngxs/router-plugin';
 import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { provideStore } from '@ngxs/store';
+import { PageTitleService } from '@shared/services/page-title.service';
 import { TelemetryService } from '@shared/services/telemetry.service';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { authInterceptor } from './auth/auth.interceptor';
 import { AuthState } from './auth/auth.state';
-import { AppTitleStrategy } from './core/app-title-strategy.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -42,7 +42,7 @@ export const appConfig: ApplicationConfig = {
     ),
     {
       provide: TitleStrategy,
-      useClass: AppTitleStrategy
+      useClass: PageTitleService
     },
     {
       provide: ErrorHandler,
