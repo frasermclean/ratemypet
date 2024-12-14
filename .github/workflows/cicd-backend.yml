@@ -22,6 +22,8 @@ jobs:
   build:
     name: Build application
     runs-on: ubuntu-latest
+    env:
+      BUILD_CONFIGURATION: Release
     defaults:
       run:
         working-directory: ${{ github.workspace }}/backend
@@ -40,3 +42,7 @@ jobs:
       # Restore packages
       - name: Restore packages
         run: dotnet restore
+
+      # Build solution
+      - name: Build solution
+        run: dotnet build --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
