@@ -1,0 +1,36 @@
+name: CI/CD Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/cicd-backend.yml
+      - backend/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/cicd-backend.yml
+      - backend/**
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  build:
+    name: Build application
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}/backend
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Restore packages
+      - name: Restore packages
+        run: dotnet restore
