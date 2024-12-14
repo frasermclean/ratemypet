@@ -46,3 +46,22 @@ jobs:
       # Build solution
       - name: Build solution
         run: dotnet build --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
+
+      # Login to GitHub Container Registry
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        if: github.event_name != 'pull_request'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and push API image
+      - name: Build and push API image
+        if: github.event_name != 'pull_request'
+        run: >-
+          dotnet publish src/Adoptrix.Api
+          --configuration ${{ env.BUILD_CONFIGURATION }}
+          -p:PublishProfile=DefaultContainer
+          -p:Version=v0.0.0
+          -p:ContainerRegistry=ghcr.io
