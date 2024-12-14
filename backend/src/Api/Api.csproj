@@ -10,8 +10,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>..\..</DockerfileContext>
+    <ContainerRepository>ratemypet-api</ContainerRepository>
+    <ContainerImageTags>v$(Version);latest</ContainerImageTags>
+    <ContainerAuthors>Fraser McLean</ContainerAuthors>
+    <ContainerDescription>Backend API for the Rate My Pet application.</ContainerDescription>
   </PropertyGroup>
 
   <ItemGroup>
