@@ -60,7 +60,7 @@ jobs:
       - name: Build and push API image
         if: github.event_name != 'pull_request'
         run: >-
-          dotnet publish src/Adoptrix.Api
+          dotnet publish src/Api/Api.csproj
           --configuration ${{ env.BUILD_CONFIGURATION }}
           -p:PublishProfile=DefaultContainer
           -p:Version=v0.0.0
