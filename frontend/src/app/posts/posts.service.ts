@@ -1,14 +1,12 @@
-import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
 import { Paging } from 'gridify-client';
 import { map, Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import { AddPostRequest, Post, PostComment, PostReactions, Reaction, SearchPostsMatch } from './post.models';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class PostsService {
   private readonly httpClient = inject(HttpClient);
   private readonly baseUrl = `${environment.apiBaseUrl}/posts`;
