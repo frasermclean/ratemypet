@@ -1,0 +1,44 @@
+name: CI/CD Frontend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/cicd-frontend.yml
+      - frontend/**
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ROOT: ${{ github.workspace }}/frontend
+      BUILD_CONFIGURATION: production
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ${{ env.PROJECT_ROOT }}
+
+      # Build application
+      - name: Build application
+        run: npx ng build --configuration ${{ env.BUILD_CONFIGURATION }}
