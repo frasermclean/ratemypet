@@ -67,3 +67,4 @@ jobs:
           -p:PublishProfile=DefaultContainer
           -p:Version=0.1.0
           -p:ContainerRegistry=ghcr.io
+          -p:ContainerRepository=${{ vars.API_REPOSITORY_NAME}}
