@@ -9,6 +9,12 @@ param appEnv string
 @description('Azure region for the non-global resources')
 param location string = resourceGroup().location
 
+@description('Domain name')
+param domainName string
+
+@description('Name of the shared resource group')
+param sharedResourceGroup string
+
 @description('Application administrator group name')
 param adminGroupName string
 
@@ -42,6 +48,20 @@ module storageModule 'storage.bicep' = {
     workload: workload
     appEnv: appEnv
     location: location
+    tags: tags
+  }
+}
+
+// frontend static web app
+module staticWebAppModule 'staticWebApp.bicep' = {
+  name: 'staticWebApp'
+  params: {
+    workload: workload
+    appEnv: appEnv
+    appName: 'frontend'
+    location: 'eastasia'
+    domainName: domainName
+    sharedResourceGroup: sharedResourceGroup
     tags: tags
   }
 }
