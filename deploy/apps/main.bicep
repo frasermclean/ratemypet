@@ -29,6 +29,7 @@ var tags = {
   appEnv: appEnv
 }
 
+// azure sql database
 module databaseModule 'database.bicep' = {
   name: 'database'
   params: {
@@ -42,6 +43,7 @@ module databaseModule 'database.bicep' = {
   }
 }
 
+// storage account
 module storageModule 'storage.bicep' = {
   name: 'storage'
   params: {
@@ -63,5 +65,17 @@ module staticWebAppModule 'staticWebApp.bicep' = {
     domainName: domainName
     sharedResourceGroup: sharedResourceGroup
     tags: tags
+  }
+}
+
+// application insights
+module appInsightsModule 'appInsights.bicep' = {
+  name: 'appInsights'
+  params: {
+    workload: workload
+    appEnv: appEnv
+    location: location
+    tags: tags
+    actionGroupShortName: 'RMP - ${appEnv}'
   }
 }
