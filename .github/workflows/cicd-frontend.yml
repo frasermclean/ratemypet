@@ -19,9 +19,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    env:
-      PROJECT_ROOT: ${{ github.workspace }}/frontend
-      BUILD_CONFIGURATION: production
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}/frontend
 
     steps:
       # Checkout the repository
@@ -37,8 +37,9 @@ jobs:
       # Install dependencies
       - name: Install dependencies
         run: npm ci
-        working-directory: ${{ env.PROJECT_ROOT }}
 
       # Build application
       - name: Build application
+        env:
+          BUILD_CONFIGURATION: production
         run: npx ng build --configuration ${{ env.BUILD_CONFIGURATION }}
