@@ -6,11 +6,28 @@ param workload string
 @description('Category of the workload')
 param category string
 
+@description('Location of the resources')
+param location string = resourceGroup().location
+
 @description('Domain name of the root DNS zone')
 param dnsZoneName string
 
 @description('Location of the email data')
 param emailDataLocation string = 'Australia'
+
+@secure()
+@description('Password for the container registry')
+param containerRegistryPassword string = ''
+
+@description('Expiry date for the container registry password in ISO 8601 format')
+#disable-next-line secure-secrets-in-params
+param containerRegistryPasswordExpiry string = ''
+
+@description('Array of prinicpal IDs that have administrative roles')
+param adminPrincipalIds array = []
+
+@description('Current date and time in UTC')
+param now string = utcNow()
 
 var tags = {
   workload: workload
@@ -122,5 +139,51 @@ resource communicationServices 'Microsoft.Communication/communicationServices@20
     linkedDomains: [
       emailCommunicationServices::notifyDomain.id
     ]
+  }
+}
+
+// key vault
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
+  name: '${workload}-${category}-kv'
+  location: location
+  tags: tags
+  properties: {
+    enabledForTemplateDeployment: true
+    enableRbacAuthorization: true
+    tenantId: tenant().tenantId
+    sku: {
+      name: 'standard'
+      family: 'A'
+    }
+  }
+
+  resource containerRegistryPasswordSecret 'secrets' = if (!empty(containerRegistryPassword)) {
+    name: 'container-registry-password'
+    properties: {
+      value: containerRegistryPassword
+      contentType: 'text/plain'
+      attributes: {
+        enabled: true
+        nbf: dateTimeToEpoch(now)
+        exp: dateTimeToEpoch(containerRegistryPasswordExpiry)
+      }
+    }
+  }
+}
+
+// managed identity
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: '${workload}-${category}-id'
+  location: location
+  tags: tags
+}
+
+// role assignments
+module roleAssignments './roleAssignments.bicep' = {
+  name: 'roleAssignments'
+  params: {
+    keyVaultName: keyVault.name
+    keyVaultAdministrators: adminPrincipalIds
+    keyVaultSecretsUsers: [managedIdentity.properties.principalId]
   }
 }
