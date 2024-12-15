@@ -172,7 +172,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
 }
 
 // app configuration
-resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-09-01-preview' = {
+resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-05-01' = {
   name: '${workload}-shared-ac'
   location: location
   tags: tags
@@ -189,7 +189,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-0
   resource authenticationInstanceKeyValue 'keyValues' = {
     name: 'EmailSender:Endpoint'
     properties: {
-      value: communicationServices.properties.hostName
+      value: 'https://${communicationServices.properties.hostName}'
       contentType: 'text/plain'
     }
   }
