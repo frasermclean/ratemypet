@@ -187,7 +187,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
   }
 
   resource authenticationInstanceKeyValue 'keyValues' = {
-    name: 'EmailSender:Endpoint'
+    name: 'Email:AcsEndpoint'
     properties: {
       value: 'https://${communicationServices.properties.hostName}'
       contentType: 'text/plain'
@@ -195,7 +195,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
   }
 
   resource authenticationTenantIdKeyValue 'keyValues' = {
-    name: 'EmailSender:SenderAddress'
+    name: 'Email:SenderAddress'
     properties: {
       value: 'no-reply@notify.${dnsZoneName}'
       contentType: 'text/plain'

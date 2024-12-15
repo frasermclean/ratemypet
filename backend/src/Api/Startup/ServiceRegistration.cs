@@ -31,8 +31,8 @@ public static class ServiceRegistration
             .BindConfiguration(ImageProcessorOptions.SectionName)
             .ValidateDataAnnotations();
 
-        builder.Services.AddOptions<EmailSenderOptions>()
-            .BindConfiguration(EmailSenderOptions.SectionName)
+        builder.Services.AddOptions<EmailOptions>()
+            .BindConfiguration(EmailOptions.SectionName)
             .ValidateDataAnnotations();
 
         builder.Services.AddOptions<FrontendOptions>()
@@ -90,13 +90,10 @@ public static class ServiceRegistration
 
         services.AddAzureClients(factoryBuilder =>
         {
-            var connectionString = configuration.GetConnectionString("Storage");
-            factoryBuilder.AddBlobServiceClient(connectionString);
-
-            var emailClientEndpoint = new Uri(configuration["EmailSender:Endpoint"]!);
-            factoryBuilder.AddEmailClient(emailClientEndpoint);
-
+            factoryBuilder.AddBlobServiceClient(new Uri(configuration["Storage:BlobEndpoint"]!));
+            factoryBuilder.AddEmailClient(new Uri(configuration["Email:AcsEndpoint"]!));
             factoryBuilder.UseCredential(TokenCredentialFactory.Create());
+            factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
         });
 
         return services;

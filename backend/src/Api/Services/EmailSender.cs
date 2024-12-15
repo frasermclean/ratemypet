@@ -15,7 +15,7 @@ public interface IEmailSender
 }
 
 public class EmailSender(
-    IOptions<EmailSenderOptions> options,
+    IOptions<EmailOptions> options,
     ILogger<EmailSender> logger,
     EmailClient emailClient) : IEmailSender
 {
