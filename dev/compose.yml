@@ -1,3 +1,5 @@
+name: ratemypet
+
 services:
   # SQL Server 2022 Developer Edition
   database:
@@ -18,7 +20,26 @@ services:
       - 10001:10001
       - 10002:10002
     volumes:
+      - ./certs:/certs
       - storage-data:/data
+    command:
+      [
+        "azurite",
+        "--blobHost",
+        "0.0.0.0",
+        "--queueHost",
+        "0.0.0.0",
+        "--tableHost",
+        "0.0.0.0",
+        "--cert",
+        "/certs/cert.pem",
+        "--key",
+        "/certs/key.pem",
+        "--oauth",
+        "basic",
+        "--location",
+        "/data",
+      ]
 
 volumes:
   database-data:
