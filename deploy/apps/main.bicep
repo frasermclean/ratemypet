@@ -15,6 +15,9 @@ param domainName string
 @description('Name of the shared resource group')
 param sharedResourceGroup string
 
+@description('Name of the Azure Key Vault instance')
+param keyVaultName string
+
 @description('Application administrator group name')
 param adminGroupName string
 
@@ -23,6 +26,18 @@ param adminGroupObjectId string
 
 @description('Array of allowed external IP addresses. Needs to be an array of objects with name and ipAddress properties.')
 param allowedExternalIpAddresses array = []
+
+@description('Repository of the API container image')
+param apiImageRepository string
+
+@description('Tag of the API container image')
+param apiImageTag string
+
+@description('Container registry login server')
+param containerRegistryName string
+
+@description('Username to access the container registry')
+param containerRegistryUsername string
 
 var tags = {
   workload: workload
@@ -91,5 +106,12 @@ module containerAppsModule 'containerApps.bicep' = {
     domainName: domainName
     sharedResourceGroup: sharedResourceGroup
     logAnalyticsWorkspaceId: appInsightsModule.outputs.logAnalyticsWorkspaceId
+    applicationInsightsConnectionString: appInsightsModule.outputs.connectionString
+    apiImageRepository: apiImageRepository
+    apiImageTag: apiImageTag
+    apiAllowedOrigins: map(staticWebAppModule.outputs.hostnames, (hostname) => 'https://${hostname}')
+    containerRegistryName: containerRegistryName
+    containerRegistryUsername: containerRegistryUsername
+    keyVaultName: keyVaultName
   }
 }

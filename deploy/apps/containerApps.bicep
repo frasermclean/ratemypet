@@ -24,7 +24,37 @@ param tags object = {
 @description('Resource ID of the Log Analytics workspace')
 param logAnalyticsWorkspaceId string
 
+@description('Application Insights connection string')
+param applicationInsightsConnectionString string
+
+@description('Name of the container registry')
+param containerRegistryName string
+
+@description('Username to access the container registry')
+param containerRegistryUsername string
+
+@description('Name of the Azure Key Vault instance')
+param keyVaultName string
+
+@description('Repository of the API container image')
+param apiImageRepository string
+
+@description('Tag of the API container image')
+param apiImageTag string
+
+@description('Allowed HTTP origins for the API container app')
+param apiAllowedOrigins array = []
+
+@description('Flag to create a managed certificates for the container apps. Set to true on first run.')
+param shouldBindManagedCertificate bool = false
+
 var apiContainerAppName = '${workload}-${appEnv}-api-ca'
+
+// shared managed identity
+resource sharedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  name: '${workload}-shared-id'
+  scope: resourceGroup(sharedResourceGroup)
+}
 
 // container apps environment
 resource appsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
@@ -34,6 +64,16 @@ resource appsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
   properties: {
     appLogsConfiguration: {
       destination: 'azure-monitor'
+    }
+  }
+
+  resource apiCertificate 'managedCertificates' = if (!shouldBindManagedCertificate) {
+    name: 'api-cert'
+    location: location
+    tags: tags
+    properties: {
+      subjectName: dnsRecordsModule.outputs.apiAppFqdn
+      domainControlValidation: 'CNAME'
     }
   }
 }
@@ -61,5 +101,97 @@ module dnsRecordsModule 'dnsRecords.bicep' = {
     domainName: domainName
     apiAppDefaultHostname: '${apiContainerAppName}.${appsEnvironment.properties.defaultDomain}'
     caeDomainVerificationId: appsEnvironment.properties.customDomainConfiguration.customDomainVerificationId
+  }
+}
+
+// api container app
+resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
+  name: apiContainerAppName
+  location: location
+  tags: union(tags, { appName: 'api' })
+  identity: {
+    type: 'SystemAssigned,UserAssigned'
+    userAssignedIdentities: {
+      '${sharedIdentity.id}': {}
+    }
+  }
+  properties: {
+    environmentId: appsEnvironment.id
+    configuration: {
+      activeRevisionsMode: 'Single'
+      maxInactiveRevisions: 3
+      ingress: {
+        external: true
+        targetPort: 8080
+        allowInsecure: false
+        traffic: [
+          {
+            latestRevision: true
+            weight: 100
+          }
+        ]
+        customDomains: [
+          {
+            name: dnsRecordsModule.outputs.apiAppFqdn
+            bindingType: shouldBindManagedCertificate ? 'Disabled' : 'SniEnabled'
+            certificateId: shouldBindManagedCertificate ? null : appsEnvironment::apiCertificate.id
+          }
+        ]
+        corsPolicy: {
+          allowedOrigins: apiAllowedOrigins
+        }
+      }
+      registries: [
+        {
+          server: containerRegistryName
+          username: containerRegistryUsername
+          passwordSecretRef: 'container-registry-password'
+        }
+      ]
+      secrets: [
+        {
+          name: 'container-registry-password'
+          identity: sharedIdentity.id
+          keyVaultUrl: 'https://${keyVaultName}${environment().suffixes.keyvaultDns}/secrets/container-registry-password'
+        }
+      ]
+    }
+    template: {
+      revisionSuffix: replace(apiImageTag, '.', '-')
+      containers: [
+        {
+          name: 'api'
+          image: '${containerRegistryName}/${apiImageRepository}:${apiImageTag}'
+          resources: {
+            cpu: json('0.25')
+            memory: '0.5Gi'
+          }
+          env: [
+            {
+              name: 'ASPNETCORE_ENVIRONMENT'
+              value: appEnv
+            }
+            {
+              name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+              value: applicationInsightsConnectionString
+            }
+          ]
+        }
+      ]
+      scale: {
+        minReplicas: 1
+        maxReplicas: 3
+        rules: [
+          {
+            name: 'http-scale-rule'
+            http: {
+              metadata: {
+                concurrentRequests: '20'
+              }
+            }
+          }
+        ]
+      }
+    }
   }
 }
