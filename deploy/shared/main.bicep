@@ -171,6 +171,38 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   }
 }
 
+// app configuration
+resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-09-01-preview' = {
+  name: '${workload}-shared-ac'
+  location: location
+  tags: tags
+  sku: {
+    name: 'Free'
+  }
+  properties: {
+    disableLocalAuth: true
+    dataPlaneProxy: {
+      authenticationMode: 'Pass-through'
+    }
+  }
+
+  resource authenticationInstanceKeyValue 'keyValues' = {
+    name: 'EmailSender:Endpoint'
+    properties: {
+      value: communicationServices.properties.hostName
+      contentType: 'text/plain'
+    }
+  }
+
+  resource authenticationTenantIdKeyValue 'keyValues' = {
+    name: 'EmailSender:SenderAddress'
+    properties: {
+      value: 'no-reply@notify.${dnsZoneName}'
+      contentType: 'text/plain'
+    }
+  }
+}
+
 // managed identity
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
   name: '${workload}-${category}-id'
@@ -185,5 +217,7 @@ module roleAssignments './roleAssignments.bicep' = {
     keyVaultName: keyVault.name
     keyVaultAdministrators: adminPrincipalIds
     keyVaultSecretsUsers: [managedIdentity.properties.principalId]
+    appConfigurationName: appConfiguration.name
+    configurationDataOwners: adminPrincipalIds
   }
 }
