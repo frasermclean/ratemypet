@@ -130,3 +130,30 @@ module appConfigModule 'appConfig.bicep' = {
     storageAccountBlobEndpoint: storageModule.outputs.blobEndpoint
   }
 }
+
+// role assignments
+module roleAssignmentsModule 'roleAssignments.bicep' = {
+  name: 'roleAssignments'
+  params: {
+    adminGroupObjectId: adminGroupObjectId
+    apiAppPrincipalId: containerAppsModule.outputs.apiAppPrincipalId
+    storageAccountName: storageModule.outputs.accountName
+    applicationInsightsName: appInsightsModule.outputs.applicationInsightsName
+  }
+}
+
+// shared resource role assignments
+module sharedRoleAssignmentsModule '../shared/roleAssignments.bicep' = {
+  name: 'roleAssignments-${appEnv}'
+  scope: resourceGroup(sharedResourceGroup)
+  params: {
+    keyVaultName: keyVaultName
+    keyVaultSecretsUsers: [
+      containerAppsModule.outputs.apiAppPrincipalId
+    ]
+    appConfigurationName: appConfigurationName
+    configurationDataReaders: [
+      containerAppsModule.outputs.apiAppPrincipalId
+    ]
+  }
+}
