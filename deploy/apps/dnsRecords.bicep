@@ -5,13 +5,19 @@ targetScope = 'resourceGroup'
 param appEnv string
 
 @description('Domain name')
-param domainName string
+param domainName string = 'ratemy.pet'
 
 @description('Resource ID of the static web app')
-param swaResourceId string
+param swaResourceId string = ''
 
 @description('Default hostname of the static web app')
 param swaDefaultHostname string = ''
+
+@description('Default hostname of the API app')
+param apiAppDefaultHostname string = ''
+
+@description('Container App Environment domain verification ID')
+param caeDomainVerificationId string = ''
 
 resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' existing = {
   name: domainName
@@ -46,6 +52,28 @@ resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' existing = {
       CNAMERecord: {
         cname: swaDefaultHostname
       }
+    }
+  }
+
+  // API app CNAME record
+  resource apiAppCnameRecord 'CNAME' = if (!empty(apiAppDefaultHostname)) {
+    name: appEnv == 'prod' ? 'api' : 'api.${appEnv}'
+    properties: {
+      TTL: 3600
+      CNAMERecord: {
+        cname: apiAppDefaultHostname
+      }
+    }
+  }
+
+  // API app TXT verification record
+  resource apiAppTxtRecord 'TXT' = if (!empty(caeDomainVerificationId)) {
+    name: appEnv == 'prod' ? 'asuid.api' : 'asuid.api.${appEnv}'
+    properties: {
+      TTL: 3600
+      TXTRecords: [
+        { value: [caeDomainVerificationId] }
+      ]
     }
   }
 }

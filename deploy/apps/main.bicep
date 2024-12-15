@@ -79,3 +79,17 @@ module appInsightsModule 'appInsights.bicep' = {
     actionGroupShortName: 'RMP - ${appEnv}'
   }
 }
+
+// container apps
+module containerAppsModule 'containerApps.bicep' = {
+  name: 'containerApps'
+  params: {
+    workload: workload
+    appEnv: appEnv
+    location: location
+    tags: tags
+    domainName: domainName
+    sharedResourceGroup: sharedResourceGroup
+    logAnalyticsWorkspaceId: appInsightsModule.outputs.logAnalyticsWorkspaceId
+  }
+}
