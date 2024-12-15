@@ -18,6 +18,9 @@ param sharedResourceGroup string
 @description('Name of the Azure Key Vault instance')
 param keyVaultName string
 
+@description('Name of the Azure App Configuration instance')
+param appConfigurationName string
+
 @description('Application administrator group name')
 param adminGroupName string
 
@@ -113,5 +116,17 @@ module containerAppsModule 'containerApps.bicep' = {
     containerRegistryName: containerRegistryName
     containerRegistryUsername: containerRegistryUsername
     keyVaultName: keyVaultName
+  }
+}
+
+// app configuration
+module appConfigModule 'appConfig.bicep' = {
+  name: 'appConfig-${appEnv}'
+  scope: resourceGroup(sharedResourceGroup)
+  params: {
+    appEnv: appEnv
+    appConfigurationName: appConfigurationName
+    databaseConnectionString: databaseModule.outputs.connectionString
+    storageAccountBlobEndpoint: storageModule.outputs.blobEndpoint
   }
 }

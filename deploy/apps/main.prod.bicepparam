@@ -8,6 +8,7 @@ param domainName = 'ratemy.pet'
 // shared resources
 param sharedResourceGroup = 'ratemypet-shared-rg'
 param keyVaultName = 'ratemypet-shared-kv'
+param appConfigurationName = 'ratemypet-shared-ac'
 
 // admin group
 param adminGroupName = 'Rate My Pet Administrators'
