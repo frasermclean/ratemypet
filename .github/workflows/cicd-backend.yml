@@ -59,6 +59,7 @@ jobs:
       # Calculate next version
       - name: Calculate next version
         uses: anothrNick/github-tag-action@v1
+        if: github.event_name != 'pull_request'
         id: calc_tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
