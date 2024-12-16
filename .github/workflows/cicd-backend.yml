@@ -18,15 +18,24 @@ on:
       - synchronize
       - reopened
 
+env:
+  CONTAINER_REGISTRY: ghcr.io
+  API_IMAGE_REPOSITORY: frasermclean/ratemypet-api
+
 jobs:
   build:
     name: Build application
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     env:
       BUILD_CONFIGURATION: Release
     defaults:
       run:
         working-directory: ${{ github.workspace }}/backend
+    outputs:
+      versionTag: ${{ steps.calc_tag.outputs.new_tag }}
 
     steps:
       # Checkout the repository
@@ -47,6 +56,36 @@ jobs:
       - name: Build solution
         run: dotnet build --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
 
+      # Calculate next version
+      - name: Calculate next version
+        uses: anothrNick/github-tag-action@v1
+        id: calc_tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          RELEASE_BRANCHES: main
+          DRY_RUN: true
+
+      # Login to GitHub Container Registry
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        if: github.event_name != 'pull_request'
+        with:
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and push API image
+      - name: Build and push API image
+        if: github.event_name != 'pull_request'
+        run: >-
+          dotnet publish src/Api/Api.csproj
+          --configuration ${{ env.BUILD_CONFIGURATION }}
+          -p:PublishProfile=DefaultContainer
+          -p:Version=${{ steps.calc_tag.outputs.new_tag }}
+          -p:ContainerRegistry=${{ env.CONTAINER_REGISTRY }}
+          -p:ContainerRepository=${{ env.API_IMAGE_REPOSITORY }}
+
   deploy:
     name: Deploy application
     if: github.event_name != 'pull_request'
@@ -57,8 +96,6 @@ jobs:
       contents: write
       id-token: write
       packages: write
-    env:
-      CONTAINER_REGISTRY: ghcr.io
     steps:
       # Checkout the repository
       - name: Checkout repository
@@ -72,47 +109,11 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # Login to GitHub Container Registry
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        if: github.event_name != 'pull_request'
-        with:
-          registry: ${{ env.CONTAINER_REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # Set up QEMU and Buildx
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # Calculate next version
-      - name: Calculate next version
-        uses: anothrNick/github-tag-action@v1
-        id: calc_tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: patch
-          WITH_V: true
-          DRY_RUN: true
-
-      # Build and push image
-      - name: Build and push image
-        uses: docker/build-push-action@v6
-        with:
-          context: ${{ github.workspace }}/backend
-          file: api.Dockerfile
-          tags: >-
-            ${{ env.CONTAINER_REGISTRY }}/${{ vars.API_REPOSITORY_NAME }}:latest,
-            ${{ env.CONTAINER_REGISTRY }}/${{ vars.API_REPOSITORY_NAME }}:${{ steps.calc_tag.outputs.new_tag }}
-          push: true
-
       # Deploy Container App
       - name: Deploy Container App
         uses: azure/container-apps-deploy-action@v1
         with:
-          imageToDeploy: ${{ env.CONTAINER_REGISTRY }}/${{ vars.API_REPOSITORY_NAME }}:${{ steps.calc_tag.outputs.new_tag }}
+          imageToDeploy: ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ needs.build.outputs.versionTag }}
           containerAppName: ${{ vars.API_CONTAINER_APP_NAME }}
           resourceGroup: ${{ vars.RESOURCE_GROUP }}
 
@@ -121,5 +122,4 @@ jobs:
         uses: anothrNick/github-tag-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: patch
-          WITH_V: true
+          CUSTOM_TAG: ${{ needs.build.outputs.versionTag }}
