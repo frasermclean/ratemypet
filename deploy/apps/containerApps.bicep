@@ -162,7 +162,7 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
     template: {
       containers: [
         {
-          name: 'api'
+          name: '${workload}-api'
           image: '${containerRegistryName}/${apiImageRepository}:${apiImageTag}'
           resources: {
             cpu: json('0.25')
