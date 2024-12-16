@@ -208,6 +208,15 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-
   name: '${workload}-${category}-id'
   location: location
   tags: tags
+
+  resource mainBranchCredentials 'federatedIdentityCredentials' = {
+    name: 'main-creds'
+    properties: {
+      issuer: 'https://token.actions.githubusercontent.com'
+      audiences: ['api://AzureADTokenExchange']
+      subject: 'repo:frasermclean/ratemypet:ref:refs/heads/main'
+    }
+  }
 }
 
 // role assignments

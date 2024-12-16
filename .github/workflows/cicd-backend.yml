@@ -58,6 +58,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
           RELEASE_BRANCHES: main
+          DRY_RUN: true
 
       # Login to GitHub Container Registry
       - name: Login to GitHub Container Registry
@@ -77,4 +78,17 @@ jobs:
           -p:PublishProfile=DefaultContainer
           -p:Version=${{ steps.tag_commit.outputs.new_tag }}
           -p:ContainerRegistry=ghcr.io
-          -p:ContainerRepository=${{ vars.API_REPOSITORY_NAME}}
+          -p:ContainerRepository=${{ vars.API_REPOSITORY_NAME }}
+
+  deploy:
+    name: Deploy application
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      # Login to Azure
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
