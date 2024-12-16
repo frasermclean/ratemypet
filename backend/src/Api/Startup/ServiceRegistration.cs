@@ -135,10 +135,10 @@ public static class ServiceRegistration
         {
             options.AddDefaultPolicy(policyBuilder => policyBuilder
                 .WithOrigins(configuration["Frontend:BaseUrl"]!)
-                .AllowAnyMethod()
+                .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .AllowAnyHeader()
-                .AllowCredentials()
                 .WithExposedHeaders("Location")
+                .SetPreflightMaxAge(TimeSpan.FromMinutes(10))
             );
         });
 
