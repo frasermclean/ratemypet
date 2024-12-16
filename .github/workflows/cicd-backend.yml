@@ -104,7 +104,7 @@ jobs:
           context: ${{ github.workspace }}/backend
           file: api.Dockerfile
           tags: >-
-            ${{ env.CONTAINER_REGISTRY }}/${{ vars.API_REPOSITORY_NAME }}:latest
+            ${{ env.CONTAINER_REGISTRY }}/${{ vars.API_REPOSITORY_NAME }}:latest,
             ${{ env.CONTAINER_REGISTRY }}/${{ vars.API_REPOSITORY_NAME }}:${{ steps.calc_tag.outputs.new_tag }}
           push: true
 
