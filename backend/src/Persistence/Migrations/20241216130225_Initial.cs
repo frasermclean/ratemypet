@@ -48,10 +48,10 @@ namespace RateMyPet.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LastSeenUtc = table.Column<DateTime>(type: "datetime2(2)", precision: 2, nullable: true),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -288,7 +288,7 @@ namespace RateMyPet.Persistence.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LastSeenUtc", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("fb8ad061-3a62-45f9-2202-08dd15f6fc85"), 0, "initial", "dev@frasermclean.com", true, null, false, null, "DEV@FRASERMCLEAN.COM", "FRASERMCLEAN", null, null, false, "initial", false, "frasermclean" });
+                values: new object[] { new Guid("fb8ad061-3a62-45f9-2202-08dd15f6fc85"), 0, "591b07b3-192b-410c-b31a-063163d5dc06", "dev@frasermclean.com", true, null, false, null, "DEV@FRASERMCLEAN.COM", "FRASERMCLEAN", "AQAAAAIAAYagAAAAEBoXY3pqPk5/R8T+lWoMQvgHwVaoG3hT+R8xD1iwrLk8S6Xy4F1vJbFEx6XQLShF5w==", null, false, "SECHFYM7WURIXXX2FGC33PN3RWDOU4YD", false, "frasermclean" });
 
             migrationBuilder.InsertData(
                 table: "RoleClaims",
@@ -375,15 +375,13 @@ namespace RateMyPet.Persistence.Migrations
                 name: "IX_Users_NormalizedEmail",
                 table: "Users",
                 column: "NormalizedEmail",
-                unique: true,
-                filter: "[NormalizedEmail] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_NormalizedUserName",
                 table: "Users",
                 column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
+                unique: true);
         }
 
         /// <inheritdoc />

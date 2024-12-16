@@ -1,7 +1,6 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using RateMyPet.Core;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Services;
 using PostsPermissions = RateMyPet.Core.Security.Permissions.Posts;

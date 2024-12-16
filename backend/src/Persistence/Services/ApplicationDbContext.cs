@@ -8,7 +8,7 @@ using RateMyPet.Persistence.Converters;
 namespace RateMyPet.Persistence.Services;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-    : IdentityDbContext<User, Role, Guid>(options)
+    : IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>(options)
 {
     public DbSet<Post> Posts => Set<Post>();
     public DbSet<PostReaction> PostReactions => Set<PostReaction>();
@@ -20,9 +20,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         base.OnModelCreating(modelBuilder);
 
         // rename Identity tables
-        modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("UserClaims");
-        modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("UserTokens");
-        modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("UserLogins");
+        modelBuilder.Entity<UserClaim>().ToTable("UserClaims");
+        modelBuilder.Entity<UserLogin>().ToTable("UserLogins");
+        modelBuilder.Entity<UserToken>().ToTable("UserTokens");
 
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 

@@ -11,6 +11,20 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         builder.ToTable("Users");
 
+        builder.Property(user => user.UserName)
+            .HasMaxLength(User.UserNameMaxLength)
+            .IsRequired();
+
+        builder.Property(user => user.NormalizedUserName)
+            .HasMaxLength(User.UserNameMaxLength)
+            .IsRequired();
+
+        builder.Property(user => user.Email)
+            .IsRequired();
+
+        builder.Property(user => user.NormalizedEmail)
+            .IsRequired();
+
         builder.Property(user => user.LastSeen)
             .HasPrecision(2)
             .HasColumnName("LastSeenUtc");
@@ -21,7 +35,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasMany(user => user.Roles)
             .WithMany(role => role.Users)
-            .UsingEntity<IdentityUserRole<Guid>>();
+            .UsingEntity<UserRole>();
 
         builder.HasIndex(user => user.NormalizedUserName)
             .HasDatabaseName("IX_Users_NormalizedUserName")
@@ -40,8 +54,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 Email = "dev@frasermclean.com",
                 NormalizedEmail = "DEV@FRASERMCLEAN.COM",
                 EmailConfirmed = true,
-                ConcurrencyStamp = "initial",
-                SecurityStamp = "initial"
+                PasswordHash = "AQAAAAIAAYagAAAAEBoXY3pqPk5/R8T+lWoMQvgHwVaoG3hT+R8xD1iwrLk8S6Xy4F1vJbFEx6XQLShF5w==",
+                SecurityStamp = "SECHFYM7WURIXXX2FGC33PN3RWDOU4YD",
+                ConcurrencyStamp = "591b07b3-192b-410c-b31a-063163d5dc06"
             });
     }
 }
