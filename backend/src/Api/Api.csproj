@@ -11,7 +11,7 @@
 
   <PropertyGroup>
     <ContainerRepository>ratemypet-api</ContainerRepository>
-    <ContainerImageTags>v$(Version);latest</ContainerImageTags>
+    <ContainerImageTags>$(Version);latest</ContainerImageTags>
     <ContainerAuthors>Fraser McLean</ContainerAuthors>
     <ContainerDescription>Backend API for the Rate My Pet application.</ContainerDescription>
   </PropertyGroup>
