@@ -27,6 +27,9 @@ param logAnalyticsWorkspaceId string
 @description('Application Insights connection string')
 param applicationInsightsConnectionString string
 
+@description('Name of the Azure App Configuration instance')
+param appConfigurationName string
+
 @description('Name of the container registry')
 param containerRegistryName string
 
@@ -157,7 +160,6 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
       ]
     }
     template: {
-      revisionSuffix: replace(apiImageTag, '.', '-')
       containers: [
         {
           name: 'api'
@@ -170,6 +172,10 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'ASPNETCORE_ENVIRONMENT'
               value: appEnv
+            }
+            {
+              name: 'APP_CONFIG_ENDPOINT'
+              value: 'https://${appConfigurationName}.azconfig.io'
             }
             {
               name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'

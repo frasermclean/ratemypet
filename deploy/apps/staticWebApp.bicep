@@ -82,7 +82,5 @@ module dnsRecordsModule 'dnsRecords.bicep' = {
 
 output staticWebAppName string = staticWebApp.name
 
-output hostnames string[] = [
-  staticWebApp.properties.defaultHostname
-  staticWebApp::customDomain.name
-]
+@description('Hostnames at which the static web app is accessible')
+output hostnames string[] = concat([staticWebApp.properties.defaultHostname], staticWebApp.properties.customDomains)

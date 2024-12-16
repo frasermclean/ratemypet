@@ -7,6 +7,9 @@ param appConfigurationName string
 @description('Application environment')
 param appEnv string
 
+@description('Domain name')
+param domainName string
+
 @description('Storage account blob endpoint to be stored in App Configuration.')
 param storageAccountBlobEndpoint string
 
@@ -28,6 +31,14 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-0
     name: 'Storage:BlobEndpoint$${appEnv}'
     properties: {
       value: storageAccountBlobEndpoint
+      contentType: 'text/plain'
+    }
+  }
+
+  resource frontendBaseUrlKeyValue 'keyValues' = {
+    name: 'Frontend:BaseUrl$${appEnv}'
+    properties: {
+      value: appEnv == 'prod' ? 'https://${domainName}' : 'https://${appEnv}.${domainName}'
       contentType: 'text/plain'
     }
   }
