@@ -18,12 +18,19 @@ param configurationDataOwners array = []
 @description('Array of prinicpal IDs that have read access to the configuration data')
 param configurationDataReaders array = []
 
+@description('Name of the communication and email service')
+param communicationServicesName string = 'ratemypet-shared-acs'
+
+@description('Array of prinicpal IDs that have access to the communication and email service')
+param communicationAndEmailServiceOwners array = []
+
 @description('Mapping of role names to role definition IDs')
 var roleDefinitionIds = {
   KeyVaultAdministrator: '00482a5a-887f-4fb3-b363-3b7fe8e74483'
   KeyVaultSecretsUser: '4633458b-17de-408a-b874-0445c86b69e6'
   AppConfigurationDataOwner: '5ae67dd6-50cb-40e7-96ff-dc2bfa4b606b'
   AppConfiguratonDataReader: '516239f1-63e1-4d78-a4de-a74fb236a071'
+  CommunicationAndEmailServiceOwner: '09976791-48a7-449e-bb21-39d1a415f350'
 }
 
 // existing key vault to assign roles to
@@ -91,6 +98,25 @@ resource configurationDataReaderRoleAssigment 'Microsoft.Authorization/roleAssig
       roleDefinitionId: resourceId(
         'Microsoft.Authorization/roleDefinitions@2022-04-01',
         roleDefinitionIds.AppConfiguratonDataReader
+      )
+    }
+  }
+]
+
+resource communicationServices 'Microsoft.Communication/communicationServices@2023-04-01' existing = {
+  name: communicationServicesName
+}
+
+// communication and email service owner role assignments
+resource communicationAndEmailServiceOwnerRoleAssigment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
+  for principalId in communicationAndEmailServiceOwners: {
+    name: guid(communicationServices.id, roleDefinitionIds.CommunicationAndEmailServiceOwner, principalId)
+    scope: communicationServices
+    properties: {
+      principalId: principalId
+      roleDefinitionId: resourceId(
+        'Microsoft.Authorization/roleDefinitions@2022-04-01',
+        roleDefinitionIds.CommunicationAndEmailServiceOwner
       )
     }
   }

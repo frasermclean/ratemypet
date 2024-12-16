@@ -228,5 +228,7 @@ module roleAssignments './roleAssignments.bicep' = {
     keyVaultSecretsUsers: [managedIdentity.properties.principalId]
     appConfigurationName: appConfiguration.name
     configurationDataOwners: adminPrincipalIds
+    communicationServicesName: communicationServices.name
+    communicationAndEmailServiceOwners: adminPrincipalIds
   }
 }

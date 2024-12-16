@@ -157,5 +157,8 @@ module sharedRoleAssignmentsModule '../shared/roleAssignments.bicep' = {
     configurationDataReaders: [
       containerAppsModule.outputs.apiAppPrincipalId
     ]
+    communicationAndEmailServiceOwners: [
+      containerAppsModule.outputs.apiAppPrincipalId
+    ]
   }
 }
