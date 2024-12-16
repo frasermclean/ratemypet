@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration.AzureAppConfiguration;
+using RateMyPet.Persistence;
 
 namespace RateMyPet.Api.Startup;
 

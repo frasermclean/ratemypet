@@ -29,27 +29,10 @@ public class DeletePostEndpoint(
             return TypedResults.NotFound();
         }
 
-        await DeleteImageBlobAsync(post.Image.BlobName, cancellationToken);
-        await RemoveEntityAsync(post, cancellationToken);
-
-        return TypedResults.NoContent();
-    }
-
-    private async Task DeleteImageBlobAsync(string blobName, CancellationToken cancellationToken)
-    {
-        await blobContainerManager.DeleteBlobAsync(blobName, cancellationToken);
-        Logger.LogInformation("Deleted image blob {BlobName}", blobName);
-    }
-
-    private async Task RemoveEntityAsync(Post post, CancellationToken cancellationToken)
-    {
-        var deletedReactionCount = await dbContext.PostReactions.Where(reaction => reaction.Post.Id == post.Id)
-            .ExecuteDeleteAsync(cancellationToken);
-        Logger.LogInformation("Deleted {DeletedReactionCount} reactions for post {PostId}", deletedReactionCount,
-            post.Id);
-
         dbContext.Posts.Remove(post);
         await dbContext.SaveChangesAsync(cancellationToken);
         Logger.LogInformation("Deleted post {PostId}", post.Id);
+
+        return TypedResults.NoContent();
     }
 }

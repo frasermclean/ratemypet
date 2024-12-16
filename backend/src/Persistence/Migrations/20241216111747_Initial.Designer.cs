@@ -12,8 +12,8 @@ using RateMyPet.Persistence.Services;
 namespace RateMyPet.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241205121423_AddRolesData")]
-    partial class AddRolesData
+    [Migration("20241216111747_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -130,6 +130,18 @@ namespace RateMyPet.Persistence.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("fb8ad061-3a62-45f9-2202-08dd15f6fc85"),
+                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
+                        },
+                        new
+                        {
+                            UserId = new Guid("fb8ad061-3a62-45f9-2202-08dd15f6fc85"),
+                            RoleId = new Guid("8e71eb35-2194-495b-b0e8-8690ebe7f918")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
@@ -167,6 +179,9 @@ namespace RateMyPet.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsProcessed")
+                        .HasColumnType("bit");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -219,7 +234,7 @@ namespace RateMyPet.Persistence.Migrations
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("PostId")
+                    b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("RowVersion")
@@ -385,6 +400,11 @@ namespace RateMyPet.Persistence.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("LastSeen")
+                        .HasPrecision(2)
+                        .HasColumnType("datetime2(2)")
+                        .HasColumnName("LastSeenUtc");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -437,6 +457,24 @@ namespace RateMyPet.Persistence.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("fb8ad061-3a62-45f9-2202-08dd15f6fc85"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "initial",
+                            Email = "dev@frasermclean.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "DEV@FRASERMCLEAN.COM",
+                            NormalizedUserName = "FRASERMCLEAN",
+                            PhoneNumberConfirmed = false,
+                            RowVersion = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 },
+                            SecurityStamp = "initial",
+                            TwoFactorEnabled = false,
+                            UserName = "frasermclean"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -499,46 +537,9 @@ namespace RateMyPet.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("RateMyPet.Core.User", "User")
-                        .WithMany("Posts")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsOne("RateMyPet.Core.PostImage", "Image", b1 =>
-                        {
-                            b1.Property<Guid>("PostId")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("BlobName")
-                                .IsRequired()
-                                .HasMaxLength(40)
-                                .HasColumnType("nvarchar(40)")
-                                .HasColumnName("ImageBlobName");
-
-                            b1.Property<string>("ContentType")
-                                .IsRequired()
-                                .HasMaxLength(25)
-                                .HasColumnType("nvarchar(25)")
-                                .HasColumnName("ImageContentType");
-
-                            b1.Property<int>("Height")
-                                .HasColumnType("int")
-                                .HasColumnName("ImageHeight");
-
-                            b1.Property<int>("Width")
-                                .HasColumnType("int")
-                                .HasColumnName("ImageWidth");
-
-                            b1.HasKey("PostId");
-
-                            b1.ToTable("Posts");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PostId");
-                        });
-
-                    b.Navigation("Image")
                         .IsRequired();
 
                     b.Navigation("Species");
@@ -549,20 +550,24 @@ namespace RateMyPet.Persistence.Migrations
             modelBuilder.Entity("RateMyPet.Core.PostComment", b =>
                 {
                     b.HasOne("RateMyPet.Core.PostComment", "Parent")
-                        .WithMany("Children")
+                        .WithMany()
                         .HasForeignKey("ParentId");
 
-                    b.HasOne("RateMyPet.Core.Post", null)
+                    b.HasOne("RateMyPet.Core.Post", "Post")
                         .WithMany("Comments")
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RateMyPet.Core.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Parent");
+
+                    b.Navigation("Post");
 
                     b.Navigation("User");
                 });
@@ -572,11 +577,11 @@ namespace RateMyPet.Persistence.Migrations
                     b.HasOne("RateMyPet.Core.Post", "Post")
                         .WithMany("Reactions")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("RateMyPet.Core.User", "User")
-                        .WithMany("PostReactions")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -593,20 +598,8 @@ namespace RateMyPet.Persistence.Migrations
                     b.Navigation("Reactions");
                 });
 
-            modelBuilder.Entity("RateMyPet.Core.PostComment", b =>
-                {
-                    b.Navigation("Children");
-                });
-
             modelBuilder.Entity("RateMyPet.Core.Species", b =>
                 {
-                    b.Navigation("Posts");
-                });
-
-            modelBuilder.Entity("RateMyPet.Core.User", b =>
-                {
-                    b.Navigation("PostReactions");
-
                     b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618

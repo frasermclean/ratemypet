@@ -26,8 +26,9 @@ public class AddPostCommentEndpoint(ApplicationDbContext dbContext)
 
         var comment = new PostComment
         {
-            Content = request.Content,
+            Post = post,
             User = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken),
+            Content = request.Content,
             Parent = request.ParentId is not null
                 ? await dbContext.PostComments.FirstAsync(c => c.Id == request.ParentId, cancellationToken)
                 : null

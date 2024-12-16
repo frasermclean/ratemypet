@@ -1,7 +1,6 @@
-using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RateMyPet.Jobs.Startup;
 
 namespace RateMyPet.Jobs;
 
@@ -9,12 +8,11 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        var builder = FunctionsApplication.CreateBuilder(args);
+        var host = FunctionsApplication.CreateBuilder(args)
+            .RegisterServices()
+            .Build();
 
-        builder.Services
-            .AddApplicationInsightsTelemetryWorkerService()
-            .ConfigureFunctionsApplicationInsights();
+        host.Run();
 
-        builder.Build().Run();
     }
 }

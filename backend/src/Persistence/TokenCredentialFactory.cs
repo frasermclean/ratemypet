@@ -1,7 +1,7 @@
 ﻿using Azure.Core;
 using Azure.Identity;
 
-namespace RateMyPet.Api.Startup;
+namespace RateMyPet.Persistence;
 
 public static class TokenCredentialFactory
 {

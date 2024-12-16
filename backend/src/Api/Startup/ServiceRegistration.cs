@@ -81,13 +81,6 @@ public static class ServiceRegistration
             builder.UseSqlServer(connectionString);
         });
 
-        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.OriginalImages, (provider, _) =>
-        {
-            var containerClient = provider.GetRequiredService<BlobServiceClient>()
-                .GetBlobContainerClient(BlobContainerNames.OriginalImages);
-            return new BlobContainerManager(containerClient);
-        });
-
         services.AddAzureClients(factoryBuilder =>
         {
             factoryBuilder.AddBlobServiceClient(new Uri(configuration["Storage:BlobEndpoint"]!));
@@ -95,6 +88,14 @@ public static class ServiceRegistration
             factoryBuilder.UseCredential(TokenCredentialFactory.Create());
             factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
         });
+
+        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.OriginalImages, (provider, _) =>
+            new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
+                .GetBlobContainerClient(BlobContainerNames.OriginalImages)));
+
+        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.PostImages, (provider, _) =>
+            new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
+                .GetBlobContainerClient(BlobContainerNames.PostImages)));
 
         return services;
     }
