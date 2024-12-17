@@ -32,6 +32,8 @@ public class DeletePostEndpoint(
         await dbContext.SaveChangesAsync(cancellationToken);
         Logger.LogInformation("Deleted post {PostId}", post.Id);
 
+        await blobContainerManager.DeleteBlobAsync(request.PostId.ToString(), cancellationToken);
+
         return TypedResults.NoContent();
     }
 }
