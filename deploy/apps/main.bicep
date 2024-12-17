@@ -146,6 +146,7 @@ module appConfigModule 'appConfig.bicep' = {
     domainName: domainName
     databaseConnectionString: databaseModule.outputs.connectionString
     storageAccountBlobEndpoint: storageModule.outputs.blobEndpoint
+    storageAccountQueueEndpoint: storageModule.outputs.queueEndpoint
   }
 }
 

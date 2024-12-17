@@ -45,6 +45,18 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
       name: 'original-images'
     }
   }
+
+  resource queueServices 'queueServices' = {
+    name: 'default'
+
+    resource registerConfirmationQueue 'queues' = {
+      name: 'register-confirmation'
+    }
+
+    resource forgotPasswordQueue 'queues' = {
+      name: 'forgot-password'
+    }
+  }
 }
 
 @description('Name of the storage account')
