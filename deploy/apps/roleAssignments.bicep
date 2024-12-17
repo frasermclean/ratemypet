@@ -6,6 +6,9 @@ param adminGroupObjectId string
 @description('Prinicpal id of the API application managed identity')
 param apiAppPrincipalId string
 
+@description('Prinicpal id of the jobs application managed identity')
+param jobsAppPrincipalId string
+
 @description('The name of the storage account to grant access to')
 param storageAccountName string
 
@@ -21,8 +24,10 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
 }
 
 var roleIds = {
+  storageAccountContributor: '17d1049b-9a84-46fb-8f53-869881c3d3ab'
   storageBlobDataOwner: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
   storageBlobDataContributor: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+  storageQueueDataContributor: '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
   monitoringMetricsPublisher: '3913510d-42f4-4e42-8a64-420c390055eb'
 }
 
@@ -34,6 +39,22 @@ var storageAccountRoleAssignmentData = [
   {
     principalId: apiAppPrincipalId
     roleId: roleIds.storageBlobDataContributor
+  }
+  {
+    principalId: apiAppPrincipalId
+    roleId: roleIds.storageQueueDataContributor
+  }
+  {
+    principalId: jobsAppPrincipalId
+    roleId: roleIds.storageBlobDataOwner
+  }
+  {
+    principalId: jobsAppPrincipalId
+    roleId: roleIds.storageAccountContributor
+  }
+  {
+    principalId: jobsAppPrincipalId
+    roleId: roleIds.storageQueueDataContributor
   }
 ]
 

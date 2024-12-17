@@ -103,7 +103,7 @@ module dnsRecordsModule 'dnsRecords.bicep' = {
     appEnv: appEnv
     domainName: domainName
     apiAppDefaultHostname: '${apiContainerAppName}.${appsEnvironment.properties.defaultDomain}'
-    caeDomainVerificationId: appsEnvironment.properties.customDomainConfiguration.customDomainVerificationId
+    customDomainVerificationId: appsEnvironment.properties.customDomainConfiguration.customDomainVerificationId
   }
 }
 

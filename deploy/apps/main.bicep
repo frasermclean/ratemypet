@@ -120,6 +120,22 @@ module containerAppsModule 'containerApps.bicep' = {
   }
 }
 
+// jobs function app
+module jobsAppModule './functionApp.bicep' = {
+  name: 'functionApp'
+  params: {
+    workload: workload
+    appEnv: appEnv
+    appName: 'jobs'
+    location: location
+    domainName: domainName
+    sharedResourceGroup: sharedResourceGroup
+    appConfigurationName: appConfigurationName
+    storageAccountName: storageModule.outputs.accountName
+    applicationInsightsConnectionString: appInsightsModule.outputs.connectionString
+  }
+}
+
 // app configuration
 module appConfigModule 'appConfig.bicep' = {
   name: 'appConfig-${appEnv}'
@@ -139,6 +155,7 @@ module roleAssignmentsModule 'roleAssignments.bicep' = {
   params: {
     adminGroupObjectId: adminGroupObjectId
     apiAppPrincipalId: containerAppsModule.outputs.apiAppPrincipalId
+    jobsAppPrincipalId: jobsAppModule.outputs.principalId
     storageAccountName: storageModule.outputs.accountName
     applicationInsightsName: appInsightsModule.outputs.applicationInsightsName
   }
