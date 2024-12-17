@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RateMyPet.Jobs.Options;
+using RateMyPet.Jobs.Services;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Services;
 
@@ -16,15 +18,14 @@ public static class ServiceRegistration
     {
         builder.Services
             .AddApplicationInsightsTelemetryWorkerService()
-            .ConfigureFunctionsApplicationInsights();
-
-        builder.Services.AddPersistence(builder.Configuration);
+            .ConfigureFunctionsApplicationInsights()
+            .AddPersistence(builder.Configuration)
+            .AddJobsServices();
 
         return builder;
     }
 
-    private static IServiceCollection AddPersistence(this IServiceCollection services,
-        ConfigurationManager configuration)
+    private static IServiceCollection AddPersistence(this IServiceCollection services, ConfigurationManager configuration)
     {
         services.AddDbContextFactory<ApplicationDbContext>(builder =>
         {
@@ -32,20 +33,29 @@ public static class ServiceRegistration
             builder.UseSqlServer(connectionString);
         });
 
-        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.PostImages, (provider, _) =>
-        {
-            var containerClient = provider.GetRequiredService<BlobServiceClient>()
-                .GetBlobContainerClient(BlobContainerNames.PostImages);
-            return new BlobContainerManager(containerClient);
-        });
-
         services.AddAzureClients(factoryBuilder =>
         {
+            factoryBuilder.AddEmailClient(new Uri(configuration["Email:AcsEndpoint"]!));
             factoryBuilder.AddBlobServiceClient(new Uri(configuration["Storage:BlobEndpoint"]!));
+            factoryBuilder.AddQueueServiceClient(new Uri(configuration["Storage:QueueEndpoint"]!));
             factoryBuilder.UseCredential(TokenCredentialFactory.Create());
             factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
         });
 
+        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.OriginalImages, (provider, _) =>
+            new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
+                .GetBlobContainerClient(BlobContainerNames.OriginalImages)));
+
+        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.PostImages, (provider, _) =>
+            new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
+                .GetBlobContainerClient(BlobContainerNames.PostImages)));
+
         return services;
+    }
+
+    private static void AddJobsServices(this IServiceCollection services)
+    {
+        services.AddOptions<EmailOptions>().BindConfiguration(EmailOptions.SectionName);
+        services.AddTransient<IEmailSender, EmailSender>();
     }
 }

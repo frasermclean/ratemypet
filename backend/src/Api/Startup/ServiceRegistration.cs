@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using OpenTelemetry.Resources;
-using RateMyPet.Api.Options;
-using RateMyPet.Api.Services;
 using RateMyPet.Core;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Services;
@@ -25,19 +23,7 @@ public static class ServiceRegistration
             .AddIdentity()
             .AddEnvironmentServices(builder.Environment, builder.Configuration)
             .AddFastEndpoints()
-            .AddSingleton<ImageProcessor>();
-
-        builder.Services.AddOptions<ImageProcessorOptions>()
-            .BindConfiguration(ImageProcessorOptions.SectionName)
-            .ValidateDataAnnotations();
-
-        builder.Services.AddOptions<EmailOptions>()
-            .BindConfiguration(EmailOptions.SectionName)
-            .ValidateDataAnnotations();
-
-        builder.Services.AddOptions<FrontendOptions>()
-            .BindConfiguration(FrontendOptions.SectionName)
-            .ValidateDataAnnotations();
+            .AddSingleton<IMessagePublisher, MessagePublisher>();
 
         // open telemetry
         builder.Services.AddOpenTelemetry()
@@ -72,8 +58,7 @@ public static class ServiceRegistration
         return builder;
     }
 
-    private static IServiceCollection AddPersistence(this IServiceCollection services,
-        ConfigurationManager configuration)
+    private static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContextFactory<ApplicationDbContext>(builder =>
         {
@@ -84,7 +69,7 @@ public static class ServiceRegistration
         services.AddAzureClients(factoryBuilder =>
         {
             factoryBuilder.AddBlobServiceClient(new Uri(configuration["Storage:BlobEndpoint"]!));
-            factoryBuilder.AddEmailClient(new Uri(configuration["Email:AcsEndpoint"]!));
+            factoryBuilder.AddQueueServiceClient(new Uri(configuration["Storage:QueueEndpoint"]!));
             factoryBuilder.UseCredential(TokenCredentialFactory.Create());
             factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
         });
@@ -117,8 +102,6 @@ public static class ServiceRegistration
             .AddSignInManager()
             .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<ApplicationDbContext>();
-
-        services.AddTransient<IEmailSender, EmailSender>();
 
         return services;
     }

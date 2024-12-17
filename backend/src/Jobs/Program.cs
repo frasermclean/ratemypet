@@ -9,6 +9,7 @@ public static class Program
     public static void Main(string[] args)
     {
         var host = FunctionsApplication.CreateBuilder(args)
+            .AddAzureAppConfiguration()
             .RegisterServices()
             .Build();
 
