@@ -210,16 +210,16 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
     }
   }
 
-  resource storageBlobServiceUriKeyValue 'keyValues' = {
-    name: 'Storage:BlobServiceUri$dev'
+  resource storageBlobEndpointKeyValue 'keyValues' = {
+    name: 'Storage:BlobEndpoint$dev'
     properties: {
       value: 'https://localhost:10000/devstoreaccount1'
       contentType: 'text/plain'
     }
   }
 
-  resource storageQueueServiceUriKeyValue 'keyValues' = {
-    name: 'Storage:QueueServiceUri$dev'
+  resource storageQueueEndpointKeyValue 'keyValues' = {
+    name: 'Storage:QueueEndpoint$dev'
     properties: {
       value: 'https://localhost:10001/devstoreaccount1'
       contentType: 'text/plain'

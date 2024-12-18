@@ -31,7 +31,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-0
   }
 
   resource storageBlobEndpointKeyValue 'keyValues' = {
-    name: 'Storage:BlobServiceUri$${appEnv}'
+    name: 'Storage:BlobEndpoint$${appEnv}'
     properties: {
       value: storageAccountBlobEndpoint
       contentType: 'text/plain'
@@ -39,7 +39,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-0
   }
 
   resource storageQueueEndpointKeyValue 'keyValues' = {
-    name: 'Storage:QueueServiceUri$${appEnv}'
+    name: 'Storage:QueueEndpoint$${appEnv}'
     properties: {
       value: storageAccountQueueEndpoint
       contentType: 'text/plain'
