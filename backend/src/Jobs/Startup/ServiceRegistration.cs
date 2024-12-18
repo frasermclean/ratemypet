@@ -40,7 +40,7 @@ public static class ServiceRegistration
             var queueEndpoint = configuration["Storage:QueueEndpoint"];
             if (string.IsNullOrEmpty(blobEndpoint) || string.IsNullOrEmpty(queueEndpoint))
             {
-                var connectionString = configuration.GetConnectionString("AzureWebJobsStorage");
+                var connectionString = configuration["AzureWebJobsStorage"];
                 factoryBuilder.AddBlobServiceClient(connectionString);
                 factoryBuilder.AddQueueServiceClient(connectionString);
             }
