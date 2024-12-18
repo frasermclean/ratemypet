@@ -16,7 +16,8 @@ public class HandleForgottenPassword(
     private readonly string? frontendBaseUrl = options.Value.FrontendBaseUrl;
 
     [Function(nameof(HandleForgottenPassword))]
-    public async Task ExecuteAsync([QueueTrigger(QueueNames.ForgotPassword)] ForgottenPasswordMessage message,
+    public async Task ExecuteAsync(
+        [QueueTrigger(QueueNames.ForgotPassword, Connection = "Storage")] ForgottenPasswordMessage message,
         CancellationToken cancellationToken)
     {
         const string subject = "Password reset";
