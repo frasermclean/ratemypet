@@ -13,6 +13,9 @@ param domainName string
 @description('Storage account blob endpoint to be stored in App Configuration.')
 param storageAccountBlobEndpoint string
 
+@description('Storage account queue endpoint to be stored in App Configuration.')
+param storageAccountQueueEndpoint string
+
 @description('Database connection string to be stored in App Configuration.')
 param databaseConnectionString string
 
@@ -27,7 +30,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-0
     }
   }
 
-  resource blobStorageConnectionStringKeyValue 'keyValues' = {
+  resource storageBlobEndpointKeyValue 'keyValues' = {
     name: 'Storage:BlobEndpoint$${appEnv}'
     properties: {
       value: storageAccountBlobEndpoint
@@ -35,8 +38,16 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-0
     }
   }
 
-  resource frontendBaseUrlKeyValue 'keyValues' = {
-    name: 'Frontend:BaseUrl$${appEnv}'
+  resource storageQueueEndpointKeyValue 'keyValues' = {
+    name: 'Storage:QueueEndpoint$${appEnv}'
+    properties: {
+      value: storageAccountQueueEndpoint
+      contentType: 'text/plain'
+    }
+  }
+
+  resource emailFrontendBaseUrlKeyValue 'keyValues' = {
+    name: 'Email:FrontendBaseUrl$${appEnv}'
     properties: {
       value: appEnv == 'prod' ? 'https://${domainName}' : 'https://${appEnv}.${domainName}'
       contentType: 'text/plain'

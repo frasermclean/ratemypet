@@ -12,8 +12,8 @@ using RateMyPet.Persistence.Services;
 namespace RateMyPet.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241205121423_AddRolesData")]
-    partial class AddRolesData
+    [Migration("20241216130225_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,132 +24,6 @@ namespace RateMyPet.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("RoleClaims", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ClaimType = "Permissions",
-                            ClaimValue = "Posts.Add",
-                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ClaimType = "Permissions",
-                            ClaimValue = "Posts.Edit.Owned",
-                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ClaimType = "Permissions",
-                            ClaimValue = "Posts.Delete.Owned",
-                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
-                        });
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("LoginProvider", "ProviderKey");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserLogins", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("UserRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId", "LoginProvider", "Name");
-
-                    b.ToTable("UserTokens", (string)null);
-                });
 
             modelBuilder.Entity("RateMyPet.Core.Post", b =>
                 {
@@ -167,6 +41,9 @@ namespace RateMyPet.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsProcessed")
+                        .HasColumnType("bit");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -219,7 +96,7 @@ namespace RateMyPet.Persistence.Migrations
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("PostId")
+                    b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("RowVersion")
@@ -321,6 +198,53 @@ namespace RateMyPet.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("RateMyPet.Core.RoleClaim", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("RoleClaims", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ClaimType = "Permissions",
+                            ClaimValue = "Posts.Add",
+                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ClaimType = "Permissions",
+                            ClaimValue = "Posts.Edit.Owned",
+                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ClaimType = "Permissions",
+                            ClaimValue = "Posts.Delete.Owned",
+                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
+                        });
+                });
+
             modelBuilder.Entity("RateMyPet.Core.Species", b =>
                 {
                     b.Property<int>("Id")
@@ -379,11 +303,17 @@ namespace RateMyPet.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastSeen")
+                        .HasPrecision(2)
+                        .HasColumnType("datetime2(2)")
+                        .HasColumnName("LastSeenUtc");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -392,12 +322,14 @@ namespace RateMyPet.Persistence.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NormalizedEmail")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -421,73 +353,131 @@ namespace RateMyPet.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
                         .IsUnique()
-                        .HasDatabaseName("IX_Users_NormalizedEmail")
-                        .HasFilter("[NormalizedEmail] IS NOT NULL");
+                        .HasDatabaseName("IX_Users_NormalizedEmail");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasDatabaseName("IX_Users_NormalizedUserName")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasDatabaseName("IX_Users_NormalizedUserName");
 
                     b.ToTable("Users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("fb8ad061-3a62-45f9-2202-08dd15f6fc85"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "591b07b3-192b-410c-b31a-063163d5dc06",
+                            Email = "dev@frasermclean.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "DEV@FRASERMCLEAN.COM",
+                            NormalizedUserName = "FRASERMCLEAN",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBoXY3pqPk5/R8T+lWoMQvgHwVaoG3hT+R8xD1iwrLk8S6Xy4F1vJbFEx6XQLShF5w==",
+                            PhoneNumberConfirmed = false,
+                            RowVersion = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 },
+                            SecurityStamp = "SECHFYM7WURIXXX2FGC33PN3RWDOU4YD",
+                            TwoFactorEnabled = false,
+                            UserName = "frasermclean"
+                        });
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+            modelBuilder.Entity("RateMyPet.Core.UserClaim", b =>
                 {
-                    b.HasOne("RateMyPet.Core.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+            modelBuilder.Entity("RateMyPet.Core.UserLogin", b =>
                 {
-                    b.HasOne("RateMyPet.Core.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+            modelBuilder.Entity("RateMyPet.Core.UserRole", b =>
                 {
-                    b.HasOne("RateMyPet.Core.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("UserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("fb8ad061-3a62-45f9-2202-08dd15f6fc85"),
+                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
+                        },
+                        new
+                        {
+                            UserId = new Guid("fb8ad061-3a62-45f9-2202-08dd15f6fc85"),
+                            RoleId = new Guid("8e71eb35-2194-495b-b0e8-8690ebe7f918")
+                        });
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+            modelBuilder.Entity("RateMyPet.Core.UserToken", b =>
                 {
-                    b.HasOne("RateMyPet.Core.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasOne("RateMyPet.Core.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
-                {
-                    b.HasOne("RateMyPet.Core.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("UserTokens", (string)null);
                 });
 
             modelBuilder.Entity("RateMyPet.Core.Post", b =>
@@ -499,46 +489,9 @@ namespace RateMyPet.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("RateMyPet.Core.User", "User")
-                        .WithMany("Posts")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsOne("RateMyPet.Core.PostImage", "Image", b1 =>
-                        {
-                            b1.Property<Guid>("PostId")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("BlobName")
-                                .IsRequired()
-                                .HasMaxLength(40)
-                                .HasColumnType("nvarchar(40)")
-                                .HasColumnName("ImageBlobName");
-
-                            b1.Property<string>("ContentType")
-                                .IsRequired()
-                                .HasMaxLength(25)
-                                .HasColumnType("nvarchar(25)")
-                                .HasColumnName("ImageContentType");
-
-                            b1.Property<int>("Height")
-                                .HasColumnType("int")
-                                .HasColumnName("ImageHeight");
-
-                            b1.Property<int>("Width")
-                                .HasColumnType("int")
-                                .HasColumnName("ImageWidth");
-
-                            b1.HasKey("PostId");
-
-                            b1.ToTable("Posts");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PostId");
-                        });
-
-                    b.Navigation("Image")
                         .IsRequired();
 
                     b.Navigation("Species");
@@ -549,20 +502,24 @@ namespace RateMyPet.Persistence.Migrations
             modelBuilder.Entity("RateMyPet.Core.PostComment", b =>
                 {
                     b.HasOne("RateMyPet.Core.PostComment", "Parent")
-                        .WithMany("Children")
+                        .WithMany()
                         .HasForeignKey("ParentId");
 
-                    b.HasOne("RateMyPet.Core.Post", null)
+                    b.HasOne("RateMyPet.Core.Post", "Post")
                         .WithMany("Comments")
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("RateMyPet.Core.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Parent");
+
+                    b.Navigation("Post");
 
                     b.Navigation("User");
                 });
@@ -572,11 +529,11 @@ namespace RateMyPet.Persistence.Migrations
                     b.HasOne("RateMyPet.Core.Post", "Post")
                         .WithMany("Reactions")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("RateMyPet.Core.User", "User")
-                        .WithMany("PostReactions")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -586,6 +543,57 @@ namespace RateMyPet.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("RateMyPet.Core.RoleClaim", b =>
+                {
+                    b.HasOne("RateMyPet.Core.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RateMyPet.Core.UserClaim", b =>
+                {
+                    b.HasOne("RateMyPet.Core.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RateMyPet.Core.UserLogin", b =>
+                {
+                    b.HasOne("RateMyPet.Core.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RateMyPet.Core.UserRole", b =>
+                {
+                    b.HasOne("RateMyPet.Core.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RateMyPet.Core.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RateMyPet.Core.UserToken", b =>
+                {
+                    b.HasOne("RateMyPet.Core.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("RateMyPet.Core.Post", b =>
                 {
                     b.Navigation("Comments");
@@ -593,20 +601,8 @@ namespace RateMyPet.Persistence.Migrations
                     b.Navigation("Reactions");
                 });
 
-            modelBuilder.Entity("RateMyPet.Core.PostComment", b =>
-                {
-                    b.Navigation("Children");
-                });
-
             modelBuilder.Entity("RateMyPet.Core.Species", b =>
                 {
-                    b.Navigation("Posts");
-                });
-
-            modelBuilder.Entity("RateMyPet.Core.User", b =>
-                {
-                    b.Navigation("PostReactions");
-
                     b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618

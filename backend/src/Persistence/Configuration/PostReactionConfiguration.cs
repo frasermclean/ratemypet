@@ -13,10 +13,10 @@ public class PostReactionConfiguration : IEntityTypeConfiguration<PostReaction>
 
         builder.HasOne<Post>(postReaction => postReaction.Post)
             .WithMany(post => post.Reactions)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne<User>(postReaction => postReaction.User)
-            .WithMany(user => user.PostReactions)
+            .WithMany()
             .OnDelete(DeleteBehavior.NoAction);
 
         builder.Property(postReaction => postReaction.Reaction)

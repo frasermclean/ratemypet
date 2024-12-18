@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using OpenTelemetry.Resources;
-using RateMyPet.Api.Options;
-using RateMyPet.Api.Services;
 using RateMyPet.Core;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Services;
@@ -25,19 +23,7 @@ public static class ServiceRegistration
             .AddIdentity()
             .AddEnvironmentServices(builder.Environment, builder.Configuration)
             .AddFastEndpoints()
-            .AddSingleton<ImageProcessor>();
-
-        builder.Services.AddOptions<ImageProcessorOptions>()
-            .BindConfiguration(ImageProcessorOptions.SectionName)
-            .ValidateDataAnnotations();
-
-        builder.Services.AddOptions<EmailOptions>()
-            .BindConfiguration(EmailOptions.SectionName)
-            .ValidateDataAnnotations();
-
-        builder.Services.AddOptions<FrontendOptions>()
-            .BindConfiguration(FrontendOptions.SectionName)
-            .ValidateDataAnnotations();
+            .AddSingleton<IMessagePublisher, MessagePublisher>();
 
         // open telemetry
         builder.Services.AddOpenTelemetry()
@@ -81,20 +67,34 @@ public static class ServiceRegistration
             builder.UseSqlServer(connectionString);
         });
 
-        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.OriginalImages, (provider, _) =>
-        {
-            var containerClient = provider.GetRequiredService<BlobServiceClient>()
-                .GetBlobContainerClient(BlobContainerNames.OriginalImages);
-            return new BlobContainerManager(containerClient);
-        });
-
         services.AddAzureClients(factoryBuilder =>
         {
-            factoryBuilder.AddBlobServiceClient(new Uri(configuration["Storage:BlobEndpoint"]!));
-            factoryBuilder.AddEmailClient(new Uri(configuration["Email:AcsEndpoint"]!));
+            // use connection string if endpoints are not provided
+            var blobEndpoint = configuration["Storage:BlobEndpoint"];
+            var queueEndpoint = configuration["Storage:QueueEndpoint"];
+            if (string.IsNullOrEmpty(blobEndpoint) || string.IsNullOrEmpty(queueEndpoint))
+            {
+                var connectionString = configuration.GetConnectionString("Storage");
+                factoryBuilder.AddBlobServiceClient(connectionString);
+                factoryBuilder.AddQueueServiceClient(connectionString);
+            }
+            else
+            {
+                factoryBuilder.AddBlobServiceClient(new Uri(blobEndpoint));
+                factoryBuilder.AddQueueServiceClient(new Uri(queueEndpoint));
+            }
+
             factoryBuilder.UseCredential(TokenCredentialFactory.Create());
             factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
         });
+
+        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.OriginalImages, (provider, _) =>
+            new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
+                .GetBlobContainerClient(BlobContainerNames.OriginalImages)));
+
+        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.PostImages, (provider, _) =>
+            new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
+                .GetBlobContainerClient(BlobContainerNames.PostImages)));
 
         return services;
     }
@@ -117,8 +117,6 @@ public static class ServiceRegistration
             .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
-        services.AddTransient<IEmailSender, EmailSender>();
-
         return services;
     }
 
@@ -135,10 +133,10 @@ public static class ServiceRegistration
         {
             options.AddDefaultPolicy(policyBuilder => policyBuilder
                 .WithOrigins(configuration["Frontend:BaseUrl"]!)
-                .AllowAnyMethod()
+                .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .AllowAnyHeader()
-                .AllowCredentials()
                 .WithExposedHeaders("Location")
+                .SetPreflightMaxAge(TimeSpan.FromMinutes(10))
             );
         });
 

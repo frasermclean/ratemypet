@@ -16,8 +16,11 @@ param swaDefaultHostname string = ''
 @description('Default hostname of the API app')
 param apiAppDefaultHostname string = ''
 
-@description('Container App Environment domain verification ID')
-param caeDomainVerificationId string = ''
+@description('Default hostname of the jobs app')
+param jobsAppDefaultHostname string = ''
+
+@description('Custom domain verification ID')
+param customDomainVerificationId string = ''
 
 resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' existing = {
   name: domainName
@@ -67,12 +70,34 @@ resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' existing = {
   }
 
   // API app TXT verification record
-  resource apiAppTxtRecord 'TXT' = if (!empty(caeDomainVerificationId)) {
+  resource apiAppTxtRecord 'TXT' = if (!empty(customDomainVerificationId)) {
     name: appEnv == 'prod' ? 'asuid.api' : 'asuid.api.${appEnv}'
     properties: {
       TTL: 3600
       TXTRecords: [
-        { value: [caeDomainVerificationId] }
+        { value: [customDomainVerificationId] }
+      ]
+    }
+  }
+
+  // jobs app CNAME record
+  resource jobsAppCnameRecord 'CNAME' = if (!empty(jobsAppDefaultHostname)) {
+    name: 'jobs.${appEnv}'
+    properties: {
+      TTL: 3600
+      CNAMERecord: {
+        cname: jobsAppDefaultHostname
+      }
+    }
+  }
+
+  // jobs app TXT verification record
+  resource jobsAppTxtRecord 'TXT' = if (!empty(customDomainVerificationId)) {
+    name: 'asuid.jobs.${appEnv}'
+    properties: {
+      TTL: 3600
+      TXTRecords: [
+        { value: [customDomainVerificationId] }
       ]
     }
   }

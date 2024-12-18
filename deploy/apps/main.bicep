@@ -110,13 +110,31 @@ module containerAppsModule 'containerApps.bicep' = {
     sharedResourceGroup: sharedResourceGroup
     logAnalyticsWorkspaceId: appInsightsModule.outputs.logAnalyticsWorkspaceId
     applicationInsightsConnectionString: appInsightsModule.outputs.connectionString
-    appConfigurationName: appConfigurationName
+    databaseConnectionString: databaseModule.outputs.connectionString
+    storageAccountBlobEndpoint: storageModule.outputs.blobEndpoint
+    storageAccountQueueEndpoint: storageModule.outputs.queueEndpoint
     apiImageRepository: apiImageRepository
     apiImageTag: apiImageTag
     apiAllowedOrigins: map(staticWebAppModule.outputs.hostnames, (hostname) => 'https://${hostname}')
     containerRegistryName: containerRegistryName
     containerRegistryUsername: containerRegistryUsername
     keyVaultName: keyVaultName
+  }
+}
+
+// jobs function app
+module jobsAppModule './functionApp.bicep' = {
+  name: 'functionApp'
+  params: {
+    workload: workload
+    appEnv: appEnv
+    appName: 'jobs'
+    location: location
+    domainName: domainName
+    sharedResourceGroup: sharedResourceGroup
+    storageAccountName: storageModule.outputs.accountName
+    databaseConnectionString: databaseModule.outputs.connectionString
+    applicationInsightsConnectionString: appInsightsModule.outputs.connectionString
   }
 }
 
@@ -130,6 +148,7 @@ module appConfigModule 'appConfig.bicep' = {
     domainName: domainName
     databaseConnectionString: databaseModule.outputs.connectionString
     storageAccountBlobEndpoint: storageModule.outputs.blobEndpoint
+    storageAccountQueueEndpoint: storageModule.outputs.queueEndpoint
   }
 }
 
@@ -139,6 +158,7 @@ module roleAssignmentsModule 'roleAssignments.bicep' = {
   params: {
     adminGroupObjectId: adminGroupObjectId
     apiAppPrincipalId: containerAppsModule.outputs.apiAppPrincipalId
+    jobsAppPrincipalId: jobsAppModule.outputs.principalId
     storageAccountName: storageModule.outputs.accountName
     applicationInsightsName: appInsightsModule.outputs.applicationInsightsName
   }
@@ -152,10 +172,15 @@ module sharedRoleAssignmentsModule '../shared/roleAssignments.bicep' = {
     keyVaultName: keyVaultName
     keyVaultSecretsUsers: [
       containerAppsModule.outputs.apiAppPrincipalId
+      jobsAppModule.outputs.principalId
     ]
     appConfigurationName: appConfigurationName
     configurationDataReaders: [
       containerAppsModule.outputs.apiAppPrincipalId
+      jobsAppModule.outputs.principalId
+    ]
+    communicationAndEmailServiceOwners: [
+      jobsAppModule.outputs.principalId
     ]
   }
 }

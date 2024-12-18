@@ -3,22 +3,18 @@ using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
 using RateMyPet.Api.Extensions;
-using RateMyPet.Api.Options;
-using RateMyPet.Api.Services;
 using RateMyPet.Core;
+using RateMyPet.Core.Messages;
+using RateMyPet.Persistence.Services;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
 public class RegisterEndpoint(
     UserManager<User> userManager,
-    IEmailSender emailSender,
-    IOptions<FrontendOptions> frontendOptions)
+    IMessagePublisher messagePublisher)
     : Endpoint<RegisterRequest, Results<Ok, ValidationProblem>>
 {
-    private readonly string frontendBaseUrl = frontendOptions.Value.BaseUrl;
-
     public override void Configure()
     {
         Post("auth/register");
@@ -43,9 +39,13 @@ public class RegisterEndpoint(
 
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
         var confirmationToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
-        var confirmationLink = $"{frontendBaseUrl}/auth/confirm-email?userId={user.Id}&token={confirmationToken}";
 
-        await emailSender.SendConfirmationLinkAsync(user.Email, confirmationLink, cancellationToken);
+        await messagePublisher.PublishAsync(new RegisterConfirmationMessage
+        {
+            EmailAddress = user.Email,
+            UserId = user.Id,
+            ConfirmationToken = confirmationToken
+        }, cancellationToken);
 
         return TypedResults.Ok();
     }

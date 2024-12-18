@@ -28,21 +28,6 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
             .IsRowVersion()
             .HasConversion<byte[]>();
 
-        builder.OwnsOne<PostImage>(post => post.Image, imageBuilder =>
-        {
-            imageBuilder.Property(image => image.Width)
-                .HasColumnName("ImageWidth");
-
-            imageBuilder.Property(image => image.Height)
-                .HasColumnName("ImageHeight");
-
-            imageBuilder.Property(image => image.BlobName)
-                .HasMaxLength(PostImage.BlobNameMaxLength)
-                .HasColumnName("ImageBlobName");
-
-            imageBuilder.Property(image => image.ContentType)
-                .HasMaxLength(PostImage.ContentTypeMaxLength)
-                .HasColumnName("ImageContentType");
-        });
+        builder.HasQueryFilter(post => post.IsProcessed);
     }
 }

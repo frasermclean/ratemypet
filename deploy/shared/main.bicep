@@ -186,7 +186,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
     }
   }
 
-  resource authenticationInstanceKeyValue 'keyValues' = {
+  resource emailAcsEndpointKeyValue 'keyValues' = {
     name: 'Email:AcsEndpoint'
     properties: {
       value: 'https://${communicationServices.properties.hostName}'
@@ -194,10 +194,34 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
     }
   }
 
-  resource authenticationTenantIdKeyValue 'keyValues' = {
+  resource emailSenderAddressKeyValue 'keyValues' = {
     name: 'Email:SenderAddress'
     properties: {
       value: 'no-reply@notify.${dnsZoneName}'
+      contentType: 'text/plain'
+    }
+  }
+
+  resource emailFrontendBaseUrlKeyValue 'keyValues' = {
+    name: 'Email:FrontendBaseUrl$dev'
+    properties: {
+      value: 'http://localhost:4200'
+      contentType: 'text/plain'
+    }
+  }
+
+  resource storageBlobEndpointKeyValue 'keyValues' = {
+    name: 'Storage:BlobEndpoint$dev'
+    properties: {
+      value: 'https://localhost:10000/devstoreaccount1'
+      contentType: 'text/plain'
+    }
+  }
+
+  resource storageQueueEndpointKeyValue 'keyValues' = {
+    name: 'Storage:QueueEndpoint$dev'
+    properties: {
+      value: 'https://localhost:10001/devstoreaccount1'
       contentType: 'text/plain'
     }
   }
@@ -228,5 +252,7 @@ module roleAssignments './roleAssignments.bicep' = {
     keyVaultSecretsUsers: [managedIdentity.properties.principalId]
     appConfigurationName: appConfiguration.name
     configurationDataOwners: adminPrincipalIds
+    communicationServicesName: communicationServices.name
+    communicationAndEmailServiceOwners: adminPrincipalIds
   }
 }

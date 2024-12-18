@@ -1,8 +1,8 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using RateMyPet.Api.Services;
 using RateMyPet.Core;
+using RateMyPet.Core.Messages;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Services;
 using SpeciesModel = RateMyPet.Core.Species;
@@ -12,9 +12,9 @@ namespace RateMyPet.Api.Endpoints.Posts;
 
 public class AddPostEndpoint(
     ApplicationDbContext dbContext,
-    ImageProcessor imageProcessor,
     [FromKeyedServices(BlobContainerNames.OriginalImages)]
-    IBlobContainerManager blobContainerManager)
+    IBlobContainerManager blobContainerManager,
+    IMessagePublisher messagePublisher)
     : Endpoint<AddPostRequest, Results<Created, ErrorResponse>>
 {
     public override void Configure()
@@ -35,30 +35,22 @@ public class AddPostEndpoint(
             return new ErrorResponse(ValidationFailures);
         }
 
-        var imageResult = await ProcessAndUploadImageAsync(request, cancellationToken);
-        var post = await CreatePostEntityAsync(request, species, imageResult, cancellationToken);
+        var post = await CreatePostEntityAsync(request, species, cancellationToken);
+
+        var blobName = $"{post.Id}/{request.Image.FileName}";
+        await blobContainerManager.CreateBlobAsync(blobName, request.Image.OpenReadStream(), request.Image.ContentType,
+            cancellationToken);
+
+        await messagePublisher.PublishAsync(new PostAddedMessage
+        {
+            PostId = post.Id,
+            ImageBlobName = blobName
+        }, cancellationToken);
 
         return TypedResults.Created($"/posts/{post.Id}");
     }
 
-    private async Task<ProcessImageResult> ProcessAndUploadImageAsync(AddPostRequest request,
-        CancellationToken cancellationToken)
-    {
-        var blobName = imageProcessor.GenerateBlobName();
-
-        await using var readStream = request.Image.OpenReadStream();
-        await using var writeStream = await blobContainerManager.OpenWriteStreamAsync(blobName,
-            imageProcessor.ContentType, cancellationToken);
-
-        var result = await imageProcessor.ProcessImageAsync(readStream, writeStream, blobName, cancellationToken);
-
-        Logger.LogInformation("Image processed and uploaded to blob storage, blobName: {BlobName}", blobName);
-
-        return result;
-    }
-
     private async Task<Post> CreatePostEntityAsync(AddPostRequest request, SpeciesModel species,
-        ProcessImageResult imageResult,
         CancellationToken cancellationToken)
     {
         var user = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken);
@@ -67,17 +59,10 @@ public class AddPostEndpoint(
             Title = request.Title,
             Description = request.Description,
             User = user,
-            Species = species,
-            Image = new PostImage
-            {
-                Width = imageResult.Width,
-                Height = imageResult.Height,
-                BlobName = imageResult.BlobName,
-                ContentType = imageResult.ContentType
-            }
+            Species = species
         };
 
-        user.Posts.Add(post);
+        dbContext.Posts.Add(post);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
