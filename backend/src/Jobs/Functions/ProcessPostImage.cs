@@ -19,8 +19,7 @@ public class ProcessPostImage(
 {
     [Function(nameof(ProcessPostImage))]
     public async Task Execute(
-        [BlobTrigger($"{BlobContainerNames.OriginalImages}/{{name}}", Connection = "Storage")]
-        BlobClient blobClient,
+        [BlobTrigger($"{BlobContainerNames.OriginalImages}/{{name}}")] BlobClient blobClient,
         CancellationToken cancellationToken)
     {
         var postId = Guid.Parse(blobClient.Name);

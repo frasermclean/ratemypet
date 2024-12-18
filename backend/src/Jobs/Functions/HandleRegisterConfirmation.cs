@@ -17,8 +17,7 @@ public class HandleRegisterConfirmation(
 
     [Function(nameof(HandleRegisterConfirmation))]
     public async Task ExecuteAsync(
-        [QueueTrigger(QueueNames.RegisterConfirmation, Connection = "Storage")]
-        RegisterConfirmationMessage message,
+        [QueueTrigger(QueueNames.RegisterConfirmation)] RegisterConfirmationMessage message,
         CancellationToken cancellationToken)
     {
         const string subject = "Confirm your email";
