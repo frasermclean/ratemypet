@@ -1,4 +1,4 @@
-﻿namespace RateMyPet.Core.Events;
+﻿namespace RateMyPet.Core.Messages;
 
 public class RegisterConfirmationMessage : IMessage
 {
