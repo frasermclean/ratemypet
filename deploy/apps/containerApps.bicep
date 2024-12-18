@@ -27,8 +27,14 @@ param logAnalyticsWorkspaceId string
 @description('Application Insights connection string')
 param applicationInsightsConnectionString string
 
-@description('Name of the Azure App Configuration instance')
-param appConfigurationName string
+@description('Database connection string')
+param databaseConnectionString string
+
+@description('Storage account blob endpoint to be stored in App Configuration.')
+param storageAccountBlobEndpoint string
+
+@description('Storage account queue endpoint to be stored in App Configuration.')
+param storageAccountQueueEndpoint string
 
 @description('Name of the container registry')
 param containerRegistryName string
@@ -178,12 +184,20 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
               value: appEnv
             }
             {
-              name: 'APP_CONFIG_ENDPOINT'
-              value: 'https://${appConfigurationName}.azconfig.io'
-            }
-            {
               name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
               value: applicationInsightsConnectionString
+            }
+            {
+              name: 'Storage__BlobEndpoint'
+              value: storageAccountBlobEndpoint
+            }
+            {
+              name: 'Storage__QueueEndpoint'
+              value: storageAccountQueueEndpoint
+            }
+            {
+              name: 'ConnectionStrings__Database'
+              value: databaseConnectionString
             }
           ]
         }

@@ -110,7 +110,9 @@ module containerAppsModule 'containerApps.bicep' = {
     sharedResourceGroup: sharedResourceGroup
     logAnalyticsWorkspaceId: appInsightsModule.outputs.logAnalyticsWorkspaceId
     applicationInsightsConnectionString: appInsightsModule.outputs.connectionString
-    appConfigurationName: appConfigurationName
+    databaseConnectionString: databaseModule.outputs.connectionString
+    storageAccountBlobEndpoint: storageModule.outputs.blobEndpoint
+    storageAccountQueueEndpoint: storageModule.outputs.queueEndpoint
     apiImageRepository: apiImageRepository
     apiImageTag: apiImageTag
     apiAllowedOrigins: map(staticWebAppModule.outputs.hostnames, (hostname) => 'https://${hostname}')
