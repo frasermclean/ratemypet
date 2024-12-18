@@ -68,8 +68,8 @@ public static class ServiceRegistration
 
         services.AddAzureClients(factoryBuilder =>
         {
-            factoryBuilder.AddBlobServiceClient(new Uri(configuration["Storage:BlobEndpoint"]!));
-            factoryBuilder.AddQueueServiceClient(new Uri(configuration["Storage:QueueEndpoint"]!));
+            factoryBuilder.AddBlobServiceClient(new Uri(configuration["Storage:BlobServiceUri"]!));
+            factoryBuilder.AddQueueServiceClient(new Uri(configuration["Storage:QueueServiceUri"]!));
             factoryBuilder.UseCredential(TokenCredentialFactory.Create());
             factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
         });
@@ -109,7 +109,7 @@ public static class ServiceRegistration
     private static IServiceCollection AddEnvironmentServices(this IServiceCollection services,
         IWebHostEnvironment environment, ConfigurationManager configuration)
     {
-        if (!environment.IsDevelopment())
+        if (!environment.IsEnvironment("dev"))
         {
             return services;
         }

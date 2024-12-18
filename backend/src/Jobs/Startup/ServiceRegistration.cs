@@ -36,8 +36,8 @@ public static class ServiceRegistration
         services.AddAzureClients(factoryBuilder =>
         {
             factoryBuilder.AddEmailClient(new Uri(configuration["Email:AcsEndpoint"]!));
-            factoryBuilder.AddBlobServiceClient(new Uri(configuration["Storage:BlobEndpoint"]!));
-            factoryBuilder.AddQueueServiceClient(new Uri(configuration["Storage:QueueEndpoint"]!));
+            factoryBuilder.AddBlobServiceClient(new Uri(configuration["Storage:BlobServiceUri"]!));
+            factoryBuilder.AddQueueServiceClient(new Uri(configuration["Storage:QueueServiceUri"]!));
             factoryBuilder.UseCredential(TokenCredentialFactory.Create());
             factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
         });
