@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feature/jobs-azure-functions
     paths:
       - .github/workflows/cicd-backend.yml
       - backend/**
@@ -86,6 +87,23 @@ jobs:
           -p:Version=${{ steps.calc_tag.outputs.new_tag }}
           -p:ContainerRegistry=${{ env.CONTAINER_REGISTRY }}
           -p:ContainerRepository=${{ env.API_IMAGE_REPOSITORY }}
+
+      # Publish jobs project
+      - name: Publish jobs project
+        if: github.event_name != 'pull_request'
+        run: >-
+          dotnet publish src/Adoptrix.Jobs
+          --no-build
+          --configuration ${{ env.BUILD_CONFIGURATION }}
+          --output ${{ github.workspace }}/jobs
+
+      # Upload jobs artifact
+      - name: Upload jobs artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jobs
+          path: ${{ github.workspace }}/jobs
 
   deploy:
     name: Deploy application
