@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
+using RateMyPet.Core.Messages;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Services;
 using SpeciesModel = RateMyPet.Core.Species;
@@ -12,7 +13,8 @@ namespace RateMyPet.Api.Endpoints.Posts;
 public class AddPostEndpoint(
     ApplicationDbContext dbContext,
     [FromKeyedServices(BlobContainerNames.OriginalImages)]
-    IBlobContainerManager blobContainerManager)
+    IBlobContainerManager blobContainerManager,
+    IMessagePublisher messagePublisher)
     : Endpoint<AddPostRequest, Results<Created, ErrorResponse>>
 {
     public override void Configure()
@@ -35,11 +37,15 @@ public class AddPostEndpoint(
 
         var post = await CreatePostEntityAsync(request, species, cancellationToken);
 
-        await blobContainerManager.CreateBlobAsync(
-            blobName: post.Id.ToString(),
-            content: request.Image.OpenReadStream(),
-            contentType: request.Image.ContentType,
-            cancellationToken: cancellationToken);
+        var blobName = $"{post.Id}/{request.Image.FileName}";
+        await blobContainerManager.CreateBlobAsync(blobName, request.Image.OpenReadStream(), request.Image.ContentType,
+            cancellationToken);
+
+        await messagePublisher.PublishAsync(new PostAddedMessage
+        {
+            PostId = post.Id,
+            ImageBlobName = blobName
+        }, cancellationToken);
 
         return TypedResults.Created($"/posts/{post.Id}");
     }

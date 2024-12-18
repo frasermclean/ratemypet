@@ -49,12 +49,16 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   resource queueServices 'queueServices' = {
     name: 'default'
 
-    resource registerConfirmationQueue 'queues' = {
-      name: 'register-confirmation'
-    }
-
     resource forgotPasswordQueue 'queues' = {
       name: 'forgot-password'
+    }
+
+    resource postAddedQueue 'queues' = {
+      name: 'post-added'
+    }
+
+    resource registerConfirmationQueue 'queues' = {
+      name: 'register-confirmation'
     }
   }
 }

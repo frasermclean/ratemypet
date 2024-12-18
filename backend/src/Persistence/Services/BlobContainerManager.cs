@@ -5,6 +5,8 @@ namespace RateMyPet.Persistence.Services;
 
 public interface IBlobContainerManager
 {
+    Task<Stream> OpenReadStreamAsync(string blobName, CancellationToken cancellationToken = default);
+
     Task<Stream> OpenWriteStreamAsync(string blobName, string contentType,
         CancellationToken cancellationToken = default);
 
@@ -16,6 +18,12 @@ public interface IBlobContainerManager
 
 public class BlobContainerManager(BlobContainerClient containerClient) : IBlobContainerManager
 {
+    public Task<Stream> OpenReadStreamAsync(string blobName, CancellationToken cancellationToken = default)
+    {
+        var blobClient = containerClient.GetBlobClient(blobName);
+        return blobClient.OpenReadAsync(cancellationToken: cancellationToken);
+    }
+
     public Task<Stream> OpenWriteStreamAsync(string blobName, string contentType,
         CancellationToken cancellationToken)
     {
