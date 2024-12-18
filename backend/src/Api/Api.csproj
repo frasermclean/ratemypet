@@ -23,7 +23,7 @@
   <ItemGroup>
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.2.0" />
     <PackageReference Include="FastEndpoints" Version="5.32.0" />
-    <PackageReference Include="Gridify.EntityFramework" Version="2.15.1" />
+    <PackageReference Include="Gridify.EntityFramework" Version="2.16.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
