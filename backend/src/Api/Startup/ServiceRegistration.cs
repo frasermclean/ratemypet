@@ -92,8 +92,8 @@ public static class ServiceRegistration
 
     private static IServiceCollection AddIdentity(this IServiceCollection services)
     {
-        services.AddAuthentication(IdentityConstants.BearerScheme)
-            .AddBearerToken(IdentityConstants.BearerScheme);
+        services.AddAuthentication(IdentityConstants.ApplicationScheme)
+            .AddIdentityCookies();
 
         services.AddAuthorization();
 
@@ -107,6 +107,8 @@ public static class ServiceRegistration
             .AddSignInManager()
             .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<ApplicationDbContext>();
+
+        services.ConfigureApplicationCookie(options => options.Cookie.Name = "RateMyPet.Auth");
 
         return services;
     }

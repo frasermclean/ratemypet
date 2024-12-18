@@ -28,7 +28,6 @@ public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> 
             return;
         }
 
-        signInManager.AuthenticationScheme = IdentityConstants.BearerScheme;
         var result = await signInManager.PasswordSignInAsync(user, request.Password, false, false);
         if (!result.Succeeded)
         {
