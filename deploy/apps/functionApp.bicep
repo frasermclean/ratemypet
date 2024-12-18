@@ -21,11 +21,14 @@ param domainName string
 @description('Name of the shared resource group')
 param sharedResourceGroup string
 
-@description('Name of the Azure App Configuration instance')
-param appConfigurationName string
+@description('Name of the Communication Service to use for the function app')
+param communicationServiceName string = 'ratemypet-shared-acs'
 
 @description('Name of the Azure Storage Account to use for the function app')
 param storageAccountName string
+
+@description('Database connection string')
+param databaseConnectionString string
 
 @description('Application Insights connection string')
 param applicationInsightsConnectionString string
@@ -85,16 +88,35 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
           value: storageAccount.name
         }
         {
-          name: 'APP_CONFIG_ENDPOINT'
-          value: 'https://${appConfigurationName}.azconfig.io'
-        }
-        {
-          name: 'APP_ENVIRONMENT'
-          value: appEnv
-        }
-        {
           name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
           value: applicationInsightsConnectionString
+        }
+        {
+          name: 'Storage__BlobEndpoint'
+          value: storageAccount.properties.primaryEndpoints.blob
+        }
+        {
+          name: 'Storage__QueueEndpoint'
+          value: storageAccount.properties.primaryEndpoints.queue
+        }
+        {
+          name: 'Email__AcsEndpoint'
+          value: 'https://${communicationServiceName}.australia.communication.azure.com'
+        }
+        {
+          name: 'Email__FrontendBaseUrl'
+          value: appEnv == 'prod' ? 'https://ratemy.pet' : 'https://${appEnv}.ratemy.pet'
+        }
+        {
+          name: 'Email__SenderAddress'
+          value: 'no-reply@notify.ratemy.pet'
+        }
+      ]
+      connectionStrings: [
+        {
+          name: 'Database'
+          type: 'SQLAzure'
+          connectionString: databaseConnectionString
         }
       ]
       cors: {

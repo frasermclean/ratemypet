@@ -130,8 +130,8 @@ module jobsAppModule './functionApp.bicep' = {
     location: location
     domainName: domainName
     sharedResourceGroup: sharedResourceGroup
-    appConfigurationName: appConfigurationName
     storageAccountName: storageModule.outputs.accountName
+    databaseConnectionString: databaseModule.outputs.connectionString
     applicationInsightsConnectionString: appInsightsModule.outputs.connectionString
   }
 }
