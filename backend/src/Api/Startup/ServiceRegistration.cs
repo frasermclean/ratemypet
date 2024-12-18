@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
-using OpenTelemetry.Resources;
 using RateMyPet.Core;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Services;
@@ -27,15 +26,7 @@ public static class ServiceRegistration
 
         // open telemetry
         builder.Services.AddOpenTelemetry()
-            .UseAzureMonitor(options => options.Credential = TokenCredentialFactory.Create())
-            .ConfigureResource(resourceBuilder =>
-            {
-                resourceBuilder.AddAttributes(new Dictionary<string, object>
-                {
-                    { "service.name", "api" },
-                    { "service.namespace", "backend" }
-                });
-            });
+            .UseAzureMonitor(options => options.Credential = TokenCredentialFactory.Create());
 
         // problem details service
         builder.Services.AddProblemDetails(options =>
