@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feature/jobs-azure-functions
     paths:
       - .github/workflows/cicd-backend.yml
       - backend/**
