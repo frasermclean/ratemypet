@@ -170,13 +170,15 @@ module sharedRoleAssignmentsModule '../shared/roleAssignments.bicep' = {
     keyVaultName: keyVaultName
     keyVaultSecretsUsers: [
       containerAppsModule.outputs.apiAppPrincipalId
+      jobsAppModule.outputs.principalId
     ]
     appConfigurationName: appConfigurationName
     configurationDataReaders: [
       containerAppsModule.outputs.apiAppPrincipalId
+      jobsAppModule.outputs.principalId
     ]
     communicationAndEmailServiceOwners: [
-      containerAppsModule.outputs.apiAppPrincipalId
+      jobsAppModule.outputs.principalId
     ]
   }
 }

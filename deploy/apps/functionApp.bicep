@@ -85,12 +85,12 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
           value: storageAccount.name
         }
         {
-          name: 'AZURE_FUNCTIONS_ENVIRONMENT'
-          value: appEnv
-        }
-        {
           name: 'APP_CONFIG_ENDPOINT'
           value: 'https://${appConfigurationName}.azconfig.io'
+        }
+        {
+          name: 'APP_ENVIRONMENT'
+          value: appEnv
         }
         {
           name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'

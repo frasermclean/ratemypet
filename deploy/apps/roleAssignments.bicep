@@ -75,6 +75,10 @@ var applicationInsightsRoleData = [
     roleId: roleIds.monitoringMetricsPublisher
     principalId: apiAppPrincipalId
   }
+  {
+    roleId: roleIds.monitoringMetricsPublisher
+    principalId: jobsAppPrincipalId
+  }
 ]
 
 // application insights role assignments
