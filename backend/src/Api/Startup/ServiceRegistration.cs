@@ -58,7 +58,8 @@ public static class ServiceRegistration
         return builder;
     }
 
-    private static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddPersistence(this IServiceCollection services,
+        ConfigurationManager configuration)
     {
         services.AddDbContextFactory<ApplicationDbContext>(builder =>
         {
@@ -68,8 +69,21 @@ public static class ServiceRegistration
 
         services.AddAzureClients(factoryBuilder =>
         {
-            factoryBuilder.AddBlobServiceClient(new Uri(configuration["Storage:BlobEndpoint"]!));
-            factoryBuilder.AddQueueServiceClient(new Uri(configuration["Storage:QueueEndpoint"]!));
+            // use connection string if endpoints are not provided
+            var blobEndpoint = configuration["Storage:BlobEndpoint"];
+            var queueEndpoint = configuration["Storage:QueueEndpoint"];
+            if (string.IsNullOrEmpty(blobEndpoint) || string.IsNullOrEmpty(queueEndpoint))
+            {
+                var connectionString = configuration.GetConnectionString("Storage");
+                factoryBuilder.AddBlobServiceClient(connectionString);
+                factoryBuilder.AddQueueServiceClient(connectionString);
+            }
+            else
+            {
+                factoryBuilder.AddBlobServiceClient(new Uri(blobEndpoint));
+                factoryBuilder.AddQueueServiceClient(new Uri(queueEndpoint));
+            }
+
             factoryBuilder.UseCredential(TokenCredentialFactory.Create());
             factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
         });
@@ -109,7 +123,7 @@ public static class ServiceRegistration
     private static IServiceCollection AddEnvironmentServices(this IServiceCollection services,
         IWebHostEnvironment environment, ConfigurationManager configuration)
     {
-        if (!environment.IsEnvironment("dev"))
+        if (!environment.IsDevelopment())
         {
             return services;
         }
