@@ -104,6 +104,7 @@ jobs:
         with:
           name: jobs
           path: ${{ github.workspace }}/jobs
+          include-hidden-files: true
 
   deploy_api:
     name: Deploy API application
