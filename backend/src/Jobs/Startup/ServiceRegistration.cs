@@ -35,9 +35,22 @@ public static class ServiceRegistration
 
         services.AddAzureClients(factoryBuilder =>
         {
+            // use connection string if endpoints are not provided
+            var blobEndpoint = configuration["Storage:BlobEndpoint"];
+            var queueEndpoint = configuration["Storage:QueueEndpoint"];
+            if (string.IsNullOrEmpty(blobEndpoint) || string.IsNullOrEmpty(queueEndpoint))
+            {
+                var connectionString = configuration.GetConnectionString("AzureWebJobsStorage");
+                factoryBuilder.AddBlobServiceClient(connectionString);
+                factoryBuilder.AddQueueServiceClient(connectionString);
+            }
+            else
+            {
+                factoryBuilder.AddBlobServiceClient(new Uri(blobEndpoint));
+                factoryBuilder.AddQueueServiceClient(new Uri(queueEndpoint));
+            }
+
             factoryBuilder.AddEmailClient(new Uri(configuration["Email:AcsEndpoint"]!));
-            factoryBuilder.AddBlobServiceClient(new Uri(configuration["Storage:BlobEndpoint"]!));
-            factoryBuilder.AddQueueServiceClient(new Uri(configuration["Storage:QueueEndpoint"]!));
             factoryBuilder.UseCredential(TokenCredentialFactory.Create());
             factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
         });

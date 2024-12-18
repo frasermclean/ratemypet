@@ -5,11 +5,10 @@
       "commandLineArgs": "--port 7080",
       "launchBrowser": false,
       "environmentVariables": {
-        "APP_CONFIG_ENDPOINT": "https://ratemypet-shared-ac.azconfig.io",
-        "APP_ENVIRONMENT": "dev",
         "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=113d2d85-aeb9-4e81-b6fa-62db294bbaa0;IngestionEndpoint=https://southeastasia-1.in.applicationinsights.azure.com/;LiveEndpoint=https://southeastasia.livediagnostics.monitor.azure.com/;ApplicationId=421044f1-5680-4fa5-8f34-72bbc3353ff3",
         "WEBSITE_CLOUD_ROLENAME": "jobs"
       }
     }
   }
 }
+
