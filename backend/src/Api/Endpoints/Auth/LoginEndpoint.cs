@@ -1,12 +1,13 @@
 ﻿using FastEndpoints;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
-public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> userManager)
-    : Endpoint<LoginRequest>
+public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> userManager, TimeProvider timeProvider)
+    : Endpoint<LoginRequest, Results<Ok<LoginResponse>, UnauthorizedHttpResult>>
 {
     public override void Configure()
     {
@@ -14,7 +15,8 @@ public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> 
         AllowAnonymous();
     }
 
-    public override async Task HandleAsync(LoginRequest request, CancellationToken cancellationToken)
+    public override async Task<Results<Ok<LoginResponse>, UnauthorizedHttpResult>> ExecuteAsync(
+        LoginRequest request, CancellationToken cancellationToken)
     {
         var isEmailAddress = request.EmailOrUserName.IsEmailAddress();
         var user = isEmailAddress
@@ -24,21 +26,28 @@ public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> 
         if (user is null)
         {
             Logger.LogWarning("Could not find user with email or username {EmailOrUserName}", request.EmailOrUserName);
-            await SendUnauthorizedAsync(cancellationToken);
-            return;
+            return TypedResults.Unauthorized();
         }
 
         var result = await signInManager.PasswordSignInAsync(user, request.Password, false, false);
         if (!result.Succeeded)
         {
             Logger.LogError("Failed to log in user {UserName}", user.UserName);
-            await SendUnauthorizedAsync(cancellationToken);
-            return;
+            return TypedResults.Unauthorized();
         }
 
-        user.LastSeen = DateTime.UtcNow;
+        Logger.LogInformation("User {UserName} logged in", user.UserName);
+
+        user.LastSeen = timeProvider.GetUtcNow().DateTime;
         await userManager.UpdateAsync(user);
 
-        Logger.LogInformation("User {UserName} logged in", user.UserName);
+        return TypedResults.Ok(new LoginResponse
+        {
+            Id = user.Id,
+            UserName = user.UserName!,
+            EmailAddress = user.Email!,
+            EmailHash = user.Email.ToSha256Hash(),
+            Roles = await userManager.GetRolesAsync(user)
+        });
     }
 }

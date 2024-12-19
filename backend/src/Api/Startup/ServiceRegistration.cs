@@ -108,7 +108,18 @@ public static class ServiceRegistration
             .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
-        services.ConfigureApplicationCookie(options => options.Cookie.Name = "RateMyPet.Auth");
+
+        services.ConfigureApplicationCookie(options =>
+        {
+            options.Cookie.Name = "RateMyPet.Auth";
+            options.Cookie.SameSite = SameSiteMode.None;
+
+            options.Events.OnRedirectToLogin = context =>
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return Task.CompletedTask;
+            };
+        });
 
         return services;
     }
@@ -128,6 +139,7 @@ public static class ServiceRegistration
                 .WithOrigins(configuration["Frontend:BaseUrl"]!)
                 .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .AllowAnyHeader()
+                .AllowCredentials()
                 .WithExposedHeaders("Location")
                 .SetPreflightMaxAge(TimeSpan.FromMinutes(10))
             );
