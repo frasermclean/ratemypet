@@ -1,7 +1,7 @@
 <button mat-icon-button [matMenuTriggerFor]="menu">
-  @if (currentUser(); as currentUser) {
+  @if (emailHash(); as emailHash) {
   <mat-icon>
-    <app-gravatar [emailHash]="currentUser.emailHash" [size]="24"></app-gravatar>
+    <app-gravatar [emailHash]="emailHash" [size]="24"></app-gravatar>
   </mat-icon>
   }
 </button>

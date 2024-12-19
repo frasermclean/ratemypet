@@ -16,6 +16,6 @@ import { AuthState } from '../../../auth/auth.state';
   styleUrl: './user-menu.component.scss'
 })
 export class UserMenuComponent {
-  currentUser = select(AuthState.currentUser);
+  emailHash = select(AuthState.emailHash);
   logout = dispatch(AuthActions.Logout);
 }

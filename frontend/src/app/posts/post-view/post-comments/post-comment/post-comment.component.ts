@@ -17,8 +17,8 @@ import { PostsActions } from '../../../posts.actions';
 export class PostCommentComponent {
   postId = input.required<string>();
   comment = input.required<PostComment>();
+  userName = select(AuthState.userName);
   deleteComment = dispatch(PostsActions.DeletePostComment);
-  currentUser = select(AuthState.currentUser);
 
   onDelete() {
     this.deleteComment(this.postId(), this.comment().id);

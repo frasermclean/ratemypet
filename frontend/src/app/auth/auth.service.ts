@@ -1,14 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import {
-  AccessTokenResponse,
-  ConfirmEmailRequest,
-  CurrentUserResponse,
-  LoginRequest,
-  RegisterRequest,
-  ResetPasswordRequest
-} from './auth.models';
+import { ConfirmEmailRequest, LoginRequest, LoginResponse, RegisterRequest, ResetPasswordRequest } from './auth.models';
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +11,15 @@ export class AuthService {
   private readonly baseUrl = `${environment.apiBaseUrl}/auth`;
 
   public login(request: LoginRequest) {
-    return this.httpClient.post<AccessTokenResponse>(`${this.baseUrl}/login`, request);
+    return this.httpClient.post<LoginResponse>(`${this.baseUrl}/login`, request);
   }
 
   public logout() {
     return this.httpClient.post(`${this.baseUrl}/logout`, null);
+  }
+
+  public verifyUser() {
+    return this.httpClient.get<LoginResponse>(`${this.baseUrl}/verify-user`);
   }
 
   public register(request: RegisterRequest) {
@@ -31,14 +28,6 @@ export class AuthService {
 
   public confirmEmail(request: ConfirmEmailRequest) {
     return this.httpClient.post(`${this.baseUrl}/confirm-email`, request);
-  }
-
-  public refreshAccessToken(refreshToken: string) {
-    return this.httpClient.post<AccessTokenResponse>(`${this.baseUrl}/refresh-token`, { refreshToken });
-  }
-
-  public getCurrentUser() {
-    return this.httpClient.get<CurrentUserResponse>(`${this.baseUrl}/current-user`);
   }
 
   public forgotPassword(emailAddress: string) {
