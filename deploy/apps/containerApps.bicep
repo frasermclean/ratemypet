@@ -148,6 +148,7 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
         ]
         corsPolicy: {
           allowedOrigins: apiAllowedOrigins
+          allowCredentials: true
           allowedHeaders: ['*']
           allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
           exposeHeaders: ['Location']
