@@ -29,7 +29,7 @@ public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> 
             return TypedResults.Unauthorized();
         }
 
-        var result = await signInManager.PasswordSignInAsync(user, request.Password, false, false);
+        var result = await signInManager.PasswordSignInAsync(user, request.Password, request.RememberMe, false);
         if (!result.Succeeded)
         {
             Logger.LogError("Failed to log in user {UserName}", user.UserName);
