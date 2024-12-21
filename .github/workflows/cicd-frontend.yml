@@ -17,6 +17,7 @@ on:
       - opened
       - synchronize
       - reopened
+      - closed
 
 env:
   APP_ARTIFACT_NAME: app
