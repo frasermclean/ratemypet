@@ -24,7 +24,9 @@
         <mat-icon matSuffix>password</mat-icon>
         <mat-error>Password is required.</mat-error>
       </mat-form-field>
-      <mat-checkbox formControlName="rememberMe">Remember me</mat-checkbox>
+      <div class="remember-me-container">
+        <mat-checkbox formControlName="rememberMe">Remember me</mat-checkbox>
+      </div>
     </mat-card-content>
     <mat-card-actions>
       @switch (status()) { @case ('busy') {
