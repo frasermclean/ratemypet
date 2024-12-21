@@ -188,6 +188,10 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
               value: applicationInsightsConnectionString
             }
             {
+              name: 'OTEL_SERVICE_NAME'
+              value: apiContainerAppName
+            }
+            {
               name: 'Storage__BlobEndpoint'
               value: storageAccountBlobEndpoint
             }

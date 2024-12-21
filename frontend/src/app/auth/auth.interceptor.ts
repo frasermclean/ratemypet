@@ -1,6 +1,4 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { select } from '@ngxs/store';
-import { AuthState } from '../auth/auth.state';
 import { environment } from '../../environments/environment';
 
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
@@ -9,16 +7,9 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
     return next(request);
   }
 
-  // get the access token from the store
-  const accessToken = select(AuthState.accessToken)();
-
-  if (!accessToken) {
-    return next(request);
-  }
-
-  // clone the request and add the Authorization header
+  // add the `withCredentials` option to the request to include cookies
   const newRequest = request.clone({
-    headers: request.headers.append('Authorization', `Bearer ${accessToken}`),
+    withCredentials: true
   });
 
   return next(newRequest);

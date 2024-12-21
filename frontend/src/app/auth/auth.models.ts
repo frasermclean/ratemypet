@@ -1,13 +1,15 @@
-export interface AccessTokenResponse {
-  tokenType: string;
-  accessToken: string;
-  expiresIn: number;
-  refreshToken: string;
-}
-
 export interface LoginRequest {
   emailOrUserName: string;
   password: string;
+  rememberMe?: boolean;
+}
+
+export interface LoginResponse {
+  id: string;
+  userName: string;
+  emailAddress: string;
+  emailHash: string;
+  roles: string[];
 }
 
 export interface RegisterRequest {

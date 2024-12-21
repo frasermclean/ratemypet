@@ -1,20 +1,21 @@
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Navigate } from '@ngxs/router-plugin';
 import { Action, NgxsOnInit, Selector, State, StateContext, StateToken } from '@ngxs/store';
 import { NotificationService } from '@shared/services/notification.service';
 import { TelemetryService } from '@shared/services/telemetry.service';
-import { catchError, of, switchMap, tap } from 'rxjs';
+import { catchError, of, tap } from 'rxjs';
 import { AuthActions } from './auth.actions';
-import { CurrentUserResponse } from './auth.models';
 import { AuthService } from './auth.service';
 
 interface AuthStateModel {
   status: 'loggedOut' | 'busy' | 'loggedIn';
   error: any;
-  accessToken: string | null;
-  accessTokenExpiry: Date | null;
-  refreshToken: string | null;
-  currentUser: CurrentUserResponse | null;
+  id?: string;
+  userName?: string;
+  emailAddress?: string;
+  emailHash?: string;
+  roles?: string[];
 }
 
 const AUTH_STATE_TOKEN = new StateToken<AuthStateModel>('auth');
@@ -23,11 +24,7 @@ const AUTH_STATE_TOKEN = new StateToken<AuthStateModel>('auth');
   name: AUTH_STATE_TOKEN,
   defaults: {
     status: 'loggedOut',
-    error: null,
-    accessToken: null,
-    accessTokenExpiry: null,
-    refreshToken: null,
-    currentUser: null
+    error: null
   }
 })
 @Injectable()
@@ -37,11 +34,9 @@ export class AuthState implements NgxsOnInit {
   private readonly notificationService = inject(NotificationService);
 
   ngxsOnInit(context: StateContext<AuthStateModel>): void {
-    const refreshToken = context.getState().refreshToken;
-    if (refreshToken) {
-      context.dispatch(new AuthActions.RefreshAccessToken(refreshToken));
-    } else {
-      context.patchState({ status: 'loggedOut' });
+    const status = context.getState().status;
+    if (status === 'loggedIn') {
+      context.dispatch(new AuthActions.VerifyUser());
     }
   }
 
@@ -49,25 +44,15 @@ export class AuthState implements NgxsOnInit {
   login(context: StateContext<AuthStateModel>, action: AuthActions.Login) {
     context.patchState({ status: 'busy' });
     return this.authService.login(action.request).pipe(
-      switchMap((response) => {
-        const accessTokenExpiry = new Date();
-        accessTokenExpiry.setSeconds(accessTokenExpiry.getSeconds() + response.expiresIn);
-        context.patchState({
-          accessToken: response.accessToken,
-          accessTokenExpiry,
-          refreshToken: response.refreshToken
-        });
-        return this.authService.getCurrentUser();
-      }),
-      tap((currentUser) => {
-        context.patchState({ status: 'loggedIn', currentUser });
-        this.notificationService.showInformation(`Welcome back, ${currentUser.userName}!`);
-        this.telemetryService.setTrackedUser(currentUser.id);
+      tap((response) => {
+        context.patchState({ status: 'loggedIn', ...response });
+        this.notificationService.showInformation(`Welcome back, ${response.userName}!`);
+        this.telemetryService.setTrackedUser(response.id);
         context.dispatch(new Navigate(['/']));
       }),
-      catchError((error) => {
+      catchError((error: HttpErrorResponse) => {
         context.patchState({ status: 'loggedOut', error });
-        if (error?.status === 401) {
+        if (error?.status === HttpStatusCode.Unauthorized) {
           this.notificationService.showError('Invalid username or password.');
           return of(null);
         }
@@ -83,13 +68,22 @@ export class AuthState implements NgxsOnInit {
       tap(() => {
         this.notificationService.showInformation('You have been logged out.');
         this.telemetryService.clearTrackedUser();
-        context.patchState({
-          status: 'loggedOut',
-          accessToken: null,
-          accessTokenExpiry: null,
-          refreshToken: null,
-          currentUser: null
-        });
+        context.patchState({ status: 'loggedOut' });
+      })
+    );
+  }
+
+  @Action(AuthActions.VerifyUser)
+  verifyUser(context: StateContext<AuthStateModel>) {
+    context.patchState({ status: 'busy' });
+    return this.authService.verifyUser().pipe(
+      tap((response) => {
+        context.patchState({ status: 'loggedIn', ...response });
+        this.telemetryService.setTrackedUser(response.id);
+      }),
+      catchError((error) => {
+        context.patchState({ status: 'loggedOut', error });
+        throw error;
       })
     );
   }
@@ -126,42 +120,6 @@ export class AuthState implements NgxsOnInit {
         this.notificationService.showError('An error occured while trying to confirm your email address.');
         context.patchState({ status: 'loggedOut', error });
         context.dispatch(new Navigate(['/']));
-        throw error;
-      })
-    );
-  }
-
-  @Action(AuthActions.RefreshAccessToken)
-  refreshAccessToken(context: StateContext<AuthStateModel>, action: AuthActions.RefreshAccessToken) {
-    context.patchState({ status: 'busy' });
-    return this.authService.refreshAccessToken(action.refreshToken).pipe(
-      switchMap((response) => {
-        const accessTokenExpiry = new Date();
-        accessTokenExpiry.setSeconds(accessTokenExpiry.getSeconds() + response.expiresIn);
-        context.patchState({
-          accessToken: response.accessToken,
-          accessTokenExpiry,
-          refreshToken: response.refreshToken
-        });
-        return this.authService.getCurrentUser();
-      }),
-      tap((currentUser) => {
-        context.patchState({
-          status: 'loggedIn',
-          currentUser
-        });
-        this.telemetryService.setTrackedUser(currentUser.id);
-      }),
-      catchError((error) => {
-        context.patchState({
-          status: 'loggedOut',
-          error,
-          accessToken: null,
-          accessTokenExpiry: null,
-          refreshToken: null
-        });
-        this.telemetryService.clearTrackedUser();
-        this.notificationService.showError('An error occurred, and you have been logged out.');
         throw error;
       })
     );
@@ -211,12 +169,12 @@ export class AuthState implements NgxsOnInit {
   }
 
   @Selector([AUTH_STATE_TOKEN])
-  static accessToken(state: AuthStateModel) {
-    return state.accessToken;
+  static userName(state: AuthStateModel) {
+    return state.userName;
   }
 
   @Selector([AUTH_STATE_TOKEN])
-  static currentUser(state: AuthStateModel) {
-    return state.currentUser;
+  static emailHash(state: AuthStateModel) {
+    return state.emailHash;
   }
 }

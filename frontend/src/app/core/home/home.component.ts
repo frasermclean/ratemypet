@@ -11,5 +11,5 @@ import { AuthState } from '../../auth/auth.state';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-  currentUser = select(AuthState.currentUser);
+  userName = select(AuthState.userName);
 }

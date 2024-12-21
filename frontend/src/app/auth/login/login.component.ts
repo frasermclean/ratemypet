@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -17,6 +18,7 @@ import { AuthState } from '../auth.state';
     ReactiveFormsModule,
     RouterLink,
     MatButtonModule,
+    MatCheckboxModule,
     MatCardModule,
     MatFormFieldModule,
     MatIconModule,
@@ -30,7 +32,8 @@ export class LoginComponent {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   formGroup = this.formBuilder.group({
     emailOrUserName: ['', Validators.required],
-    password: ['', Validators.required]
+    password: ['', Validators.required],
+    rememberMe: [false]
   });
 
   login = dispatch(AuthActions.Login);

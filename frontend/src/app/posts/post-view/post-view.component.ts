@@ -23,7 +23,7 @@ export class PostViewComponent implements OnInit, OnDestroy {
   readonly postId = input.required<string>();
   readonly status = select(PostsState.status);
   readonly post = select(PostsState.currentPost);
-  readonly currentUser = select(AuthState.currentUser);
+  readonly userName = select(AuthState.userName);
   readonly getPost = dispatch(PostsActions.GetPost);
   readonly deletePost = dispatch(PostsActions.DeletePost);
 

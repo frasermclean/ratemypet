@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
-using OpenTelemetry.Resources;
 using RateMyPet.Core;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Services;
@@ -27,15 +26,7 @@ public static class ServiceRegistration
 
         // open telemetry
         builder.Services.AddOpenTelemetry()
-            .UseAzureMonitor(options => options.Credential = TokenCredentialFactory.Create())
-            .ConfigureResource(resourceBuilder =>
-            {
-                resourceBuilder.AddAttributes(new Dictionary<string, object>
-                {
-                    { "service.name", "api" },
-                    { "service.namespace", "backend" }
-                });
-            });
+            .UseAzureMonitor(options => options.Credential = TokenCredentialFactory.Create());
 
         // problem details service
         builder.Services.AddProblemDetails(options =>
@@ -101,8 +92,8 @@ public static class ServiceRegistration
 
     private static IServiceCollection AddIdentity(this IServiceCollection services)
     {
-        services.AddAuthentication(IdentityConstants.BearerScheme)
-            .AddBearerToken(IdentityConstants.BearerScheme);
+        services.AddAuthentication(IdentityConstants.ApplicationScheme)
+            .AddIdentityCookies();
 
         services.AddAuthorization();
 
@@ -116,6 +107,19 @@ public static class ServiceRegistration
             .AddSignInManager()
             .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
+        services.ConfigureApplicationCookie(options =>
+        {
+            options.Cookie.Name = "RateMyPet.Auth";
+            options.Cookie.SameSite = SameSiteMode.None;
+
+            options.Events.OnRedirectToLogin = context =>
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return Task.CompletedTask;
+            };
+        });
 
         return services;
     }
@@ -135,6 +139,7 @@ public static class ServiceRegistration
                 .WithOrigins(configuration["Frontend:BaseUrl"]!)
                 .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .AllowAnyHeader()
+                .AllowCredentials()
                 .WithExposedHeaders("Location")
                 .SetPreflightMaxAge(TimeSpan.FromMinutes(10))
             );

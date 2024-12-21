@@ -10,6 +10,10 @@ export namespace AuthActions {
     static readonly type = '[Auth] Logout';
   }
 
+  export class VerifyUser {
+    static readonly type = '[Auth] Verify User';
+  }
+
   export class Register {
     static readonly type = '[Auth] Register';
     constructor(public request: RegisterRequest) {}
@@ -18,11 +22,6 @@ export namespace AuthActions {
   export class ConfirmEmail {
     static readonly type = '[Auth] Confirm Email';
     constructor(public request: ConfirmEmailRequest) {}
-  }
-
-  export class RefreshAccessToken {
-    static readonly type = '[Auth] Refresh Access Token';
-    constructor(public refreshToken: string) {}
   }
 
   export class ForgotPassword {

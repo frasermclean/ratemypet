@@ -20,7 +20,7 @@
       <p>{{ post.description }}</p>
       <app-post-comments [post]="post" />
     </mat-card-content>
-    @if (currentUser()?.userName === post.authorUserName) {
+    @if (userName() === post.authorUserName) {
     <mat-card-actions>
       <button mat-button>
         <mat-icon>edit</mat-icon>
