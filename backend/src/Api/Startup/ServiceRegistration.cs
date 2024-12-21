@@ -108,7 +108,6 @@ public static class ServiceRegistration
             .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
-
         services.ConfigureApplicationCookie(options =>
         {
             options.Cookie.Name = "RateMyPet.Auth";
