@@ -34,7 +34,7 @@ export class ResetPasswordComponent implements OnInit {
     newPassword: ['', [Validators.required, Validators.minLength(8)]]
   });
 
-  status = select(AuthState.status);
+  isBusy = select(AuthState.isBusy);
   resetPassword = dispatch(AuthActions.ResetPassword);
 
   ngOnInit(): void {

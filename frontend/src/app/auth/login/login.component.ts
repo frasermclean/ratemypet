@@ -37,7 +37,7 @@ export class LoginComponent {
   });
 
   login = dispatch(AuthActions.Login);
-  status = select(AuthState.status);
+  isBusy = select(AuthState.isBusy);
 
   onSubmit() {
     const formValue = this.formGroup.getRawValue();

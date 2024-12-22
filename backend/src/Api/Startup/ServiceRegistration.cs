@@ -20,7 +20,6 @@ public static class ServiceRegistration
         builder.Services
             .AddPersistence(builder.Configuration)
             .AddIdentity()
-            .AddEnvironmentServices(builder.Environment, builder.Configuration)
             .AddFastEndpoints()
             .AddSingleton<IMessagePublisher, MessagePublisher>();
 
@@ -45,6 +44,12 @@ public static class ServiceRegistration
             options.SerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
             options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
         });
+
+        // local development services
+        if (builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddDevelopmentCors(builder.Configuration["Frontend:BaseUrl"]!);
+        }
 
         return builder;
     }
@@ -108,11 +113,11 @@ public static class ServiceRegistration
             .AddDefaultTokenProviders()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
-
         services.ConfigureApplicationCookie(options =>
         {
-            options.Cookie.Name = "RateMyPet.Auth";
+            options.Cookie.Name = "rmp_app";
             options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
             options.Events.OnRedirectToLogin = context =>
             {
@@ -124,27 +129,15 @@ public static class ServiceRegistration
         return services;
     }
 
-    private static IServiceCollection AddEnvironmentServices(this IServiceCollection services,
-        IWebHostEnvironment environment, ConfigurationManager configuration)
-    {
-        if (!environment.IsDevelopment())
-        {
-            return services;
-        }
-
-        // cors policy for frontend development
-        services.AddCors(options =>
-        {
-            options.AddDefaultPolicy(policyBuilder => policyBuilder
-                .WithOrigins(configuration["Frontend:BaseUrl"]!)
-                .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .AllowAnyHeader()
-                .AllowCredentials()
-                .WithExposedHeaders("Location")
-                .SetPreflightMaxAge(TimeSpan.FromMinutes(10))
-            );
-        });
-
-        return services;
-    }
+    /// <summary>
+    /// Add CORS policy for local development environment
+    /// </summary>
+    private static IServiceCollection AddDevelopmentCors(this IServiceCollection services, string frontEndBaseUrl)
+        => services.AddCors(options => options.AddDefaultPolicy(policyBuilder => policyBuilder
+            .WithOrigins(frontEndBaseUrl)
+            .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+            .AllowAnyHeader()
+            .AllowCredentials()
+            .WithExposedHeaders("Location")
+            .SetPreflightMaxAge(TimeSpan.FromMinutes(10))));
 }

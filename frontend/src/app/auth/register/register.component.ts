@@ -66,6 +66,6 @@ export class RegisterComponent {
     }
   );
 
-  status = select(AuthState.status);
+  isBusy = select(AuthState.isBusy);
   register = dispatch(AuthActions.Register);
 }

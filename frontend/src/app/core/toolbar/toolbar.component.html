@@ -5,11 +5,11 @@
   <a class="title" routerLink="/">{{ title() }}</a>
   <span class="spacer"></span>
   <div class="user-content">
-    @switch (status()) { @case ('busy'){
+    @if (isBusy()) {
     <mat-spinner diameter="20" />
-    } @case ('loggedIn') {
+    } @else { @if (isLoggedIn()) {
     <app-user-menu />
-    } @case ('loggedOut') {
+    } @else {
     <a mat-flat-button routerLink="/auth/login">
       <mat-icon>login</mat-icon>
       Login

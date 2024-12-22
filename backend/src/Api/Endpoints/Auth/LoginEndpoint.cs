@@ -43,7 +43,7 @@ public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> 
 
         return TypedResults.Ok(new LoginResponse
         {
-            Id = user.Id,
+            UserId = user.Id,
             UserName = user.UserName!,
             EmailAddress = user.Email!,
             EmailHash = user.Email.ToSha256Hash(),

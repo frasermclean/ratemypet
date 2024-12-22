@@ -31,7 +31,7 @@ export class ForgotPasswordComponent {
   formGroup = this.formBuilder.group({
     emailAddress: ['', [Validators.required, Validators.email]]
   });
-  status = select(AuthState.status);
+  isBusy = select(AuthState.isBusy);
   forgotPassword = dispatch(AuthActions.ForgotPassword);
   hasSubmitted = signal(false);
 

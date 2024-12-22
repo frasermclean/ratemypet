@@ -20,7 +20,7 @@ public class VerifyUserEndpoint(UserManager<User> userManager)
         return user is not null
             ? TypedResults.Ok(new LoginResponse
             {
-                Id = user.Id,
+                UserId = user.Id,
                 UserName = user.UserName!,
                 EmailAddress = user.Email!,
                 EmailHash = user.Email.ToSha256Hash(),
