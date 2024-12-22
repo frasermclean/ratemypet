@@ -5,7 +5,7 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  id: string;
+  userId: string;
   userName: string;
   emailAddress: string;
   emailHash: string;

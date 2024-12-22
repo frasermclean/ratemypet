@@ -18,5 +18,6 @@ export class ToolbarComponent {
   title = input('Rate My Pet');
   store = inject(Store);
   router = inject(Router);
-  status = select(AuthState.status);
+  isBusy = select(AuthState.isBusy);
+  isLoggedIn = select(AuthState.isLoggedIn);
 }

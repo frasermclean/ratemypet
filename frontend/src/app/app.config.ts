@@ -35,7 +35,7 @@ export const appConfig: ApplicationConfig = {
       ...[
         withNgxsRouterPlugin(),
         withNgxsStoragePlugin({
-          keys: ['auth.status']
+          keys: ['auth.userId']
         }),
         ...environment.ngxsPlugins
       ]
