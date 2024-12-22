@@ -112,6 +112,7 @@ public static class ServiceRegistration
         {
             options.Cookie.Name = "rmp_app";
             options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 
             options.Events.OnRedirectToLogin = context =>
             {
