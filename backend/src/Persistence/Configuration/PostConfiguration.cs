@@ -8,8 +8,7 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
 {
     public void Configure(EntityTypeBuilder<Post> builder)
     {
-        builder.Property(post => post.Id)
-            .HasDefaultValueSql("newid()");
+        builder.Property(post => post.Id);
 
         builder.Property(post => post.Title)
             .HasMaxLength(Post.TitleMaxLength);

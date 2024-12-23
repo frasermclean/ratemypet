@@ -5,7 +5,7 @@ public class Post
     public const int TitleMaxLength = 50;
     public const int DescriptionMaxLength = 500;
 
-    public Guid Id { get; init; }
+    public Guid Id { get; init; } = Guid.CreateVersion7();
     public required string Title { get; set; }
     public string? Description { get; set; }
     public required User User { get; init; }
@@ -17,5 +17,7 @@ public class Post
     public DateTime? UpdatedAtUtc { get; set; }
     public ulong RowVersion { get; init; }
 
-    public string GetImageBlobName(ImageSize imageSize) => $"{Id}/{imageSize.ToString().ToLowerInvariant()}.jpg";
+    public string GetImageBlobName(ImageSize imageSize) => GetImageBlobName(Id, imageSize);
+
+    public static string GetImageBlobName(Guid postId, ImageSize imageSize) => $"{postId}/{imageSize.ToString().ToLowerInvariant()}.jpg";
 }
