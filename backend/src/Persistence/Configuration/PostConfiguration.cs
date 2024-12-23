@@ -27,7 +27,5 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(post => post.RowVersion)
             .IsRowVersion()
             .HasConversion<byte[]>();
-
-        builder.HasQueryFilter(post => post.IsProcessed);
     }
 }
