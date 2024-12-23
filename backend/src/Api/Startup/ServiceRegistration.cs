@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Azure.Storage.Blobs;
@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using RateMyPet.Core;
+using RateMyPet.Logic.Services;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Services;
 
@@ -21,6 +22,7 @@ public static class ServiceRegistration
             .AddPersistence(builder.Configuration)
             .AddIdentity()
             .AddFastEndpoints()
+            .AddLogicServices()
             .AddSingleton<IMessagePublisher, MessagePublisher>();
 
         // open telemetry
