@@ -5,8 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RateMyPet.Jobs.Options;
-using RateMyPet.Jobs.Services;
+using RateMyPet.Logic.Services;
 using RateMyPet.Persistence;
 using RateMyPet.Persistence.Services;
 
@@ -20,12 +19,13 @@ public static class ServiceRegistration
             .AddApplicationInsightsTelemetryWorkerService()
             .ConfigureFunctionsApplicationInsights()
             .AddPersistence(builder.Configuration)
-            .AddJobsServices();
+            .AddLogicServices();
 
         return builder;
     }
 
-    private static IServiceCollection AddPersistence(this IServiceCollection services, ConfigurationManager configuration)
+    private static IServiceCollection AddPersistence(this IServiceCollection services,
+        ConfigurationManager configuration)
     {
         services.AddDbContextFactory<ApplicationDbContext>(builder =>
         {
@@ -64,11 +64,5 @@ public static class ServiceRegistration
                 .GetBlobContainerClient(BlobContainerNames.PostImages)));
 
         return services;
-    }
-
-    private static void AddJobsServices(this IServiceCollection services)
-    {
-        services.AddOptions<EmailOptions>().BindConfiguration(EmailOptions.SectionName);
-        services.AddTransient<IEmailSender, EmailSender>();
     }
 }

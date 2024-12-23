@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RateMyPet.Core.Messages;
-using RateMyPet.Jobs.Options;
-using RateMyPet.Jobs.Services;
+using RateMyPet.Logic.Options;
+using RateMyPet.Logic.Services;
 using RateMyPet.Persistence;
 
 namespace RateMyPet.Jobs.Functions;
@@ -17,7 +17,8 @@ public class HandleRegisterConfirmation(
 
     [Function(nameof(HandleRegisterConfirmation))]
     public async Task ExecuteAsync(
-        [QueueTrigger(QueueNames.RegisterConfirmation)] RegisterConfirmationMessage message,
+        [QueueTrigger(QueueNames.RegisterConfirmation)]
+        RegisterConfirmationMessage message,
         CancellationToken cancellationToken)
     {
         const string subject = "Confirm your email";

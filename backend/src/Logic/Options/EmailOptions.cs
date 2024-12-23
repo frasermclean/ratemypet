@@ -1,4 +1,4 @@
-namespace RateMyPet.Jobs.Options;
+namespace RateMyPet.Logic.Options;
 
 public class EmailOptions
 {

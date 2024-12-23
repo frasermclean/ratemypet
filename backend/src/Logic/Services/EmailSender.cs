@@ -2,9 +2,9 @@
 using Azure.Communication.Email;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using RateMyPet.Jobs.Options;
+using RateMyPet.Logic.Options;
 
-namespace RateMyPet.Jobs.Services;
+namespace RateMyPet.Logic.Services;
 
 public interface IEmailSender
 {
