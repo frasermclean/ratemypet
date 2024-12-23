@@ -12,7 +12,7 @@ using RateMyPet.Persistence.Services;
 namespace RateMyPet.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241223094640_PostIdGuidGeneration")]
+    [Migration("20241223095201_PostIdGuidGeneration")]
     partial class PostIdGuidGeneration
     {
         /// <inheritdoc />
@@ -40,9 +40,6 @@ namespace RateMyPet.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool>("IsProcessed")
-                        .HasColumnType("bit");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()

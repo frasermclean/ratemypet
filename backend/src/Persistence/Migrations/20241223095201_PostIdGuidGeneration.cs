@@ -11,6 +11,10 @@ namespace RateMyPet.Persistence.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "IsProcessed",
+                table: "Posts");
+
             migrationBuilder.AlterColumn<Guid>(
                 name: "Id",
                 table: "Posts",
@@ -32,6 +36,13 @@ namespace RateMyPet.Persistence.Migrations
                 defaultValueSql: "newid()",
                 oldClrType: typeof(Guid),
                 oldType: "uniqueidentifier");
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsProcessed",
+                table: "Posts",
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
         }
     }
 }
