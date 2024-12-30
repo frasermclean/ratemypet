@@ -69,13 +69,18 @@ public class PostImageProcessor(
         return Result.Ok();
     }
 
-    private async Task ResizeAndSaveImageAsync(Image image, int width, int height, string blobName,
+    private async Task ResizeAndSaveImageAsync(Image source, int width, int height, string blobName,
         CancellationToken cancellationToken)
     {
-        // crop and resize image
-        using var resizedImage = image.Clone(context => context
-            .Crop(width, height)
-            .Resize(width, 0)
+        // create square, centered crop rectangle
+        var cropRectangle = source.Width >= source.Height
+            ? new Rectangle((source.Width - source.Height) / 2, 0, source.Height, source.Height)
+            : new Rectangle(0, (source.Height - source.Width) / 2, source.Width, source.Width);
+
+        // crop and resize source image
+        using var resizedImage = source.Clone(context => context
+            .Crop(cropRectangle)
+            .Resize(width, height)
         );
 
         await using var stream = await containerManager.OpenWriteStreamAsync(blobName, contentType, cancellationToken);
