@@ -28,10 +28,6 @@
     <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Logic\Logic.csproj" />    
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Options\" />
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 </Project>

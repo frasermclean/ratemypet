@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
-using RateMyPet.Persistence;
-using RateMyPet.Persistence.Services;
+using RateMyPet.Infrastructure;
+using RateMyPet.Infrastructure.Services;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 

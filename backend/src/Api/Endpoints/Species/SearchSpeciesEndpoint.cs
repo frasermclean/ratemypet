@@ -1,7 +1,7 @@
 ﻿using FastEndpoints;
 using Gridify;
 using Gridify.EntityFramework;
-using RateMyPet.Persistence.Services;
+using RateMyPet.Infrastructure.Services;
 
 namespace RateMyPet.Api.Endpoints.Species;
 

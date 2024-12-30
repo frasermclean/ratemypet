@@ -1,5 +1,5 @@
 ﻿using Azure.Storage.Blobs;
-using RateMyPet.Persistence;
+using RateMyPet.Infrastructure;
 
 namespace RateMyPet.Api.Extensions;
 
