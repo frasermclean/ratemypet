@@ -29,6 +29,8 @@ jobs:
     permissions:
       contents: read
       packages: write
+      checks: write
+      pull-requests: write
     env:
       BUILD_CONFIGURATION: Release
     defaults:
@@ -55,6 +57,26 @@ jobs:
       # Build solution
       - name: Build solution
         run: dotnet build --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
+
+      # Run tests
+      - name: Run tests
+        run: >-
+          dotnet test
+          --no-build
+          --configuration ${{ env.BUILD_CONFIGURATION }}
+          --logger trx
+          --collect "XPlat Code Coverage"
+          --settings coverlet.runsettings
+          --results-directory ${{ github.workspace }}/test-results
+
+      # Publish test results
+      - name: Publish test results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: ${{ github.workspace }}/test-results/*.trx
+          check_name: Test results
+          action_fail: true
 
       # Calculate next version
       - name: Calculate next version
