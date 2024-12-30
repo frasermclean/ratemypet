@@ -8,13 +8,25 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
 {
     public void Configure(EntityTypeBuilder<Post> builder)
     {
-        builder.Property(post => post.Id);
+        builder.Property(post => post.Id)
+            .HasDefaultValueSql("newid()");
 
         builder.Property(post => post.Title)
             .HasMaxLength(Post.TitleMaxLength);
 
         builder.Property(post => post.Description)
             .HasMaxLength(Post.DescriptionMaxLength);
+
+        builder.OwnsOne(post => post.Image, imageBuilder =>
+        {
+            imageBuilder.Property(image => image.PreviewBlobName)
+                .HasMaxLength(PostImage.BlobNameMaxLength)
+                .HasColumnName("ImagePreviewBlobName");
+
+            imageBuilder.Property(image => image.FullBlobName)
+                .HasMaxLength(PostImage.BlobNameMaxLength)
+                .HasColumnName("ImageFullBlobName");
+        });
 
         builder.Property(post => post.CreatedAtUtc)
             .HasPrecision(2)
@@ -26,5 +38,7 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(post => post.RowVersion)
             .IsRowVersion()
             .HasConversion<byte[]>();
+
+        builder.HasIndex(post => post.Status);
     }
 }

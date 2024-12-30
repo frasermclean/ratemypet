@@ -12,7 +12,7 @@ public class GetPostResponse
     public required string AuthorUserName { get; init; }
     public required string AuthorEmailHash { get; init; }
     public required string SpeciesName { get; init; }
-    public bool IsProcessed { get; init; }
+    public PostStatus Status { get; init; }
     public DateTime CreatedAtUtc { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

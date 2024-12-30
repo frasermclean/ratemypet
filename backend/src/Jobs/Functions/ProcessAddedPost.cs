@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Messages;
 using RateMyPet.Infrastructure;
@@ -32,13 +33,19 @@ public class ProcessAddedPost(
 
         // process the image
         var imageResult = await imageProcessor.ProcessOriginalImageAsync(originalReadStream, post, cancellationToken);
-        if (imageResult.IsFailed)
-        {
-            throw new InvalidOperationException("Failed to process image");
-        }
 
         // update post entity in database
-        post.IsProcessed = true;
+        if (imageResult.IsSuccess)
+        {
+            post.Status = PostStatus.Processed;
+            post.Image.PreviewBlobName = imageResult.Value.PreviewBlobName;
+            post.Image.FullBlobName = imageResult.Value.FullBlobName;
+        }
+        else
+        {
+            post.Status = PostStatus.InvalidImage;
+        }
+
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

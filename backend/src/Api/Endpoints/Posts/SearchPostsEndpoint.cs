@@ -30,14 +30,14 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext, BlobServiceClie
 
         var userId = User.GetUserId();
         var paging = await dbContext.Posts
+            .Where(post => post.Status == PostStatus.Processed)
             .AsNoTracking()
             .Select(post => new SearchPostsMatch
             {
                 Id = post.Id,
                 Title = post.Title,
                 Description = post.Description,
-                ImageUrl = blobServiceClient.GetBlobUri(post.GetImageBlobName(ImageSize.Preview),
-                    BlobContainerNames.PostImages),
+                ImageUrl = blobServiceClient.GetBlobUri(post.Image.PreviewBlobName, BlobContainerNames.PostImages),
                 AuthorUserName = post.User.UserName!,
                 AuthorEmailHash = post.User.Email.ToSha256Hash(),
                 SpeciesName = post.Species.Name,

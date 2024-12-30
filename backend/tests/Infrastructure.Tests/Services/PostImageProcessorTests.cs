@@ -16,7 +16,7 @@ public class PostImageProcessorTests
 
     private readonly ImageProcessingOptions options = new()
     {
-        ContentType = "image/webp",
+        ContentType = "image/png",
         PreviewWidth = 320,
         PreviewHeight = 320,
         FullWidth = 1024,
@@ -36,8 +36,8 @@ public class PostImageProcessorTests
     {
         // arrange
         var post = CreatePost();
-        var previewBlobName = post.GetImageBlobName(ImageSize.Preview);
-        var fullBlobName = post.GetImageBlobName(ImageSize.Full);
+        var previewBlobName = postImageProcessor.GetBlobName(post.Id, ImageSize.Preview);
+        var fullBlobName = postImageProcessor.GetBlobName(post.Id, ImageSize.Full);
         var contentType = options.ContentType;
         await using var fileStream = File.OpenRead("Data/red_1600x1200.png");
         const string previewFile = "preview.png";

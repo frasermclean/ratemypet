@@ -34,7 +34,17 @@ public class PostImageProcessor(
         _ => SixLabors.ImageSharp.Configuration.Default.ImageFormatsManager.GetEncoder(JpegFormat.Instance)
     };
 
-    public async Task<Result> ProcessOriginalImageAsync(Stream stream, Post post,
+    private readonly string fileExtension = options.Value.ContentType switch
+    {
+        "image/png" => ".png",
+        "image/webp" => ".webp",
+        _ => ".jpg"
+    };
+
+    public string GetBlobName(Guid postId, ImageSize size) =>
+        $"{postId}/{size.ToString().ToLowerInvariant()}{fileExtension}";
+
+    public async Task<Result<PostImage>> ProcessOriginalImageAsync(Stream stream, Post post,
         CancellationToken cancellationToken = default)
     {
         var loadResult = await Result.Try(
@@ -59,14 +69,18 @@ public class PostImageProcessor(
 
         logger.LogInformation("Read image successfully, dimensions: {Width}x{Height}", image.Width, image.Height);
 
-        await ResizeAndSaveImageAsync(image, previewWidth, previewHeight, post.GetImageBlobName(ImageSize.Preview),
-            cancellationToken);
-        await ResizeAndSaveImageAsync(image, fullWidth, fullHeight, post.GetImageBlobName(ImageSize.Full),
-            cancellationToken);
+        var previewBlobName = GetBlobName(post.Id, ImageSize.Preview);
+        var fullBlobName = GetBlobName(post.Id, ImageSize.Full);
 
-        post.IsProcessed = true;
+        await Task.WhenAll(
+            ResizeAndSaveImageAsync(image, previewWidth, previewHeight, previewBlobName, cancellationToken),
+            ResizeAndSaveImageAsync(image, fullWidth, fullHeight, fullBlobName, cancellationToken));
 
-        return Result.Ok();
+        return new PostImage
+        {
+            PreviewBlobName = previewBlobName,
+            FullBlobName = fullBlobName
+        };
     }
 
     private async Task ResizeAndSaveImageAsync(Image source, int width, int height, string blobName,

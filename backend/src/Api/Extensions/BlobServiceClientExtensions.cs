@@ -5,8 +5,16 @@ namespace RateMyPet.Api.Extensions;
 
 public static class BlobServiceClientExtensions
 {
-    public static Uri GetBlobUri(this BlobServiceClient blobServiceClient, string blobName,
-        string containerName = BlobContainerNames.OriginalImages) => blobServiceClient
-        .GetBlobContainerClient(containerName)
-        .GetBlobClient(blobName).Uri;
+    public static Uri? GetBlobUri(this BlobServiceClient blobServiceClient, string? blobName,
+        string containerName = BlobContainerNames.OriginalImages)
+    {
+        if (blobName is null)
+        {
+            return null;
+        }
+
+        return blobServiceClient.GetBlobContainerClient(containerName)
+            .GetBlobClient(blobName)
+            .Uri;
+    }
 }
