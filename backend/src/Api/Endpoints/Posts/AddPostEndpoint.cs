@@ -1,9 +1,10 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
+using RateMyPet.Core.Messages;
+using RateMyPet.Infrastructure;
 using RateMyPet.Infrastructure.Services;
 using PostsPermissions = RateMyPet.Core.Security.Permissions.Posts;
 
@@ -11,7 +12,9 @@ namespace RateMyPet.Api.Endpoints.Posts;
 
 public class AddPostEndpoint(
     ApplicationDbContext dbContext,
-    IPostImageProcessor imageProcessor)
+    [FromKeyedServices(BlobContainerNames.OriginalImages)]
+    IBlobContainerManager originalImagesManager,
+    IMessagePublisher messagePublisher)
     : Endpoint<AddPostRequest, Results<Created, ErrorResponse>>
 {
     public override void Configure()
@@ -32,6 +35,11 @@ public class AddPostEndpoint(
             return new ErrorResponse(ValidationFailures);
         }
 
+        // upload image to blob storage
+        var blobName = $"{request.UserId}/{request.Image.FileName}";
+        await originalImagesManager.CreateBlobAsync(blobName, request.Image.OpenReadStream(), request.Image.ContentType,
+            cancellationToken);
+
         // create new post
         var post = new Post
         {
@@ -41,19 +49,17 @@ public class AddPostEndpoint(
             Species = species
         };
 
-        // process the image
-        var imageStream = request.Image.OpenReadStream();
-        var imageResult = await imageProcessor.ProcessOriginalImageAsync(imageStream, post, cancellationToken);
-        if (imageResult.IsFailed)
-        {
-            ValidationFailures.AddRange(imageResult.Errors.ToValidationFailures(nameof(request.Image)));
-            return new ErrorResponse(ValidationFailures);
-        }
-
         // save the post entity
         dbContext.Posts.Add(post);
         await dbContext.SaveChangesAsync(cancellationToken);
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
+
+        // publish message to queue
+        await messagePublisher.PublishAsync(new PostAddedMessage
+        {
+            PostId = post.Id,
+            ImageBlobName = blobName
+        }, cancellationToken);
 
         return TypedResults.Created($"/posts/{post.Id}");
     }
