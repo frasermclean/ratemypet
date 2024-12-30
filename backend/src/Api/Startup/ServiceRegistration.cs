@@ -6,7 +6,6 @@ using FastEndpoints;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Azure;
 using RateMyPet.Core;
 using RateMyPet.Logic.Services;
 using RateMyPet.Persistence;
