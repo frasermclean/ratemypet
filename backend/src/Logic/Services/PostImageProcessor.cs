@@ -70,6 +70,8 @@ public class PostImageProcessor(
         await ResizeAndSaveImageAsync(image, fullWidth, fullHeight, post.GetImageBlobName(ImageSize.Full),
             cancellationToken);
 
+        post.IsProcessed = true;
+
         return Result.Ok();
     }
 

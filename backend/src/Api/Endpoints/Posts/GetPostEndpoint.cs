@@ -36,6 +36,7 @@ public class GetPostEndpoint(
                 AuthorUserName = post.User.UserName!,
                 AuthorEmailHash = post.User.Email.ToSha256Hash(),
                 SpeciesName = post.Species.Name,
+                IsProcessed = post.IsProcessed,
                 CreatedAtUtc = post.CreatedAtUtc,
                 UpdatedAtUtc = post.UpdatedAtUtc,
                 UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == userId)!.Reaction,

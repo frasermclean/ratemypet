@@ -5,11 +5,12 @@ public class Post
     public const int TitleMaxLength = 50;
     public const int DescriptionMaxLength = 500;
 
-    public Guid Id { get; init; } = Guid.CreateVersion7();
+    public Guid Id { get; init; }
     public required string Title { get; set; }
     public string? Description { get; set; }
     public required User User { get; init; }
     public required Species Species { get; set; }
+    public bool IsProcessed { get; set; }
     public ICollection<PostReaction> Reactions { get; } = [];
     public ICollection<PostComment> Comments { get; } = [];
     public DateTime CreatedAtUtc { get; init; }

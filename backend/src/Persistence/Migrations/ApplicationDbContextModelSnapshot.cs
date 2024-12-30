@@ -26,7 +26,8 @@ namespace RateMyPet.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("newid()");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .ValueGeneratedOnAdd()
@@ -37,6 +38,9 @@ namespace RateMyPet.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsProcessed")
+                        .HasColumnType("bit");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -65,7 +69,7 @@ namespace RateMyPet.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("RateMyPet.Core.PostComment", b =>
@@ -113,7 +117,7 @@ namespace RateMyPet.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PostComments");
+                    b.ToTable("PostComments", (string)null);
                 });
 
             modelBuilder.Entity("RateMyPet.Core.PostReaction", b =>
@@ -259,7 +263,7 @@ namespace RateMyPet.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Species");
+                    b.ToTable("Species", (string)null);
 
                     b.HasData(
                         new
