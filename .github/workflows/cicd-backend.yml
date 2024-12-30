@@ -67,14 +67,13 @@ jobs:
           --logger trx
           --collect "XPlat Code Coverage"
           --settings coverlet.runsettings
-          --results-directory ${{ github.workspace }}/test-results
 
       # Publish test results
       - name: Publish test results
         if: always()
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
-          files: ${{ github.workspace }}/test-results/*.trx
+          files: tests/**/TestResults/*.trx
           check_name: Test results
           action_fail: true
 
