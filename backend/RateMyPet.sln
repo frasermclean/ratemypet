@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs", "src\Jobs\Jobs.cspro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logic", "src\Logic\Logic.csproj", "{F21E634C-6960-4B5C-B6CF-8B0E67274A43}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C04E5AB8-4BAF-432C-B045-05501699AE3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logic.Tests", "tests\Logic.Tests\Logic.Tests.csproj", "{6E5B8358-AF63-44E4-86C0-D1A516A9B11D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +46,12 @@ Global
 		{F21E634C-6960-4B5C-B6CF-8B0E67274A43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F21E634C-6960-4B5C-B6CF-8B0E67274A43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F21E634C-6960-4B5C-B6CF-8B0E67274A43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E5B8358-AF63-44E4-86C0-D1A516A9B11D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E5B8358-AF63-44E4-86C0-D1A516A9B11D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E5B8358-AF63-44E4-86C0-D1A516A9B11D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E5B8358-AF63-44E4-86C0-D1A516A9B11D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6E5B8358-AF63-44E4-86C0-D1A516A9B11D} = {C04E5AB8-4BAF-432C-B045-05501699AE3C}
 	EndGlobalSection
 EndGlobal

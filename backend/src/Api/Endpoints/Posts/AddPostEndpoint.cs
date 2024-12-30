@@ -11,7 +11,7 @@ namespace RateMyPet.Api.Endpoints.Posts;
 
 public class AddPostEndpoint(
     ApplicationDbContext dbContext,
-    ImageProcessor imageProcessor)
+    IPostImageProcessor imageProcessor)
     : Endpoint<AddPostRequest, Results<Created, ErrorResponse>>
 {
     public override void Configure()
@@ -41,7 +41,7 @@ public class AddPostEndpoint(
             Species = species
         };
 
-        await imageProcessor.ProcessOriginalImageAsync(request.Image.OpenReadStream(), post.Id, cancellationToken);
+        await imageProcessor.ProcessOriginalImageAsync(request.Image.OpenReadStream(), post, cancellationToken);
 
         dbContext.Posts.Add(post);
         await dbContext.SaveChangesAsync(cancellationToken);

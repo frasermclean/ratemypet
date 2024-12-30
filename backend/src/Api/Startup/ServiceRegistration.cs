@@ -22,7 +22,7 @@ public static class ServiceRegistration
             .AddPersistence(builder.Configuration)
             .AddIdentity()
             .AddFastEndpoints()
-            .AddLogicServices()
+            .AddLogicServices(builder.Configuration)
             .AddSingleton<IMessagePublisher, MessagePublisher>();
 
         // open telemetry
@@ -63,28 +63,7 @@ public static class ServiceRegistration
         {
             var connectionString = configuration.GetConnectionString("Database");
             builder.UseSqlServer(connectionString);
-        });
-
-        services.AddAzureClients(factoryBuilder =>
-        {
-            // use connection string if endpoints are not provided
-            var blobEndpoint = configuration["Storage:BlobEndpoint"];
-            var queueEndpoint = configuration["Storage:QueueEndpoint"];
-            if (string.IsNullOrEmpty(blobEndpoint) || string.IsNullOrEmpty(queueEndpoint))
-            {
-                var connectionString = configuration.GetConnectionString("Storage");
-                factoryBuilder.AddBlobServiceClient(connectionString);
-                factoryBuilder.AddQueueServiceClient(connectionString);
-            }
-            else
-            {
-                factoryBuilder.AddBlobServiceClient(new Uri(blobEndpoint));
-                factoryBuilder.AddQueueServiceClient(new Uri(queueEndpoint));
-            }
-
-            factoryBuilder.UseCredential(TokenCredentialFactory.Create());
-            factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
-        });
+        });        
 
         services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.OriginalImages, (provider, _) =>
             new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()

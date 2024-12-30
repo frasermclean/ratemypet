@@ -1,4 +1,4 @@
-﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +19,7 @@ public static class ServiceRegistration
             .AddApplicationInsightsTelemetryWorkerService()
             .ConfigureFunctionsApplicationInsights()
             .AddPersistence(builder.Configuration)
-            .AddLogicServices();
+            .AddLogicServices(builder.Configuration);
 
         return builder;
     }
@@ -31,28 +31,6 @@ public static class ServiceRegistration
         {
             var connectionString = configuration.GetConnectionString("Database");
             builder.UseSqlServer(connectionString);
-        });
-
-        services.AddAzureClients(factoryBuilder =>
-        {
-            // use connection string if endpoints are not provided
-            var blobEndpoint = configuration["Storage:BlobEndpoint"];
-            var queueEndpoint = configuration["Storage:QueueEndpoint"];
-            if (string.IsNullOrEmpty(blobEndpoint) || string.IsNullOrEmpty(queueEndpoint))
-            {
-                var connectionString = configuration["AzureWebJobsStorage"];
-                factoryBuilder.AddBlobServiceClient(connectionString);
-                factoryBuilder.AddQueueServiceClient(connectionString);
-            }
-            else
-            {
-                factoryBuilder.AddBlobServiceClient(new Uri(blobEndpoint));
-                factoryBuilder.AddQueueServiceClient(new Uri(queueEndpoint));
-            }
-
-            factoryBuilder.AddEmailClient(new Uri(configuration["Email:AcsEndpoint"]!));
-            factoryBuilder.UseCredential(TokenCredentialFactory.Create());
-            factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
         });
 
         services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.OriginalImages, (provider, _) =>

@@ -16,7 +16,5 @@ public class Post
     public DateTime? UpdatedAtUtc { get; set; }
     public ulong RowVersion { get; init; }
 
-    public string GetImageBlobName(ImageSize imageSize) => GetImageBlobName(Id, imageSize);
-
-    public static string GetImageBlobName(Guid postId, ImageSize imageSize) => $"{postId}/{imageSize.ToString().ToLowerInvariant()}.jpg";
+    public string GetImageBlobName(ImageSize imageSize) => $"{Id}/{imageSize.ToString().ToLowerInvariant()}.jpg";
 }
