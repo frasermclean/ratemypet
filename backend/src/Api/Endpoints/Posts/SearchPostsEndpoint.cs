@@ -31,7 +31,6 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext, BlobServiceClie
         var userId = User.GetUserId();
         var paging = await dbContext.Posts
             .Where(post => post.Status == PostStatus.Processed)
-            .AsNoTracking()
             .Select(post => new SearchPostsMatch
             {
                 Id = post.Id,
@@ -54,6 +53,7 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext, BlobServiceClie
                 UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == userId)!.Reaction,
                 CommentCount = post.Comments.Count
             })
+            .AsNoTracking()
             .GridifyAsync(query, cancellationToken);
 
         return TypedResults.Ok(paging);
