@@ -17,16 +17,23 @@ export interface Post {
   id: string;
   title: string;
   description?: string;
-  imageUrl: string;
+  imageUrl: string | null;
   authorUserName: string;
   authorEmailHash: string;
   speciesName: string;
+  status: PostStatus;
   createdAtUtc: string;
   updatedAtUtc?: string;
   userReaction?: Reaction;
   reactions: PostReactions;
   comments: PostComment[];
   commentCount: number;
+}
+
+export enum PostStatus {
+  Initial = 'initial',
+  Processed = 'processed',
+  InvalidImage = 'invalidImage'
 }
 
 export interface PostReactions {
@@ -58,7 +65,7 @@ export enum Reaction {
   Funny = 'funny',
   Crazy = 'crazy',
   Wow = 'wow',
-  Sad = 'sad',
+  Sad = 'sad'
 }
 
 export const allReactions: Reaction[] = [Reaction.Like, Reaction.Funny, Reaction.Crazy, Reaction.Wow, Reaction.Sad];

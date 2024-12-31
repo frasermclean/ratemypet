@@ -10,6 +10,11 @@ export namespace PostsActions {
     constructor(public postId: string) {}
   }
 
+  export class GetPostStatus {
+    static readonly type = '[Posts] Get Post Status';
+    constructor(public postId: string) {}
+  }
+
   export class AddPost {
     static readonly type = '[Posts] Add Post';
     constructor(public request: AddPostRequest) {}

@@ -10,7 +10,14 @@
 </div>
 } @case ('ready') { @if(post(); as post) {
 <div id="post-container">
+  @if(post.status === 'processed' && post.imageUrl) {
   <img class="full-image mat-elevation-z8" [src]="post.imageUrl" [alt]="post.title" />
+  } @else if (post.status === 'initial') {
+  <div class="centered-container">
+    <p>This post is currently being processed. Please wait or check back a bit later.</p>
+    <mat-spinner />
+  </div>
+  }
   <mat-card class="mat-elevation-z8">
     <mat-card-header>
       <mat-card-title class="title">{{ post.title }}</mat-card-title>
