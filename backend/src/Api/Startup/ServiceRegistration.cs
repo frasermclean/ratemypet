@@ -88,20 +88,22 @@ public static class ServiceRegistration
     /// </summary>
     private static IServiceCollection AddImageSharp(this IServiceCollection services, IConfiguration configuration)
     {
+        var storageConnectionString = configuration.GetConnectionString("Storage");
+
         services.AddImageSharp()
             .ClearProviders()
             .AddProvider<AzureBlobStorageImageProvider>()
             .Configure<AzureBlobStorageImageProviderOptions>(options => options.BlobContainers.Add(
                 new AzureBlobContainerClientOptions
                 {
-                    ConnectionString = configuration.GetConnectionString("Storage"),
-                    ContainerName = BlobContainerNames.OriginalImages
+                    ConnectionString = storageConnectionString,
+                    ContainerName = BlobContainerNames.Images
                 }))
             .SetCache<AzureBlobStorageCache>()
             .Configure<AzureBlobStorageCacheOptions>(options =>
             {
-                options.ConnectionString = configuration.GetConnectionString("Storage")!;
-                options.ContainerName = BlobContainerNames.PostImages;
+                options.ConnectionString = storageConnectionString!;
+                options.ContainerName = BlobContainerNames.ImagesCache;
             });
 
         return services;
