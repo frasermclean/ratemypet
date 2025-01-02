@@ -3,7 +3,7 @@ using RateMyPet.Core;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class GetPostResponse
+public class PostResponse
 {
     public required Guid Id { get; init; }
     public required string Title { get; init; }
@@ -21,7 +21,7 @@ public class GetPostResponse
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Reaction? UserReaction { get; init; }
 
-    public required PostReactionsResponse Reactions { get; init; }
-    public required IEnumerable<PostCommentResponse> Comments { get; init; }
-    public required int CommentCount { get; init; }
+    public PostReactionsResponse Reactions { get; init; } = new();
+    public IEnumerable<PostCommentResponse> Comments { get; init; } = [];
+    public int CommentCount { get; init; }
 }

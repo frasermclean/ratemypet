@@ -15,7 +15,7 @@ public class AddPostEndpoint(
     [FromKeyedServices(BlobContainerNames.OriginalImages)]
     IBlobContainerManager originalImagesManager,
     IMessagePublisher messagePublisher)
-    : Endpoint<AddPostRequest, Results<Created, ErrorResponse>>
+    : Endpoint<AddPostRequest, Results<Created<PostResponse>, ErrorResponse>, PostResponseMapper>
 {
     public override void Configure()
     {
@@ -25,7 +25,7 @@ public class AddPostEndpoint(
         AllowFileUploads();
     }
 
-    public override async Task<Results<Created, ErrorResponse>> ExecuteAsync(AddPostRequest request,
+    public override async Task<Results<Created<PostResponse>, ErrorResponse>> ExecuteAsync(AddPostRequest request,
         CancellationToken cancellationToken)
     {
         var species = await dbContext.Species.FirstOrDefaultAsync(s => s.Id == request.SpeciesId, cancellationToken);
@@ -61,6 +61,7 @@ public class AddPostEndpoint(
             ImageBlobName = blobName
         }, cancellationToken);
 
-        return TypedResults.Created($"/posts/{post.Id}");
+        var response = Map.FromEntity(post);
+        return TypedResults.Created($"/posts/{response.Id}", response);
     }
 }
