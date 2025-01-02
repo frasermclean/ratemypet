@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Paging } from 'gridify-client';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import {
@@ -36,23 +36,14 @@ export class PostsService {
    * @param request Data for the new post
    * @returns Observable with the ID of the new post
    */
-  addPost(request: AddPostRequest): Observable<string> {
+  addPost(request: AddPostRequest): Observable<Post> {
     const formData = new FormData();
     formData.append('title', request.title);
     formData.append('description', request.description);
     formData.append('image', request.image);
     formData.append('speciesId', request.speciesId.toString());
 
-    return this.httpClient.post(this.baseUrl, formData, { observe: 'response' }).pipe(
-      map((response) => {
-        const location = response.headers.get('Location');
-        const postId = location?.split('/').pop();
-        if (!postId) {
-          throw new Error('Could not get the ID of the new post');
-        }
-        return postId;
-      })
-    );
+    return this.httpClient.post<Post>(this.baseUrl, formData);
   }
 
   deletePost(postId: string) {

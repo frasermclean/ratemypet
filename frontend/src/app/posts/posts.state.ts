@@ -45,6 +45,12 @@ export class PostsState {
 
   @Action(PostsActions.GetPost)
   getPost(context: StateContext<PostsStateModel>, action: PostsActions.GetPost) {
+    // if the current post is the one we want to get, return it
+    const currentPost = context.getState().currentPost;
+    if (currentPost?.id === action.postId) {
+      return of(currentPost);
+    }
+
     context.patchState({ status: 'busy' });
     return this.postsService.getPost(action.postId).pipe(
       tap((post) => {
@@ -76,8 +82,8 @@ export class PostsState {
   addPost(context: StateContext<PostsStateModel>, action: PostsActions.AddPost) {
     context.patchState({ status: 'busy' });
     return this.postsService.addPost(action.request).pipe(
-      tap((postId) => {
-        context.patchState({ status: 'ready' });
+      tap((post) => {
+        context.patchState({ status: 'ready', currentPost: post });
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });

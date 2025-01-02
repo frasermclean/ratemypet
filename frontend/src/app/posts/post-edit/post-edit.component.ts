@@ -7,10 +7,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
-import { Actions, dispatch, ofActionSuccessful } from '@ngxs/store';
+import { Actions, dispatch, ofActionSuccessful, select } from '@ngxs/store';
 import { ImageUploadComponent } from '@shared/components/image-upload/image-upload.component';
 import { NotificationService } from '@shared/services/notification.service';
 import { PostsActions } from '../posts.actions';
+import { PostsState } from '../posts.state';
 
 @Component({
   selector: 'app-post-edit',
@@ -29,6 +30,8 @@ import { PostsActions } from '../posts.actions';
 export class PostEditComponent {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   addPost = dispatch(PostsActions.AddPost);
+  currentPost = select(PostsState.currentPost);
+
   imageUpload = viewChild.required(ImageUploadComponent);
 
   formGroup = this.formBuilder.group({
@@ -42,10 +45,9 @@ export class PostEditComponent {
     actions$
       .pipe(ofActionSuccessful(PostsActions.AddPost))
       .pipe(takeUntilDestroyed())
-      .subscribe((postId) => {
+      .subscribe(() => {
         notificationService.showInformation('Post created successfully');
-        console.log(postId);
-        router.navigate(['/posts', postId]);
+        router.navigate(['/posts', this.currentPost()?.id]);
       });
   }
 
