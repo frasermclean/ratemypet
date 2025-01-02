@@ -1,14 +1,12 @@
 import { inject, Injectable } from '@angular/core';
-import { Navigate } from '@ngxs/router-plugin';
 import { Action, Selector, State, StateContext, StateToken } from '@ngxs/store';
-import { NotificationService } from '@shared/services/notification.service';
 import { catchError, of, tap } from 'rxjs';
 import { Post, SearchPostsMatch } from './post.models';
 import { PostsActions } from './posts.actions';
 import { PostsService } from './posts.service';
 
 interface PostsStateModel {
-  status: 'initial' | 'busy' | 'error' | 'ready';
+  status: 'ready' | 'busy' | 'error';
   error: any;
   matches: SearchPostsMatch[];
   totalMatches: number;
@@ -20,7 +18,7 @@ const POSTS_STATE_TOKEN = new StateToken<PostsStateModel>('posts');
 @State<PostsStateModel>({
   name: POSTS_STATE_TOKEN,
   defaults: {
-    status: 'initial',
+    status: 'ready',
     error: null,
     matches: [],
     totalMatches: 0,
@@ -30,7 +28,6 @@ const POSTS_STATE_TOKEN = new StateToken<PostsStateModel>('posts');
 @Injectable()
 export class PostsState {
   private readonly postsService = inject(PostsService);
-  private readonly notificationService = inject(NotificationService);
 
   @Action(PostsActions.SearchPosts)
   searchPosts(context: StateContext<PostsStateModel>) {
@@ -81,8 +78,6 @@ export class PostsState {
     return this.postsService.addPost(action.request).pipe(
       tap((postId) => {
         context.patchState({ status: 'ready' });
-        context.dispatch(new Navigate(['/posts', postId]));
-        this.notificationService.showInformation('Post created successfully');
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });
@@ -97,8 +92,6 @@ export class PostsState {
     return this.postsService.deletePost(action.postId).pipe(
       tap(() => {
         context.patchState({ status: 'ready' });
-        context.dispatch(new Navigate(['/posts']));
-        this.notificationService.showInformation('Post deleted successfully');
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });
@@ -147,7 +140,6 @@ export class PostsState {
             }
           });
         }
-        this.notificationService.showInformation('Comment added successfully.');
       })
     );
   }
@@ -161,7 +153,6 @@ export class PostsState {
           const comments = currentPost.comments.filter((comment) => comment.id !== action.commentId);
           context.patchState({ currentPost: { ...currentPost, commentCount: currentPost.commentCount - 1, comments } });
         }
-        this.notificationService.showInformation('Comment has been removed.');
       })
     );
   }

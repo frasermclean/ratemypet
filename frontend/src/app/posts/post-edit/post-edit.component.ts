@@ -1,12 +1,15 @@
 import { Component, inject, viewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { dispatch } from '@ngxs/store';
+import { Router } from '@angular/router';
+import { Actions, dispatch, ofActionSuccessful } from '@ngxs/store';
 import { ImageUploadComponent } from '@shared/components/image-upload/image-upload.component';
+import { NotificationService } from '@shared/services/notification.service';
 import { PostsActions } from '../posts.actions';
 
 @Component({
@@ -34,6 +37,17 @@ export class PostEditComponent {
     speciesId: [1, Validators.required],
     image: [null as File | null, Validators.required]
   });
+
+  constructor(actions$: Actions, notificationService: NotificationService, router: Router) {
+    actions$
+      .pipe(ofActionSuccessful(PostsActions.AddPost))
+      .pipe(takeUntilDestroyed())
+      .subscribe((postId) => {
+        notificationService.showInformation('Post created successfully');
+        console.log(postId);
+        router.navigate(['/posts', postId]);
+      });
+  }
 
   onImageFileChange(file: File | null) {
     this.formGroup.controls.image.setValue(file);

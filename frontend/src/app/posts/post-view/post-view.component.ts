@@ -5,8 +5,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { dispatch, select } from '@ngxs/store';
+import { Router } from '@angular/router';
+import { Actions, dispatch, ofActionSuccessful, select } from '@ngxs/store';
 import { ConfirmationComponent, ConfirmationData } from '@shared/components/confirmation/confirmation.component';
+import { NotificationService } from '@shared/services/notification.service';
 import { filter, Subject, takeUntil } from 'rxjs';
 import { AuthState } from '../../auth/auth.state';
 import { PostsActions } from '../posts.actions';
@@ -29,6 +31,18 @@ export class PostViewComponent implements OnInit, OnDestroy {
 
   private readonly dialog = inject(MatDialog);
   private readonly destroy$ = new Subject<void>();
+
+  constructor(notificationService: NotificationService, router: Router) {
+    const actions$ = inject(Actions);
+
+    actions$
+      .pipe(ofActionSuccessful(PostsActions.DeletePost))
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        notificationService.showInformation('Post deleted successfully');
+        router.navigate(['/posts']);
+      });
+  }
 
   ngOnInit(): void {
     this.getPost(this.postId());
