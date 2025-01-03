@@ -3,7 +3,7 @@ using SixLabors.ImageSharp.Web.Resolvers;
 
 namespace RateMyPet.Infrastructure.Services.ImageProcessing;
 
-public class AzureBlobStorageCacheResolver(BlobClient blobClient) : IImageCacheResolver
+public class BlobStorageImageCacheResolver(BlobClient blobClient) : IImageCacheResolver
 {
     public async Task<ImageCacheMetadata> GetMetaDataAsync()
     {

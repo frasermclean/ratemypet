@@ -16,10 +16,9 @@ public class PostImageProcessorTests
     private readonly ImageProcessingOptions options = new()
     {
         ContentType = "image/png",
-        PreviewWidth = 320,
-        PreviewHeight = 320,
-        FullWidth = 1024,
-        FullHeight = 1024,
+        ImageWidth = 1024,
+        ImageHeight = 1024,
+        ImagesContainerName = BlobContainerNames.Images,
         CacheContainerName = BlobContainerNames.ImagesCache
     };
 
@@ -51,8 +50,8 @@ public class PostImageProcessorTests
 
         // assert
         result.Should().BeSuccess();
-        outputImage.Width.Should().Be(options.PreviewWidth);
-        outputImage.Height.Should().Be(options.PreviewHeight);
+        outputImage.Width.Should().Be(options.ImageWidth);
+        outputImage.Height.Should().Be(options.ImageHeight);
         outputImage.Metadata.DecodedImageFormat!.DefaultMimeType.Should().Be(contentType);
     }
 

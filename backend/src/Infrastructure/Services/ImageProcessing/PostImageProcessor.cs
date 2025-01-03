@@ -19,10 +19,8 @@ public class PostImageProcessor(
     IBlobContainerManager containerManager) : IPostImageProcessor
 {
     private readonly string contentType = options.Value.ContentType;
-    private readonly int previewWidth = options.Value.PreviewWidth;
-    private readonly int previewHeight = options.Value.PreviewHeight;
-    private readonly int fullWidth = options.Value.FullWidth;
-    private readonly int fullHeight = options.Value.FullHeight;
+    private readonly int imageWidth = options.Value.ImageWidth;
+    private readonly int imageHeight = options.Value.ImageHeight;
 
     private readonly IImageEncoder imageEncoder = options.Value.ContentType switch
     {
@@ -73,7 +71,7 @@ public class PostImageProcessor(
         using var image = loadResult.Value;
 
         // validate image dimensions
-        if (image.Width < fullWidth || image.Height < fullHeight)
+        if (image.Width < imageWidth || image.Height < imageHeight)
         {
             logger.LogError("Image dimensions are too small, dimensions: {Width}x{Height}", image.Width,
                 image.Height);
@@ -83,7 +81,7 @@ public class PostImageProcessor(
         logger.LogInformation("Read image successfully, dimensions: {Width}x{Height}", image.Width, image.Height);
 
         var blobName = GetBlobName(post.Id);
-        await ResizeAndSaveImageAsync(image, previewWidth, previewHeight, blobName, cancellationToken);
+        await ResizeAndSaveImageAsync(image, imageWidth, imageHeight, blobName, cancellationToken);
 
         return blobName;
     }

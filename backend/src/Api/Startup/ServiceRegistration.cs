@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using RateMyPet.Core;
 using RateMyPet.Infrastructure;
 using RateMyPet.Infrastructure.Services;
-using SixLabors.ImageSharp.Web.DependencyInjection;
-using SixLabors.ImageSharp.Web.Providers.Azure;
 
 namespace RateMyPet.Api.Startup;
 
@@ -18,7 +16,6 @@ public static class ServiceRegistration
     {
         builder.Services
             .AddIdentity()
-            .AddImageSharp(builder.Configuration)
             .AddFastEndpoints()
             .AddInfrastructureServices(builder.Configuration)
             .AddDevelopmentCors(builder.Configuration, builder.Environment);
@@ -78,27 +75,6 @@ public static class ServiceRegistration
                 return Task.CompletedTask;
             };
         });
-
-        return services;
-    }
-
-    /// <summary>
-    /// Add ImageSharp.Web image processing middleware services
-    /// </summary>
-    private static IServiceCollection AddImageSharp(this IServiceCollection services, IConfiguration configuration)
-    {
-        var storageConnectionString = configuration.GetConnectionString("Storage");
-
-        services.AddImageSharp()
-            .ClearProviders()
-            .AddProvider<AzureBlobStorageImageProvider>()
-            .Configure<AzureBlobStorageImageProviderOptions>(options => options.BlobContainers.Add(
-                new AzureBlobContainerClientOptions
-                {
-                    ConnectionString = storageConnectionString,
-                    ContainerName = BlobContainerNames.Images
-                }))
-            .SetCache<Infrastructure.Services.ImageProcessing.AzureBlobStorageCache>();
 
         return services;
     }

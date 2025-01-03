@@ -6,7 +6,7 @@ using SixLabors.ImageSharp.Web.Resolvers;
 
 namespace RateMyPet.Infrastructure.Services.ImageProcessing;
 
-public class AzureBlobStorageCache(BlobServiceClient blobServiceClient, IOptions<ImageProcessingOptions> options)
+public class BlobStorageImageCache(BlobServiceClient blobServiceClient, IOptions<ImageProcessingOptions> options)
     : IImageCache
 {
     private readonly BlobContainerClient containerClient =
@@ -17,7 +17,7 @@ public class AzureBlobStorageCache(BlobServiceClient blobServiceClient, IOptions
         var blobClient = containerClient.GetBlobClient(key);
 
         return await blobClient.ExistsAsync()
-            ? new AzureBlobStorageCacheResolver(blobClient)
+            ? new BlobStorageImageCacheResolver(blobClient)
             : null;
     }
 
