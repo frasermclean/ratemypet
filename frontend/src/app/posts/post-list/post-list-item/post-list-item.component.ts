@@ -9,6 +9,7 @@ import { RouterLink } from '@angular/router';
 import { dispatch, select } from '@ngxs/store';
 import { GravatarComponent } from '@shared/components/gravatar/gravatar.component';
 import { NotificationService } from '@shared/services/notification.service';
+import { environment } from '../../../../environments/environment';
 import { AuthState } from '../../../auth/auth.state';
 import { allReactions, Reaction, SearchPostsMatch } from '../../post.models';
 import { PostsActions } from '../../posts.actions';
@@ -35,6 +36,10 @@ export class PostItemComponent {
   removePostReaction = dispatch(PostsActions.RemovePostReaction);
   updatePostReaction = dispatch(PostsActions.UpdatePostReaction);
   isLoggedIn = select(AuthState.isLoggedIn);
+
+  get imageUrl() {
+    return `${environment.apiBaseUrl}${this.postMatch().imagePath}?width=320&height=320&format=webp`;
+  }
 
   handleReaction(reaction: Reaction) {
     if (!this.isLoggedIn()) {

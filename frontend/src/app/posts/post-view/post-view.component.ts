@@ -10,6 +10,7 @@ import { Actions, dispatch, ofActionSuccessful, select } from '@ngxs/store';
 import { ConfirmationComponent, ConfirmationData } from '@shared/components/confirmation/confirmation.component';
 import { NotificationService } from '@shared/services/notification.service';
 import { filter, Subject, takeUntil } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { AuthState } from '../../auth/auth.state';
 import { PostsActions } from '../posts.actions';
 import { PostsState } from '../posts.state';
@@ -31,6 +32,11 @@ export class PostViewComponent implements OnInit, OnDestroy {
 
   private readonly dialog = inject(MatDialog);
   private readonly destroy$ = new Subject<void>();
+
+  get imageUrl() {
+    const post = this.post();
+    return post ? `${environment.apiBaseUrl}${post.imagePath}?width=1024&height=1024&format=webp` : '';
+  }
 
   constructor(actions$: Actions, notificationService: NotificationService, router: Router) {
     actions$

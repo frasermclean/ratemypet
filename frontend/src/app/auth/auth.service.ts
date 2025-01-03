@@ -8,7 +8,7 @@ import { ConfirmEmailRequest, LoginRequest, LoginResponse, RegisterRequest, Rese
 })
 export class AuthService {
   private readonly httpClient = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiBaseUrl}/auth`;
+  private readonly baseUrl = `${environment.apiBaseUrl}/api/auth`;
 
   public login(request: LoginRequest) {
     return this.httpClient.post<LoginResponse>(`${this.baseUrl}/login`, request);

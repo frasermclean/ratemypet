@@ -9,7 +9,7 @@ import { AddPostRequest, Post, PostComment, PostReactions, Reaction, SearchPosts
 @Injectable()
 export class PostsService {
   private readonly httpClient = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiBaseUrl}/posts`;
+  private readonly baseUrl = `${environment.apiBaseUrl}/api/posts`;
 
   searchPosts(): Observable<Paging<SearchPostsMatch>> {
     return this.httpClient.get<Paging<SearchPostsMatch>>(this.baseUrl);
@@ -52,5 +52,9 @@ export class PostsService {
 
   deletePostComment(postId: string, commentId: string) {
     return this.httpClient.delete(`${this.baseUrl}/${postId}/comments/${commentId}`);
+  }
+
+  getImageUrl(post: Post | SearchPostsMatch, width: number = 320, height: number = 320) {
+    return `${environment.apiBaseUrl}${post.imagePath}?width=${width}&height=${height}&format=webp`;
   }
 }
