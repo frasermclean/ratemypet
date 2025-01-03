@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure.Options;
+using RateMyPet.Infrastructure.Services.ImageProcessing;
 
 namespace RateMyPet.Infrastructure.Services;
 

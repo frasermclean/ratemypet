@@ -5,13 +5,12 @@ using Microsoft.Extensions.Options;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure.Errors;
-using RateMyPet.Infrastructure.Options;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Formats.Webp;
 
-namespace RateMyPet.Infrastructure.Services;
+namespace RateMyPet.Infrastructure.Services.ImageProcessing;
 
 public class PostImageProcessor(
     IOptions<ImageProcessingOptions> options,

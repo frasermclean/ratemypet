@@ -2,8 +2,7 @@
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure.Errors;
-using RateMyPet.Infrastructure.Options;
-using RateMyPet.Infrastructure.Services;
+using RateMyPet.Infrastructure.Services.ImageProcessing;
 using SixLabors.ImageSharp;
 using MicrosoftOptions = Microsoft.Extensions.Options.Options;
 
@@ -20,7 +19,8 @@ public class PostImageProcessorTests
         PreviewWidth = 320,
         PreviewHeight = 320,
         FullWidth = 1024,
-        FullHeight = 1024
+        FullHeight = 1024,
+        CacheContainerName = BlobContainerNames.ImagesCache
     };
 
     private readonly PostImageProcessor postImageProcessor;

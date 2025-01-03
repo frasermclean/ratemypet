@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using RateMyPet.Core;
 using RateMyPet.Infrastructure;
 using RateMyPet.Infrastructure.Services;
-using SixLabors.ImageSharp.Web.Caching.Azure;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Providers.Azure;
 
@@ -99,12 +98,7 @@ public static class ServiceRegistration
                     ConnectionString = storageConnectionString,
                     ContainerName = BlobContainerNames.Images
                 }))
-            .SetCache<AzureBlobStorageCache>()
-            .Configure<AzureBlobStorageCacheOptions>(options =>
-            {
-                options.ConnectionString = storageConnectionString!;
-                options.ContainerName = BlobContainerNames.ImagesCache;
-            });
+            .SetCache<Infrastructure.Services.ImageProcessing.AzureBlobStorageCache>();
 
         return services;
     }
