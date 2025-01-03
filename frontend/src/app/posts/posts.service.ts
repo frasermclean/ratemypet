@@ -4,15 +4,7 @@ import { Paging } from 'gridify-client';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
-import {
-  AddPostRequest,
-  Post,
-  PostComment,
-  PostReactions,
-  PostStatus,
-  Reaction,
-  SearchPostsMatch
-} from './post.models';
+import { AddPostRequest, Post, PostComment, PostReactions, Reaction, SearchPostsMatch } from './post.models';
 
 @Injectable()
 export class PostsService {
@@ -25,10 +17,6 @@ export class PostsService {
 
   getPost(postId: string): Observable<Post> {
     return this.httpClient.get<Post>(`${this.baseUrl}/${postId}`);
-  }
-
-  getPostStatus(postId: string): Observable<PostStatus> {
-    return this.httpClient.get<PostStatus>(`${this.baseUrl}/${postId}/status`);
   }
 
   /**

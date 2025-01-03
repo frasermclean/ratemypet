@@ -32,9 +32,7 @@ export class PostViewComponent implements OnInit, OnDestroy {
   private readonly dialog = inject(MatDialog);
   private readonly destroy$ = new Subject<void>();
 
-  constructor(notificationService: NotificationService, router: Router) {
-    const actions$ = inject(Actions);
-
+  constructor(actions$: Actions, notificationService: NotificationService, router: Router) {
     actions$
       .pipe(ofActionSuccessful(PostsActions.DeletePost))
       .pipe(takeUntil(this.destroy$))
@@ -56,12 +54,7 @@ export class PostViewComponent implements OnInit, OnDestroy {
   onDelete() {
     this.dialog
       .open<ConfirmationComponent, ConfirmationData, boolean>(ConfirmationComponent, {
-        data: {
-          title: 'Delete Post',
-          message: 'Are you sure you want to delete this post?',
-          confirmText: 'Yes, delete it',
-          cancelText: 'No, keep it'
-        }
+        data: DELETE_DIALOG_DATA
       })
       .afterClosed()
       .pipe(
@@ -71,3 +64,10 @@ export class PostViewComponent implements OnInit, OnDestroy {
       .subscribe(() => this.deletePost(this.postId()));
   }
 }
+
+const DELETE_DIALOG_DATA: ConfirmationData = {
+  title: 'Delete Post',
+  message: 'Are you sure you want to delete this post?',
+  confirmText: 'Yes, delete it',
+  cancelText: 'No, keep it'
+};

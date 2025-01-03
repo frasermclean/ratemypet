@@ -2,7 +2,7 @@ export interface SearchPostsMatch {
   id: string;
   title: string;
   description?: string;
-  imageUrl: string;
+  imagePath: string;
   authorUserName: string;
   authorEmailHash: string;
   speciesName: string;
@@ -17,23 +17,16 @@ export interface Post {
   id: string;
   title: string;
   description?: string;
-  imageUrl: string | null;
+  imagePath: string | null;
   authorUserName: string;
   authorEmailHash: string;
   speciesName: string;
-  status: PostStatus;
   createdAtUtc: string;
   updatedAtUtc?: string;
   userReaction?: Reaction;
   reactions: PostReactions;
   comments: PostComment[];
   commentCount: number;
-}
-
-export enum PostStatus {
-  Initial = 'initial',
-  Processed = 'processed',
-  InvalidImage = 'invalidImage'
 }
 
 export interface PostReactions {

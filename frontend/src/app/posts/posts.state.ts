@@ -55,25 +55,10 @@ export class PostsState {
     return this.postsService.getPost(action.postId).pipe(
       tap((post) => {
         context.patchState({ status: 'ready', currentPost: post });
-        if (post.status === 'initial') {
-          context.dispatch(new PostsActions.GetPostStatus(post.id));
-        }
       }),
       catchError((error) => {
         context.patchState({ status: 'error', error });
         return of(null);
-      })
-    );
-  }
-
-  @Action(PostsActions.GetPostStatus)
-  getPostStatus(context: StateContext<PostsStateModel>, action: PostsActions.GetPostStatus) {
-    return this.postsService.getPostStatus(action.postId).pipe(
-      tap((status) => {
-        const currentPost = context.getState().currentPost;
-        if (currentPost?.id === action.postId) {
-          context.patchState({ currentPost: { ...currentPost, status } });
-        }
       })
     );
   }
