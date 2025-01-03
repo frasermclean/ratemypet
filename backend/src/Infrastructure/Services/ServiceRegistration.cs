@@ -65,6 +65,10 @@ public static class ServiceRegistration
 
     private static IServiceCollection AddBlobContainerManagers(this IServiceCollection services)
     {
+        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.Images, (provider, _) =>
+            new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
+                .GetBlobContainerClient(BlobContainerNames.Images)));
+
         services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.OriginalImages, (provider, _) =>
             new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
                 .GetBlobContainerClient(BlobContainerNames.OriginalImages)));

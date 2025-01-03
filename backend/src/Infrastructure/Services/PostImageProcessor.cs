@@ -6,12 +6,10 @@ using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure.Errors;
 using RateMyPet.Infrastructure.Options;
-using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Formats.Webp;
-using SixLabors.ImageSharp.Processing;
 
 namespace RateMyPet.Infrastructure.Services;
 
@@ -41,10 +39,26 @@ public class PostImageProcessor(
         _ => ".jpg"
     };
 
-    public string GetBlobName(Guid postId, ImageSize size) =>
-        $"{postId}/{size.ToString().ToLowerInvariant()}{fileExtension}";
+    public string GetBlobName(Guid postId) => $"{postId}/processed{fileExtension}";
 
-    public async Task<Result<PostImage>> ProcessOriginalImageAsync(Stream stream, Post post,
+    public async Task<Result<(int Width, int Height)>> ValidateImageAsync(Stream stream,
+        CancellationToken cancellationToken = default)
+    {
+        var identifyResult = await Result.Try(
+            () => Image.IdentifyAsync(stream, cancellationToken),
+            ImageProcessingError.FromException);
+
+        if (identifyResult.IsFailed)
+        {
+            logger.LogError("Failed to identify image from stream");
+            return identifyResult.ToResult();
+        }
+
+        var imageInfo = identifyResult.Value;
+        return (imageInfo.Width, imageInfo.Height);
+    }
+
+    public async Task<Result<string>> ProcessOriginalImageAsync(Stream stream, Post post,
         CancellationToken cancellationToken = default)
     {
         var loadResult = await Result.Try(
@@ -69,18 +83,10 @@ public class PostImageProcessor(
 
         logger.LogInformation("Read image successfully, dimensions: {Width}x{Height}", image.Width, image.Height);
 
-        var previewBlobName = GetBlobName(post.Id, ImageSize.Preview);
-        var fullBlobName = GetBlobName(post.Id, ImageSize.Full);
+        var blobName = GetBlobName(post.Id);
+        await ResizeAndSaveImageAsync(image, previewWidth, previewHeight, blobName, cancellationToken);
 
-        await Task.WhenAll(
-            ResizeAndSaveImageAsync(image, previewWidth, previewHeight, previewBlobName, cancellationToken),
-            ResizeAndSaveImageAsync(image, fullWidth, fullHeight, fullBlobName, cancellationToken));
-
-        return new PostImage
-        {
-            PreviewBlobName = previewBlobName,
-            FullBlobName = fullBlobName
-        };
+        return blobName;
     }
 
     private async Task ResizeAndSaveImageAsync(Image source, int width, int height, string blobName,

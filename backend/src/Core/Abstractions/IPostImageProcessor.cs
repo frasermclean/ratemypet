@@ -4,8 +4,11 @@ namespace RateMyPet.Core.Abstractions;
 
 public interface IPostImageProcessor
 {
-    string GetBlobName(Guid postId, ImageSize size);
+    string GetBlobName(Guid postId);
 
-    Task<Result<PostImage>> ProcessOriginalImageAsync(Stream stream, Post post,
+    Task<Result<(int Width, int Height)>> ValidateImageAsync(Stream stream,
+        CancellationToken cancellationToken = default);
+
+    Task<Result<string>> ProcessOriginalImageAsync(Stream stream, Post post,
         CancellationToken cancellationToken = default);
 }

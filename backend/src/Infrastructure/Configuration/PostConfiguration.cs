@@ -8,9 +8,6 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
 {
     public void Configure(EntityTypeBuilder<Post> builder)
     {
-        builder.Property(post => post.Id)
-            .HasDefaultValueSql("newid()");
-
         builder.Property(post => post.Title)
             .HasMaxLength(Post.TitleMaxLength);
 
@@ -19,13 +16,22 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
 
         builder.OwnsOne(post => post.Image, imageBuilder =>
         {
-            imageBuilder.Property(image => image.PreviewBlobName)
+            imageBuilder.Property(image => image.BlobName)
                 .HasMaxLength(PostImage.BlobNameMaxLength)
-                .HasColumnName("ImagePreviewBlobName");
+                .HasColumnName("ImageBlobName");
 
-            imageBuilder.Property(image => image.FullBlobName)
-                .HasMaxLength(PostImage.BlobNameMaxLength)
-                .HasColumnName("ImageFullBlobName");
+            imageBuilder.Property(image => image.FileName)
+                .HasMaxLength(PostImage.FileNameMaxLength)
+                .HasColumnName("ImageFileName");
+
+            imageBuilder.Property(image => image.MimeType)
+                .HasMaxLength(PostImage.MimeTypeMaxLength)
+                .HasColumnName("ImageMimeType");
+
+            imageBuilder.Property(image => image.Width).HasColumnName("ImageWidth");
+            imageBuilder.Property(image => image.Height).HasColumnName("ImageHeight");
+            imageBuilder.Property(image => image.Size).HasColumnName("ImageSize");
+            imageBuilder.Property(image => image.IsProcessed).HasColumnName("ImageIsProcessed");
         });
 
         builder.Property(post => post.CreatedAtUtc)
@@ -38,7 +44,5 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(post => post.RowVersion)
             .IsRowVersion()
             .HasConversion<byte[]>();
-
-        builder.HasIndex(post => post.Status);
     }
 }

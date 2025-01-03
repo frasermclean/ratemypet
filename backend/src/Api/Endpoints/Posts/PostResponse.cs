@@ -8,11 +8,10 @@ public class PostResponse
     public required Guid Id { get; init; }
     public required string Title { get; init; }
     public string? Description { get; init; }
-    public required Uri? ImageUrl { get; init; }
+    public required string ImagePath { get; init; }
     public required string AuthorUserName { get; init; }
     public required string AuthorEmailHash { get; init; }
     public required string SpeciesName { get; init; }
-    public PostStatus Status { get; init; }
     public DateTime CreatedAtUtc { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

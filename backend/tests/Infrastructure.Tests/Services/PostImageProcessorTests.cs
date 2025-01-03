@@ -36,33 +36,24 @@ public class PostImageProcessorTests
     {
         // arrange
         var post = CreatePost();
-        var previewBlobName = postImageProcessor.GetBlobName(post.Id, ImageSize.Preview);
-        var fullBlobName = postImageProcessor.GetBlobName(post.Id, ImageSize.Full);
+        var blobName = postImageProcessor.GetBlobName(post.Id);
         var contentType = options.ContentType;
         await using var fileStream = File.OpenRead("Data/red_1600x1200.png");
-        const string previewFile = "preview.png";
-        const string fullFile = "full.png";
+        const string outputFile = "output.png";
 
         blobContainerManagerMock.Setup(manager =>
-                manager.OpenWriteStreamAsync(previewBlobName, contentType, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(File.OpenWrite(previewFile));
-        blobContainerManagerMock.Setup(manager =>
-                manager.OpenWriteStreamAsync(fullBlobName, contentType, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(File.OpenWrite(fullFile));
+                manager.OpenWriteStreamAsync(blobName, contentType, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(File.OpenWrite(outputFile));
 
         // act
         var result = await postImageProcessor.ProcessOriginalImageAsync(fileStream, post);
-        using var previewImage = await Image.LoadAsync(previewFile);
-        using var fullImage = await Image.LoadAsync(fullFile);
+        using var outputImage = await Image.LoadAsync(outputFile);
 
         // assert
         result.Should().BeSuccess();
-        previewImage.Width.Should().Be(options.PreviewWidth);
-        previewImage.Height.Should().Be(options.PreviewHeight);
-        previewImage.Metadata.DecodedImageFormat!.DefaultMimeType.Should().Be(contentType);
-        fullImage.Width.Should().Be(options.FullWidth);
-        fullImage.Height.Should().Be(options.FullHeight);
-        fullImage.Metadata.DecodedImageFormat!.DefaultMimeType.Should().Be(contentType);
+        outputImage.Width.Should().Be(options.PreviewWidth);
+        outputImage.Height.Should().Be(options.PreviewHeight);
+        outputImage.Metadata.DecodedImageFormat!.DefaultMimeType.Should().Be(contentType);
     }
 
     [Fact]
@@ -99,6 +90,14 @@ public class PostImageProcessorTests
     {
         Title = "My first post",
         User = new User(),
-        Species = new Species { Name = "Dog" }
+        Species = new Species { Name = "Dog" },
+        Image = new PostImage
+        {
+            BlobName = "original",
+            FileName = "image1.png",
+            MimeType = "image/png",
+            Width = 1024,
+            Height = 768
+        }
     };
 }

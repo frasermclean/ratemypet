@@ -1,17 +1,16 @@
-﻿using Azure.Storage.Blobs;
-using FastEndpoints;
+﻿using FastEndpoints;
 using Gridify;
 using Gridify.EntityFramework;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
-using RateMyPet.Infrastructure;
+using RateMyPet.Infrastructure.Extensions;
 using RateMyPet.Infrastructure.Services;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class SearchPostsEndpoint(ApplicationDbContext dbContext, BlobServiceClient blobServiceClient)
+public class SearchPostsEndpoint(ApplicationDbContext dbContext)
     : Endpoint<GridifyQuery, Results<Ok<Paging<SearchPostsMatch>>, BadRequest>>
 {
     public override void Configure()
@@ -30,13 +29,12 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext, BlobServiceClie
 
         var userId = User.GetUserId();
         var paging = await dbContext.Posts
-            .Where(post => post.Status == PostStatus.Processed)
             .Select(post => new SearchPostsMatch
             {
                 Id = post.Id,
                 Title = post.Title,
                 Description = post.Description,
-                ImageUrl = blobServiceClient.GetBlobUri(post.Image.PreviewBlobName, BlobContainerNames.PostImages),
+                ImagePath = post.GetImagePath(),
                 AuthorUserName = post.User.UserName!,
                 AuthorEmailHash = post.User.Email.ToSha256Hash(),
                 SpeciesName = post.Species.Name,

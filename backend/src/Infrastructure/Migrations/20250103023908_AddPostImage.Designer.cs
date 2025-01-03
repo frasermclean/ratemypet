@@ -12,7 +12,7 @@ using RateMyPet.Infrastructure.Services;
 namespace RateMyPet.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241230072553_AddPostImage")]
+    [Migration("20250103023908_AddPostImage")]
     partial class AddPostImage
     {
         /// <inheritdoc />
@@ -29,8 +29,7 @@ namespace RateMyPet.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("newid()");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .ValueGeneratedOnAdd()
@@ -51,9 +50,6 @@ namespace RateMyPet.Infrastructure.Migrations
                     b.Property<int>("SpeciesId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -69,8 +65,6 @@ namespace RateMyPet.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("SpeciesId");
-
-                    b.HasIndex("Status");
 
                     b.HasIndex("UserId");
 
@@ -499,18 +493,41 @@ namespace RateMyPet.Infrastructure.Migrations
                     b.OwnsOne("RateMyPet.Core.PostImage", "Image", b1 =>
                         {
                             b1.Property<Guid>("PostId")
-                                .ValueGeneratedOnAdd()
                                 .HasColumnType("uniqueidentifier");
 
-                            b1.Property<string>("FullBlobName")
-                                .HasMaxLength(64)
-                                .HasColumnType("nvarchar(64)")
-                                .HasColumnName("ImageFullBlobName");
+                            b1.Property<string>("BlobName")
+                                .IsRequired()
+                                .HasMaxLength(80)
+                                .HasColumnType("nvarchar(80)")
+                                .HasColumnName("ImageBlobName");
 
-                            b1.Property<string>("PreviewBlobName")
+                            b1.Property<string>("FileName")
+                                .IsRequired()
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)")
+                                .HasColumnName("ImageFileName");
+
+                            b1.Property<int>("Height")
+                                .HasColumnType("int")
+                                .HasColumnName("ImageHeight");
+
+                            b1.Property<bool>("IsProcessed")
+                                .HasColumnType("bit")
+                                .HasColumnName("ImageIsProcessed");
+
+                            b1.Property<string>("MimeType")
+                                .IsRequired()
                                 .HasMaxLength(64)
                                 .HasColumnType("nvarchar(64)")
-                                .HasColumnName("ImagePreviewBlobName");
+                                .HasColumnName("ImageMimeType");
+
+                            b1.Property<long>("Size")
+                                .HasColumnType("bigint")
+                                .HasColumnName("ImageSize");
+
+                            b1.Property<int>("Width")
+                                .HasColumnType("int")
+                                .HasColumnName("ImageWidth");
 
                             b1.HasKey("PostId");
 

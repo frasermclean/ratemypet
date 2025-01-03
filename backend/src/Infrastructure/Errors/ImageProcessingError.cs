@@ -1,5 +1,4 @@
 ﻿using FluentResults;
-using SixLabors.ImageSharp;
 
 namespace RateMyPet.Infrastructure.Errors;
 
