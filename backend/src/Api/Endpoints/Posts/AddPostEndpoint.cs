@@ -48,8 +48,8 @@ public class AddPostEndpoint(
 
         // upload image to blob storage
         imageStream.Position = 0;
-        var blobName = $"{postId}/original";
-        await imagesManager.CreateBlobAsync(blobName, imageStream, request.Image.ContentType, cancellationToken);
+        await imagesManager.CreateBlobAsync(postId.ToString(), imageStream, request.Image.ContentType,
+            cancellationToken);
 
         // create new post
         var post = new Post
@@ -61,7 +61,6 @@ public class AddPostEndpoint(
             Species = species,
             Image = new PostImage
             {
-                BlobName = blobName,
                 FileName = request.Image.FileName,
                 MimeType = request.Image.ContentType,
                 Width = width,

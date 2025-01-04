@@ -492,12 +492,6 @@ namespace RateMyPet.Persistence.Migrations
                             b1.Property<Guid>("PostId")
                                 .HasColumnType("uniqueidentifier");
 
-                            b1.Property<string>("BlobName")
-                                .IsRequired()
-                                .HasMaxLength(80)
-                                .HasColumnType("nvarchar(80)")
-                                .HasColumnName("ImageBlobName");
-
                             b1.Property<string>("FileName")
                                 .IsRequired()
                                 .HasMaxLength(256)

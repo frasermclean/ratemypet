@@ -12,7 +12,7 @@ using RateMyPet.Infrastructure.Services;
 namespace RateMyPet.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250103023908_AddPostImage")]
+    [Migration("20250104015733_AddPostImage")]
     partial class AddPostImage
     {
         /// <inheritdoc />
@@ -494,12 +494,6 @@ namespace RateMyPet.Infrastructure.Migrations
                         {
                             b1.Property<Guid>("PostId")
                                 .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("BlobName")
-                                .IsRequired()
-                                .HasMaxLength(80)
-                                .HasColumnType("nvarchar(80)")
-                                .HasColumnName("ImageBlobName");
 
                             b1.Property<string>("FileName")
                                 .IsRequired()

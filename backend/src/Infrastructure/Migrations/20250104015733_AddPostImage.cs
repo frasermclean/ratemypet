@@ -26,14 +26,6 @@ namespace RateMyPet.Infrastructure.Migrations
                 oldDefaultValueSql: "newid()");
 
             migrationBuilder.AddColumn<string>(
-                name: "ImageBlobName",
-                table: "Posts",
-                type: "nvarchar(80)",
-                maxLength: 80,
-                nullable: false,
-                defaultValue: "");
-
-            migrationBuilder.AddColumn<string>(
                 name: "ImageFileName",
                 table: "Posts",
                 type: "nvarchar(256)",
@@ -74,10 +66,6 @@ namespace RateMyPet.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "ImageBlobName",
-                table: "Posts");
-
             migrationBuilder.DropColumn(
                 name: "ImageFileName",
                 table: "Posts");

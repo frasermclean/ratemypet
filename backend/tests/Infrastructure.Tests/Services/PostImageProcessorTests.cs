@@ -92,7 +92,6 @@ public class PostImageProcessorTests
         Species = new Species { Name = "Dog" },
         Image = new PostImage
         {
-            BlobName = "original",
             FileName = "image1.png",
             MimeType = "image/png",
             Width = 1024,

@@ -36,7 +36,6 @@ public class ProcessAddedPost(
         // update post entity in database
         if (imageResult.IsSuccess)
         {
-            post.Image.BlobName = imageResult.Value;
             post.Image.IsProcessed = true;
             await dbContext.SaveChangesAsync(cancellationToken);
         }
