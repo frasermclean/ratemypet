@@ -10,8 +10,8 @@ namespace RateMyPet.Api.Endpoints.Posts;
 
 public class DeletePostEndpoint(
     ApplicationDbContext dbContext,
-    [FromKeyedServices(BlobContainerNames.OriginalImages)]
-    IBlobContainerManager blobContainerManager) : Endpoint<DeletePostRequest, Results<NoContent, NotFound>>
+    [FromKeyedServices(BlobContainerNames.Images)]
+    IBlobContainerManager imagesManager) : Endpoint<DeletePostRequest, Results<NoContent, NotFound>>
 {
     public override void Configure()
     {
@@ -33,7 +33,7 @@ public class DeletePostEndpoint(
         await dbContext.SaveChangesAsync(cancellationToken);
         Logger.LogInformation("Deleted post {PostId}", post.Id);
 
-        await blobContainerManager.DeleteBlobAsync(request.PostId.ToString(), cancellationToken);
+        await imagesManager.DeleteBlobAsync(post.Image.BlobName, cancellationToken);
 
         return TypedResults.NoContent();
     }
