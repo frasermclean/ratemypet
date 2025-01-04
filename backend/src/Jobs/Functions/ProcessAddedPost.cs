@@ -12,8 +12,8 @@ namespace RateMyPet.Jobs.Functions;
 public class ProcessAddedPost(
     ILogger<ProcessAddedPost> logger,
     ApplicationDbContext dbContext,
-    [FromKeyedServices(BlobContainerNames.OriginalImages)]
-    IBlobContainerManager originalImagesManager,
+    [FromKeyedServices(BlobContainerNames.Images)]
+    IBlobContainerManager imagesManager,
     IPostImageProcessor imageProcessor)
 {
     [Function(nameof(ProcessAddedPost))]
@@ -27,11 +27,10 @@ public class ProcessAddedPost(
             .FirstAsync(post => post.Id == message.PostId, cancellationToken);
 
         // get original image read stream
-        await using var originalReadStream =
-            await originalImagesManager.OpenReadStreamAsync(message.ImageBlobName, cancellationToken);
+        await using var readStream = await imagesManager.OpenReadStreamAsync(message.ImageBlobName, cancellationToken);
 
         // process the image
-        var imageResult = await imageProcessor.ProcessOriginalImageAsync(originalReadStream, post, cancellationToken);
+        var imageResult = await imageProcessor.ProcessOriginalImageAsync(readStream, post, cancellationToken);
 
         // update post entity in database
         if (imageResult.IsSuccess)

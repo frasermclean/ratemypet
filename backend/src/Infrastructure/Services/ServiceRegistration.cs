@@ -68,13 +68,9 @@ public static class ServiceRegistration
             new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
                 .GetBlobContainerClient(BlobContainerNames.Images)));
 
-        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.OriginalImages, (provider, _) =>
+        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.ImagesCache, (provider, _) =>
             new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
-                .GetBlobContainerClient(BlobContainerNames.OriginalImages)));
-
-        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.PostImages, (provider, _) =>
-            new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
-                .GetBlobContainerClient(BlobContainerNames.PostImages)));
+                .GetBlobContainerClient(BlobContainerNames.ImagesCache)));
 
         return services;
     }

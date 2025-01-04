@@ -15,8 +15,8 @@ namespace RateMyPet.Infrastructure.Services.ImageProcessing;
 public class PostImageProcessor(
     IOptions<ImageProcessingOptions> options,
     ILogger<PostImageProcessor> logger,
-    [FromKeyedServices(BlobContainerNames.PostImages)]
-    IBlobContainerManager containerManager) : IPostImageProcessor
+    [FromKeyedServices(BlobContainerNames.Images)]
+    IBlobContainerManager imagesManager) : IPostImageProcessor
 {
     private readonly string contentType = options.Value.ContentType;
     private readonly int imageWidth = options.Value.ImageWidth;
@@ -100,7 +100,7 @@ public class PostImageProcessor(
             .Resize(width, height)
         );
 
-        await using var stream = await containerManager.OpenWriteStreamAsync(blobName, contentType, cancellationToken);
+        await using var stream = await imagesManager.OpenWriteStreamAsync(blobName, contentType, cancellationToken);
 
         await resizedImage.SaveAsync(stream, imageEncoder, cancellationToken);
     }
