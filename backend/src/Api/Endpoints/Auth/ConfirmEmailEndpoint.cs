@@ -17,7 +17,8 @@ public class ConfirmEmailEndpoint(UserManager<User> userManager)
         AllowAnonymous();
     }
 
-    public override async Task<Results<NoContent, NotFound, ValidationProblem>> ExecuteAsync(ConfirmEmailRequest request,
+    public override async Task<Results<NoContent, NotFound, ValidationProblem>> ExecuteAsync(
+        ConfirmEmailRequest request,
         CancellationToken cancellationToken)
     {
         var user = await userManager.FindByIdAsync(request.UserId.ToString());
@@ -28,9 +29,14 @@ public class ConfirmEmailEndpoint(UserManager<User> userManager)
 
         var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Token));
         var result = await userManager.ConfirmEmailAsync(user, decodedToken);
+        if (!result.Succeeded)
+        {
+            return TypedResults.ValidationProblem(result.Errors.ToDictionary());
+        }
 
-        return result.Succeeded
-            ? TypedResults.NoContent()
-            : TypedResults.ValidationProblem(result.Errors.ToDictionary());
+        // assign default roles
+        await userManager.AddToRoleAsync(user, Role.Contributor);
+
+        return TypedResults.NoContent();
     }
 }
