@@ -70,9 +70,9 @@ public class BlobStorageImageProvider(
         set => match = value;
     }
 
-    private static bool IsMatch(HttpContext context)
+    private bool IsMatch(HttpContext context)
     {
         var path = context.Request.Path.Value?.TrimStart(SlashChars);
-        return path is not null && path.StartsWith(BlobContainerNames.Images, StringComparison.OrdinalIgnoreCase);
+        return path is not null && path.StartsWith(containerName, StringComparison.OrdinalIgnoreCase);
     }
 }
