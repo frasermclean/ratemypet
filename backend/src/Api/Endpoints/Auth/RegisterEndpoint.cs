@@ -37,6 +37,13 @@ public class RegisterEndpoint(
             return TypedResults.ValidationProblem(result.Errors.ToDictionary());
         }
 
+        // assign default roles
+        result = await userManager.AddToRoleAsync(user, Role.Contributor);
+        if (!result.Succeeded)
+        {
+            return TypedResults.ValidationProblem(result.Errors.ToDictionary());
+        }
+
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
         var confirmationToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
