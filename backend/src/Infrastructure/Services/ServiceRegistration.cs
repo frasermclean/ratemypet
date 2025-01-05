@@ -80,7 +80,7 @@ public static class ServiceRegistration
     /// </summary>
     private static IServiceCollection AddImageProcessing(this IServiceCollection services)
     {
-        services.AddImageSharp()
+        services.AddImageSharp(options => options.CacheHashLength = 16)
             .ClearProviders()
             .AddProvider<BlobStorageImageProvider>()
             .SetCache<BlobStorageImageCache>();
