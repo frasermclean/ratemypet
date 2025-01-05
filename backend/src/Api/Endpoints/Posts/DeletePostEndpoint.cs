@@ -1,10 +1,10 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure;
 using RateMyPet.Infrastructure.Services;
-using PostsPermissions = RateMyPet.Core.Security.Permissions.Posts;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
@@ -16,7 +16,7 @@ public class DeletePostEndpoint(
     public override void Configure()
     {
         Delete("posts/{postId:guid}");
-        Permissions(PostsPermissions.DeleteOwned);
+        Roles(Role.Contributor);
         PreProcessor<ModifyPostPreProcessor>();
     }
 

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
-using RateMyPet.Infrastructure.Extensions;
 using RateMyPet.Infrastructure.Services;
 
 namespace RateMyPet.Api.Endpoints.Posts;

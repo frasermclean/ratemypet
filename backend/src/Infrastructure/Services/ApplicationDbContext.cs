@@ -19,6 +19,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         base.OnModelCreating(modelBuilder);
 
         // rename Identity tables
+        modelBuilder.Entity<RoleClaim>().ToTable("RoleClaims");
         modelBuilder.Entity<UserClaim>().ToTable("UserClaims");
         modelBuilder.Entity<UserLogin>().ToTable("UserLogins");
         modelBuilder.Entity<UserToken>().ToTable("UserTokens");

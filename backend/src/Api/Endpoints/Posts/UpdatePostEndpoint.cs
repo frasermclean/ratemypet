@@ -1,8 +1,8 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using RateMyPet.Core;
 using RateMyPet.Infrastructure.Services;
-using PostsPermissions = RateMyPet.Core.Security.Permissions.Posts;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
@@ -12,7 +12,7 @@ public class UpdatePostEndpoint(ApplicationDbContext dbContext)
     public override void Configure()
     {
         Put("posts/{postId:guid}");
-        Permissions(PostsPermissions.EditOwned);
+        Roles(Role.Contributor);
         PreProcessor<ModifyPostPreProcessor>();
     }
 

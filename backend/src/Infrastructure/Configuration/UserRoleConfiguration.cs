@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RateMyPet.Core;
-using RateMyPet.Core.Security;
 
 namespace RateMyPet.Infrastructure.Configuration;
 
@@ -14,13 +13,13 @@ public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
         builder.HasData(
             new UserRole
             {
-                UserId = new Guid("fb8ad061-3a62-45f9-2202-08dd15f6fc85"),
-                RoleId = Roles.User.Id
+                UserId = UserConfiguration.DeveloperUserId,
+                RoleId = RoleConfiguration.ContributorId
             },
             new UserRole
             {
-                UserId = new Guid("fb8ad061-3a62-45f9-2202-08dd15f6fc85"),
-                RoleId = Roles.Administrator.Id
+                UserId = UserConfiguration.DeveloperUserId,
+                RoleId = RoleConfiguration.AdministratorId
             }
         );
     }

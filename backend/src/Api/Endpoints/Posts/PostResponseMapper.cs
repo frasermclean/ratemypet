@@ -1,7 +1,6 @@
 ﻿using FastEndpoints;
 using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
-using RateMyPet.Infrastructure.Extensions;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
