@@ -12,13 +12,9 @@ public static class PostExtensions
             return null;
         }
 
-        var scheme = request.Scheme;
         var host = request.Host;
-        var defaultPort = request.IsHttps ? 443 : 80;
-        var port = host.Port ?? defaultPort;
-        var path = $"/{BlobContainerNames.Images}/{post.Id}";
+        var port = host.Port is 5443 ? ":5443" : string.Empty;
 
-        return new UriBuilder(scheme, host.Host, port, path)
-            .Uri;
+        return new Uri($"https://{host.Host}{port}/{BlobContainerNames.Images}/{post.Id}");
     }
 }
