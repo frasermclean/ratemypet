@@ -28,7 +28,7 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
                 Id = post.Id,
                 Title = post.Title,
                 Description = post.Description,
-                ImagePath = post.GetImagePath(),
+                ImageUrl = post.GetImageUrl(HttpContext.Request),
                 AuthorUserName = post.User.UserName!,
                 AuthorEmailHash = post.User.Email.ToSha256Hash(),
                 SpeciesName = post.Species.Name,
