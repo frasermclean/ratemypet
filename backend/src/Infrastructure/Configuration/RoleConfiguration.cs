@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RateMyPet.Core;
-using RateMyPet.Core.Security;
-using RateMyPet.Infrastructure.Extensions;
 
 namespace RateMyPet.Infrastructure.Configuration;
 
@@ -16,9 +14,22 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
             .HasDatabaseName("IX_Roles_NormalizedName")
             .IsUnique();
 
-        builder.HasData([
-            Roles.User.ToRole(),
-            Roles.Administrator.ToRole()
-        ]);
+        builder.HasData(
+            new Role
+            {
+                Id = ContributorId,
+                Name = Role.Contributor,
+                NormalizedName = Role.Contributor.ToUpperInvariant()
+            },
+            new Role
+            {
+                Id = AdministratorId,
+                Name = Role.Administrator,
+                NormalizedName = Role.Administrator.ToUpperInvariant()
+            }
+        );
     }
+
+    internal static Guid ContributorId = new("57c523c9-0957-4834-8fce-ff37fa861c36");
+    internal static Guid AdministratorId = new("8e71eb35-2194-495b-b0e8-8690ebe7f918");
 }

@@ -18,23 +18,17 @@ public class DeletePostCommentEndpoint(ApplicationDbContext dbContext)
         var postId = Route<Guid>("postId");
         var commentId = Route<Guid>("commentId");
 
-        var comment = await dbContext.Posts
-            .Where(post => post.Id == postId)
-            .SelectMany(post => post.Comments)
-            .Where(comment => comment.Id == commentId)
-            .FirstOrDefaultAsync(cancellationToken);
+        var deletedCount = await dbContext.PostComments
+            .Where(comment => comment.Id == commentId && comment.Post.Id == postId)
+            .ExecuteDeleteAsync(cancellationToken);
 
-        if (comment is null)
+        if (deletedCount == 0)
         {
             Logger.LogError("Comment {CommentId} not found", commentId);
             return TypedResults.NotFound();
         }
 
-        dbContext.PostComments.Remove(comment);
-        await dbContext.SaveChangesAsync(cancellationToken);
-
         Logger.LogInformation("Deleted comment {CommentId} from post {PostId}", commentId, postId);
-
         return TypedResults.NoContent();
     }
 }

@@ -7,6 +7,7 @@ import { dispatch, select } from '@ngxs/store';
 import { RouterLink } from '@angular/router';
 import { GravatarComponent } from '@shared/components/gravatar/gravatar.component';
 import { AuthActions } from '../../../auth/auth.actions';
+import { Role } from '../../../auth/auth.models';
 import { AuthState } from '../../../auth/auth.state';
 
 @Component({
@@ -17,5 +18,7 @@ import { AuthState } from '../../../auth/auth.state';
 })
 export class UserMenuComponent {
   emailHash = select(AuthState.emailHash);
+  userRoles = select(AuthState.roles);
   logout = dispatch(AuthActions.Logout);
+  contributor = Role.Contributor;
 }

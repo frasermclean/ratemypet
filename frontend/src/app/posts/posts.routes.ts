@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { provideStates } from '@ngxs/store';
 import { isAuthenticated } from '@shared/guards/authenticated.guard';
+import { isRoleContributor } from '@shared/guards/role-contributor.guard';
 import { PostEditComponent } from './post-edit/post-edit.component';
 import { PostListComponent } from './post-list/post-list.component';
 import { PostViewComponent } from './post-view/post-view.component';
@@ -12,7 +13,7 @@ const routes: Routes = [
     path: '',
     pathMatch: 'prefix',
     children: [
-      { path: 'add', component: PostEditComponent, canActivate: [isAuthenticated] },
+      { path: 'add', component: PostEditComponent, canActivate: [isAuthenticated, isRoleContributor] },
       { path: ':postId', component: PostViewComponent },
       { path: '', component: PostListComponent, title: 'Posts' }
     ],

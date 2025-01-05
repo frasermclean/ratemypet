@@ -8,7 +8,7 @@
   </p>
   <div class="actions">
     <a mat-raised-button class="button" routerLink="/posts">View Latest Posts</a>
-    @if (userName()) {
+    @if (userRoles().includes(contributor)) {
     <a mat-raised-button class="button sign-up" routerLink="/posts/add">Create A New Post</a>
     } @else {
     <a mat-raised-button class="button sign-up" routerLink="/auth/register">Sign Up To Share</a>

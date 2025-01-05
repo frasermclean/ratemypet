@@ -9,7 +9,7 @@ export interface LoginResponse {
   userName: string;
   emailAddress: string;
   emailHash: string;
-  roles: string[];
+  roles: Role[];
 }
 
 export interface RegisterRequest {
@@ -23,16 +23,13 @@ export interface ConfirmEmailRequest {
   token: string;
 }
 
-export interface CurrentUserResponse {
-  id: string;
-  userName: string;
-  emailAddress: string;
-  emailHash: string;
-  roles: string[];
-}
-
 export interface ResetPasswordRequest {
   emailAddress: string;
   resetCode: string;
   newPassword: string;
+}
+
+export enum Role {
+  Contributor = 'Contributor',
+  Administrator = 'Administrator'
 }

@@ -12,6 +12,7 @@ public class AddPostCommentEndpoint(ApplicationDbContext dbContext)
     public override void Configure()
     {
         Post("posts/{postId:guid}/comments");
+        Roles(Role.Contributor);
     }
 
     public override async Task<Results<Ok<PostCommentResponse>, NotFound>> ExecuteAsync(AddPostCommentRequest request,

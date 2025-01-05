@@ -5,7 +5,6 @@ using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure;
 using RateMyPet.Infrastructure.Services;
-using PostsPermissions = RateMyPet.Core.Security.Permissions.Posts;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
@@ -19,7 +18,7 @@ public class AddPostEndpoint(
     public override void Configure()
     {
         Post("posts");
-        Permissions(PostsPermissions.Add);
+        Roles(Role.Contributor);
         AllowFormData();
         AllowFileUploads();
     }

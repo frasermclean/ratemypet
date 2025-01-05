@@ -7,7 +7,7 @@
 </button>
 
 <mat-menu #menu="matMenu">
-  <a mat-menu-item routerLink="/posts/add">
+  <a mat-menu-item routerLink="/posts/add" [disabled]="!userRoles().includes(contributor)">
     <mat-icon>add</mat-icon>
     <span>Create Post</span>
   </a>

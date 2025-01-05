@@ -1,33 +1,29 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure;
 using RateMyPet.Infrastructure.Services;
-using PostsPermissions = RateMyPet.Core.Security.Permissions.Posts;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
 public class DeletePostEndpoint(
     ApplicationDbContext dbContext,
     [FromKeyedServices(BlobContainerNames.Images)]
-    IBlobContainerManager imagesManager) : Endpoint<DeletePostRequest, Results<NoContent, NotFound>>
+    IBlobContainerManager imagesManager) : Endpoint<DeletePostRequest, NoContent>
 {
     public override void Configure()
     {
         Delete("posts/{postId:guid}");
-        Permissions(PostsPermissions.DeleteOwned);
+        Roles(Role.Contributor, Role.Administrator);
         PreProcessor<ModifyPostPreProcessor>();
     }
 
-    public override async Task<Results<NoContent, NotFound>> ExecuteAsync(DeletePostRequest request,
+    public override async Task<NoContent> ExecuteAsync(DeletePostRequest request,
         CancellationToken cancellationToken)
     {
-        var post = await dbContext.Posts.FirstOrDefaultAsync(post => post.Id == request.PostId, cancellationToken);
-        if (post is null)
-        {
-            return TypedResults.NotFound();
-        }
+        var post = await dbContext.Posts.FirstAsync(post => post.Id == request.PostId, cancellationToken);
 
         dbContext.Posts.Remove(post);
         await dbContext.SaveChangesAsync(cancellationToken);

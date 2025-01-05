@@ -11,7 +11,7 @@ public class SearchUsersEndpoint(UserManager<User> userManager) : Endpoint<Gridi
     public override void Configure()
     {
         Get("users");
-        Roles("Administrator");
+        Roles(Role.Administrator);
     }
 
     public override async Task<Paging<SearchUsersMatch>> ExecuteAsync(GridifyQuery query,

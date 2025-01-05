@@ -47,7 +47,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasData(
             new User
             {
-                Id = new Guid("fb8ad061-3a62-45f9-2202-08dd15f6fc85"),
+                Id = DeveloperUserId,
                 UserName = "frasermclean",
                 NormalizedUserName = "FRASERMCLEAN",
                 Email = "dev@frasermclean.com",
@@ -58,4 +58,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 ConcurrencyStamp = "591b07b3-192b-410c-b31a-063163d5dc06"
             });
     }
+
+    internal static Guid DeveloperUserId = new("fb8ad061-3a62-45f9-2202-08dd15f6fc85");
 }
