@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using RateMyPet.Core;
+﻿using RateMyPet.Core;
+using RateMyPet.Infrastructure;
 
-namespace RateMyPet.Infrastructure.Extensions;
+namespace RateMyPet.Api.Extensions;
 
 public static class PostExtensions
 {
