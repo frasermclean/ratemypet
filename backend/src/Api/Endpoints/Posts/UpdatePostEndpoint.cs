@@ -7,27 +7,22 @@ using RateMyPet.Infrastructure.Services;
 namespace RateMyPet.Api.Endpoints.Posts;
 
 public class UpdatePostEndpoint(ApplicationDbContext dbContext)
-    : Endpoint<UpdatePostRequest, Results<NoContent, NotFound, ErrorResponse, ForbidHttpResult>>
+    : Endpoint<UpdatePostRequest, Results<Ok<PostResponse>, ErrorResponse>, PostResponseMapper>
 {
     public override void Configure()
     {
         Put("posts/{postId:guid}");
-        Roles(Role.Contributor);
+        Roles(Role.Contributor, Role.Administrator);
         PreProcessor<ModifyPostPreProcessor>();
     }
 
-    public override async Task<Results<NoContent, NotFound, ErrorResponse, ForbidHttpResult>> ExecuteAsync(
+    public override async Task<Results<Ok<PostResponse>, ErrorResponse>> ExecuteAsync(
         UpdatePostRequest request, CancellationToken cancellationToken)
     {
         var post = await dbContext.Posts.Where(p => p.Id == request.PostId)
             .Include(p => p.Reactions)
             .Include(p => p.User)
-            .FirstOrDefaultAsync(cancellationToken);
-
-        if (post is null)
-        {
-            return TypedResults.NotFound();
-        }
+            .FirstAsync(cancellationToken);
 
         var species = await dbContext.Species.FirstOrDefaultAsync(s => s.Id == request.SpeciesId, cancellationToken);
         if (species is null)
@@ -43,6 +38,7 @@ public class UpdatePostEndpoint(ApplicationDbContext dbContext)
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return TypedResults.NoContent();
+        var response = Map.FromEntity(post);
+        return TypedResults.Ok(response);
     }
 }
