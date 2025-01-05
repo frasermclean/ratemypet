@@ -2,7 +2,7 @@ export interface SearchPostsMatch {
   id: string;
   title: string;
   description?: string;
-  imagePath: string;
+  imageUrl: string | null;
   authorUserName: string;
   authorEmailHash: string;
   speciesName: string;
@@ -17,7 +17,7 @@ export interface Post {
   id: string;
   title: string;
   description?: string;
-  imagePath: string | null;
+  imageUrl: string | null;
   authorUserName: string;
   authorEmailHash: string;
   speciesName: string;

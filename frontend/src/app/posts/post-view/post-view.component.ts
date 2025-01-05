@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject, input, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, inject, input, OnDestroy, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
@@ -10,7 +10,6 @@ import { Actions, dispatch, ofActionSuccessful, select } from '@ngxs/store';
 import { ConfirmationComponent, ConfirmationData } from '@shared/components/confirmation/confirmation.component';
 import { NotificationService } from '@shared/services/notification.service';
 import { filter, Subject, takeUntil } from 'rxjs';
-import { environment } from '../../../environments/environment';
 import { AuthState } from '../../auth/auth.state';
 import { PostsActions } from '../posts.actions';
 import { PostsState } from '../posts.state';
@@ -30,13 +29,13 @@ export class PostViewComponent implements OnInit, OnDestroy {
   readonly getPost = dispatch(PostsActions.GetPost);
   readonly deletePost = dispatch(PostsActions.DeletePost);
 
+  readonly imageUrl = computed(() => {
+    const post = this.post();
+    return post ? `${post.imageUrl}?width=1024&height=1024&format=webp` : '';
+  });
+
   private readonly dialog = inject(MatDialog);
   private readonly destroy$ = new Subject<void>();
-
-  get imageUrl() {
-    const post = this.post();
-    return post ? `${environment.apiBaseUrl}${post.imagePath}?width=1024&height=1024&format=webp` : '';
-  }
 
   constructor(actions$: Actions, notificationService: NotificationService, router: Router) {
     actions$

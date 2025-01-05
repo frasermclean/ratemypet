@@ -53,8 +53,4 @@ export class PostsService {
   deletePostComment(postId: string, commentId: string) {
     return this.httpClient.delete(`${this.baseUrl}/${postId}/comments/${commentId}`);
   }
-
-  getImageUrl(post: Post | SearchPostsMatch, width: number = 320, height: number = 320) {
-    return `${environment.apiBaseUrl}${post.imagePath}?width=${width}&height=${height}&format=webp`;
-  }
 }

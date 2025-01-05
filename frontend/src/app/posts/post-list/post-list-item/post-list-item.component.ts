@@ -1,5 +1,5 @@
 import { TitleCasePipe } from '@angular/common';
-import { Component, inject, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -9,7 +9,6 @@ import { RouterLink } from '@angular/router';
 import { dispatch, select } from '@ngxs/store';
 import { GravatarComponent } from '@shared/components/gravatar/gravatar.component';
 import { NotificationService } from '@shared/services/notification.service';
-import { environment } from '../../../../environments/environment';
 import { AuthState } from '../../../auth/auth.state';
 import { allReactions, Reaction, SearchPostsMatch } from '../../post.models';
 import { PostsActions } from '../../posts.actions';
@@ -32,14 +31,13 @@ import { PostsActions } from '../../posts.actions';
 export class PostItemComponent {
   private readonly notificationService = inject(NotificationService);
   postMatch = input.required<SearchPostsMatch>();
+  width = input(320);
+  height = input(320);
+  imageUrl = computed(() => `${this.postMatch().imageUrl}?width=${this.width()}&height=${this.height()}&format=webp`);
   reactions = allReactions;
   removePostReaction = dispatch(PostsActions.RemovePostReaction);
   updatePostReaction = dispatch(PostsActions.UpdatePostReaction);
   isLoggedIn = select(AuthState.isLoggedIn);
-
-  get imageUrl() {
-    return `${environment.apiBaseUrl}${this.postMatch().imagePath}?width=320&height=320&format=webp`;
-  }
 
   handleReaction(reaction: Reaction) {
     if (!this.isLoggedIn()) {

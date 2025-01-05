@@ -13,7 +13,7 @@
     }
   </mat-card-header>
   <a [routerLink]="post.id">
-    <img mat-card-image class="preview-image" [src]="imageUrl" [alt]="post.title" />
+    <img mat-card-image class="preview-image" [src]="imageUrl()" [alt]="post.title" />
   </a>
 
   <mat-card-actions>
