@@ -4,7 +4,7 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RateMyPet.Core.Abstractions;
-using RateMyPet.Infrastructure.Options;
+using RateMyPet.Infrastructure.Services.Email;
 using RateMyPet.Infrastructure.Services.ImageProcessing;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 
@@ -25,12 +25,8 @@ public static class ServiceRegistration
         services.AddAzureClients(configuration)
             .AddBlobContainerManagers()
             .AddImageProcessing()
-            .AddTransient<IPostImageProcessor, PostImageProcessor>()
-            .AddTransient<IEmailSender, EmailSender>()
+            .AddEmailSending()
             .AddSingleton<IMessagePublisher, MessagePublisher>();
-
-        services.AddOptions<EmailOptions>()
-            .BindConfiguration(EmailOptions.SectionName);
 
         return services;
     }
@@ -88,6 +84,19 @@ public static class ServiceRegistration
         services.AddOptions<ImageProcessingOptions>()
             .BindConfiguration(ImageProcessingOptions.SectionName)
             .ValidateDataAnnotations();
+
+        services.AddTransient<IPostImageProcessor, PostImageProcessor>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddEmailSending(this IServiceCollection services)
+    {
+        services.AddOptions<EmailOptions>()
+            .BindConfiguration(EmailOptions.SectionName)
+            .ValidateDataAnnotations();
+
+        services.AddTransient<IEmailSender, EmailSender>();
 
         return services;
     }

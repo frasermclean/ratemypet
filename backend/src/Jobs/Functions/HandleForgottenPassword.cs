@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Messages;
 using RateMyPet.Infrastructure;
-using RateMyPet.Infrastructure.Options;
+using RateMyPet.Infrastructure.Services.Email;
 
 namespace RateMyPet.Jobs.Functions;
 

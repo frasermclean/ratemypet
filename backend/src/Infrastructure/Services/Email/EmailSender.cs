@@ -3,9 +3,8 @@ using Azure.Communication.Email;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RateMyPet.Core.Abstractions;
-using RateMyPet.Infrastructure.Options;
 
-namespace RateMyPet.Infrastructure.Services;
+namespace RateMyPet.Infrastructure.Services.Email;
 
 public class EmailSender(
     IOptions<EmailOptions> options,
