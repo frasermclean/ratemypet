@@ -19,7 +19,7 @@
     <p>No posts found that match the search criteria.</p>
     <button mat-raised-button (click)="searchPosts()">Try again</button>
   </div>
-  } @if (isLoggedIn()) {
+  } @if (userRoles().includes(contributor)) {
   <a mat-fab matTooltip="Create Post" class="add-post-button" routerLink="add" title="Create Post">
     <mat-icon>add</mat-icon>
   </a>

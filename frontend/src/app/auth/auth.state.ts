@@ -6,6 +6,7 @@ import { NotificationService } from '@shared/services/notification.service';
 import { TelemetryService } from '@shared/services/telemetry.service';
 import { catchError, finalize, of, tap } from 'rxjs';
 import { AuthActions } from './auth.actions';
+import { Role } from './auth.models';
 import { AuthService } from './auth.service';
 
 interface AuthStateModel {
@@ -15,7 +16,7 @@ interface AuthStateModel {
   userName: string | null;
   emailAddress: string | null;
   emailHash: string | null;
-  roles: string[];
+  roles: Role[];
 }
 
 const AUTH_STATE_TOKEN = new StateToken<AuthStateModel>('auth');
@@ -211,5 +212,10 @@ export class AuthState implements NgxsOnInit {
   @Selector([AUTH_STATE_TOKEN])
   static emailHash(state: AuthStateModel) {
     return state.emailHash;
+  }
+
+  @Selector([AUTH_STATE_TOKEN])
+  static roles(state: AuthStateModel) {
+    return state.roles;
   }
 }
