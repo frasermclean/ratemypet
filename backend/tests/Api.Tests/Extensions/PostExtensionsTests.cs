@@ -37,7 +37,8 @@ public class PostExtensionsTests
 
         // assert
         uri.Should().NotBeNull();
-        uri!.Scheme.Should().Be("https");
+        uri!.ToString().Should().Contain(host);
+        uri.Scheme.Should().Be("https");
         uri.AbsolutePath.Should().Be($"/{BlobContainerNames.Images}/{post.Id}");
         uri.Port.Should().Be(expectedPort);
     }

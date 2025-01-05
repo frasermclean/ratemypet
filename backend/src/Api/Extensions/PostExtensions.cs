@@ -13,7 +13,7 @@ public static class PostExtensions
         }
 
         var host = request.Host;
-        var port = host.Port is 443 or 80 ? "" : $":{host.Port}";
+        var port = host.Port is 5443 ? ":5443" : string.Empty;
 
         return new Uri($"https://{host.Host}{port}/{BlobContainerNames.Images}/{post.Id}");
     }
