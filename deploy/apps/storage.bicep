@@ -15,6 +15,17 @@ param tags object = {
   appEnv: appEnv
 }
 
+var containerNames = [
+  'images'
+  'images-cache'
+]
+
+var queueNames = [
+  'forgot-password'
+  'post-added'
+  'register-confirmation'
+]
+
 // storage account
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: '${workload}${appEnv}'
@@ -34,37 +45,32 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   resource blobServices 'blobServices' = {
     name: 'default'
 
-    resource postImagesContainer 'containers' = {
-      name: 'post-images'
-      properties: {
-        publicAccess: 'Blob'
+    resource containers 'containers' = [
+      for containerName in containerNames: {
+        name: containerName
       }
-    }
-
-    resource originalImagesContainer 'containers' = {
-      name: 'original-images'
-    }
+    ]
   }
 
   resource queueServices 'queueServices' = {
     name: 'default'
 
-    resource forgotPasswordQueue 'queues' = {
-      name: 'forgot-password'
-    }
-
-    resource postAddedQueue 'queues' = {
-      name: 'post-added'
-    }
-
-    resource registerConfirmationQueue 'queues' = {
-      name: 'register-confirmation'
-    }
+    resource queues 'queues' = [
+      for queueName in queueNames: {
+        name: queueName
+      }
+    ]
   }
 }
 
 @description('Name of the storage account')
 output accountName string = storageAccount.name
+
+@description('Name of the images blob storage container')
+output imagesContainerName string = storageAccount::blobServices::containers[0].name
+
+@description('Name of the images cache blob storage container')
+output imagesCacheContainerName string = storageAccount::blobServices::containers[1].name
 
 @description('Blob endpoint')
 output blobEndpoint string = storageAccount.properties.primaryEndpoints.blob

@@ -1,14 +1,6 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import {
-  ApplicationConfig,
-  ErrorHandler,
-  inject,
-  provideAppInitializer,
-  provideZoneChangeDetection
-} from '@angular/core';
-import { MatIconRegistry } from '@angular/material/icon';
+import { ApplicationConfig, ErrorHandler, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
-import { DomSanitizer } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, TitleStrategy, withComponentInputBinding } from '@angular/router';
 import { ApplicationinsightsAngularpluginErrorService } from '@microsoft/applicationinsights-angularplugin-js';
@@ -16,8 +8,8 @@ import { withNgxsRouterPlugin } from '@ngxs/router-plugin';
 import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { provideStore } from '@ngxs/store';
 import { PageTitleService } from '@shared/services/page-title.service';
-import { TelemetryService } from '@shared/services/telemetry.service';
 import { environment } from '../environments/environment';
+import initializeApp from './app.initializer';
 import { routes } from './app.routes';
 import { authInterceptor } from './auth/auth.interceptor';
 import { AuthState } from './auth/auth.state';
@@ -54,16 +46,3 @@ export const appConfig: ApplicationConfig = {
     }
   ]
 };
-
-function initializeApp() {
-  const iconRegistry = inject(MatIconRegistry);
-  const sanitizer = inject(DomSanitizer);
-  const telemetryService = inject(TelemetryService);
-
-  iconRegistry.addSvgIconResolver((name, namespace) => {
-    const path = `icons/${namespace}/${name}.svg`;
-    return sanitizer.bypassSecurityTrustResourceUrl(path);
-  });
-
-  telemetryService.initialize();
-}

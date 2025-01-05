@@ -1,16 +1,17 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using RateMyPet.Persistence;
-using RateMyPet.Persistence.Services;
+using RateMyPet.Core.Abstractions;
+using RateMyPet.Infrastructure;
+using RateMyPet.Infrastructure.Services;
 using PostsPermissions = RateMyPet.Core.Security.Permissions.Posts;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
 public class DeletePostEndpoint(
     ApplicationDbContext dbContext,
-    [FromKeyedServices(BlobContainerNames.OriginalImages)]
-    IBlobContainerManager blobContainerManager) : Endpoint<DeletePostRequest, Results<NoContent, NotFound>>
+    [FromKeyedServices(BlobContainerNames.Images)]
+    IBlobContainerManager imagesManager) : Endpoint<DeletePostRequest, Results<NoContent, NotFound>>
 {
     public override void Configure()
     {
@@ -32,7 +33,7 @@ public class DeletePostEndpoint(
         await dbContext.SaveChangesAsync(cancellationToken);
         Logger.LogInformation("Deleted post {PostId}", post.Id);
 
-        await blobContainerManager.DeleteBlobAsync(request.PostId.ToString(), cancellationToken);
+        await imagesManager.DeleteBlobAsync(post.Id.ToString(), cancellationToken);
 
         return TypedResults.NoContent();
     }

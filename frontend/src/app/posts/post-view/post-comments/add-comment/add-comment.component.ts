@@ -1,9 +1,11 @@
 import { Component, inject, input } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { dispatch } from '@ngxs/store';
+import { Actions, dispatch, ofActionSuccessful } from '@ngxs/store';
+import { NotificationService } from '@shared/services/notification.service';
 import { Post } from '../../../post.models';
 import { PostsActions } from '../../../posts.actions';
 
@@ -20,14 +22,19 @@ export class AddCommentComponent {
     content: ['', Validators.required]
   });
 
+  constructor(actions$: Actions, notificationService: NotificationService) {
+    actions$
+      .pipe(ofActionSuccessful(PostsActions.AddPostComment))
+      .pipe(takeUntilDestroyed())
+      .subscribe((x) => {
+        notificationService.showInformation('Comment added successfully.');
+      });
+  }
+
   addPostComment = dispatch(PostsActions.AddPostComment);
 
   onSubmit() {
-    const postId = this.post()?.id;
-    if (!postId) {
-      return;
-    }
-
+    const postId = this.post().id;
     const content = this.formGroup.getRawValue().content;
     this.addPostComment(postId, content);
     this.formGroup.reset();

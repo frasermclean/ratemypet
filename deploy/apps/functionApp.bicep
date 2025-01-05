@@ -27,6 +27,12 @@ param communicationServiceName string = 'ratemypet-shared-acs'
 @description('Name of the Azure Storage Account to use for the function app')
 param storageAccountName string
 
+@description('Name of the images blob storage container')
+param imagesContainerName string
+
+@description('Name of the images cache blob storage container')
+param imagesCacheContainerName string
+
 @description('Database connection string')
 param databaseConnectionString string
 
@@ -110,6 +116,26 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
         {
           name: 'Email__SenderAddress'
           value: 'no-reply@notify.ratemy.pet'
+        }
+        {
+          name: 'ImageProcessing__ContentType'
+          value: 'image/webp'
+        }
+        {
+          name: 'ImageProcessing__ImageWidth'
+          value: '1024'
+        }
+        {
+          name: 'ImageProcessing__ImageHeight'
+          value: '1024'
+        }
+        {
+          name: 'ImageProcessing__ImagesContainerName'
+          value: imagesContainerName
+        }
+        {
+          name: 'ImageProcessing__CacheContainerName'
+          value: imagesCacheContainerName
         }
       ]
       connectionStrings: [

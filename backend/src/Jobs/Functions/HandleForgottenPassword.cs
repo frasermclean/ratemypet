@@ -1,10 +1,10 @@
 ﻿using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Messages;
-using RateMyPet.Jobs.Options;
-using RateMyPet.Jobs.Services;
-using RateMyPet.Persistence;
+using RateMyPet.Infrastructure;
+using RateMyPet.Infrastructure.Services.Email;
 
 namespace RateMyPet.Jobs.Functions;
 

@@ -1,12 +1,14 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject, input, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, inject, input, OnDestroy, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { dispatch, select } from '@ngxs/store';
+import { Router } from '@angular/router';
+import { Actions, dispatch, ofActionSuccessful, select } from '@ngxs/store';
 import { ConfirmationComponent, ConfirmationData } from '@shared/components/confirmation/confirmation.component';
+import { NotificationService } from '@shared/services/notification.service';
 import { filter, Subject, takeUntil } from 'rxjs';
 import { AuthState } from '../../auth/auth.state';
 import { PostsActions } from '../posts.actions';
@@ -27,8 +29,23 @@ export class PostViewComponent implements OnInit, OnDestroy {
   readonly getPost = dispatch(PostsActions.GetPost);
   readonly deletePost = dispatch(PostsActions.DeletePost);
 
+  readonly imageUrl = computed(() => {
+    const post = this.post();
+    return post ? `${post.imageUrl}?width=1024&height=1024&format=webp` : '';
+  });
+
   private readonly dialog = inject(MatDialog);
   private readonly destroy$ = new Subject<void>();
+
+  constructor(actions$: Actions, notificationService: NotificationService, router: Router) {
+    actions$
+      .pipe(ofActionSuccessful(PostsActions.DeletePost))
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        notificationService.showInformation('Post deleted successfully');
+        router.navigate(['/posts']);
+      });
+  }
 
   ngOnInit(): void {
     this.getPost(this.postId());
@@ -42,12 +59,7 @@ export class PostViewComponent implements OnInit, OnDestroy {
   onDelete() {
     this.dialog
       .open<ConfirmationComponent, ConfirmationData, boolean>(ConfirmationComponent, {
-        data: {
-          title: 'Delete Post',
-          message: 'Are you sure you want to delete this post?',
-          confirmText: 'Yes, delete it',
-          cancelText: 'No, keep it'
-        }
+        data: DELETE_DIALOG_DATA
       })
       .afterClosed()
       .pipe(
@@ -57,3 +69,10 @@ export class PostViewComponent implements OnInit, OnDestroy {
       .subscribe(() => this.deletePost(this.postId()));
   }
 }
+
+const DELETE_DIALOG_DATA: ConfirmationData = {
+  title: 'Delete Post',
+  message: 'Are you sure you want to delete this post?',
+  confirmText: 'Yes, delete it',
+  cancelText: 'No, keep it'
+};

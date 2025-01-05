@@ -1,10 +1,10 @@
 ﻿using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Messages;
-using RateMyPet.Jobs.Options;
-using RateMyPet.Jobs.Services;
-using RateMyPet.Persistence;
+using RateMyPet.Infrastructure;
+using RateMyPet.Infrastructure.Services.Email;
 
 namespace RateMyPet.Jobs.Functions;
 
@@ -17,7 +17,8 @@ public class HandleRegisterConfirmation(
 
     [Function(nameof(HandleRegisterConfirmation))]
     public async Task ExecuteAsync(
-        [QueueTrigger(QueueNames.RegisterConfirmation)] RegisterConfirmationMessage message,
+        [QueueTrigger(QueueNames.RegisterConfirmation)]
+        RegisterConfirmationMessage message,
         CancellationToken cancellationToken)
     {
         const string subject = "Confirm your email";
@@ -31,7 +32,6 @@ public class HandleRegisterConfirmation(
                            <p>Please confirm your account by <a href='{confirmationLink}'>clicking here</a>.</p>
                            </body></html>
                            """;
-
 
         await emailSender.SendEmailAsync(message.EmailAddress, subject, htmlMessage, cancellationToken);
         logger.LogInformation("Sent registration confirmation email to {EmailAddress}", message.EmailAddress);

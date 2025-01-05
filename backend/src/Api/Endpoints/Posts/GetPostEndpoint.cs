@@ -1,18 +1,15 @@
-﻿using Azure.Storage.Blobs;
-using FastEndpoints;
+﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
-using RateMyPet.Persistence;
-using RateMyPet.Persistence.Services;
+using RateMyPet.Infrastructure.Extensions;
+using RateMyPet.Infrastructure.Services;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class GetPostEndpoint(
-    ApplicationDbContext dbContext,
-    BlobServiceClient blobServiceClient)
-    : EndpointWithoutRequest<Results<Ok<GetPostResponse>, NotFound>>
+public class GetPostEndpoint(ApplicationDbContext dbContext)
+    : EndpointWithoutRequest<Results<Ok<PostResponse>, NotFound>>
 {
     public override void Configure()
     {
@@ -20,19 +17,18 @@ public class GetPostEndpoint(
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok<GetPostResponse>, NotFound>> ExecuteAsync(CancellationToken cancellationToken)
+    public override async Task<Results<Ok<PostResponse>, NotFound>> ExecuteAsync(CancellationToken cancellationToken)
     {
         var postId = Route<Guid>("postId");
         var userId = User.GetUserId();
 
         var response = await dbContext.Posts.Where(post => post.Id == postId)
-            .Select(post => new GetPostResponse
+            .Select(post => new PostResponse
             {
                 Id = post.Id,
                 Title = post.Title,
                 Description = post.Description,
-                ImageUrl = blobServiceClient.GetBlobUri(post.GetImageBlobName(ImageSize.Full),
-                    BlobContainerNames.PostImages),
+                ImageUrl = post.GetImageUrl(HttpContext.Request),
                 AuthorUserName = post.User.UserName!,
                 AuthorEmailHash = post.User.Email.ToSha256Hash(),
                 SpeciesName = post.Species.Name,

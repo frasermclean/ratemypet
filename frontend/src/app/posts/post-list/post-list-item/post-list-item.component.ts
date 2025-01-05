@@ -1,5 +1,5 @@
 import { TitleCasePipe } from '@angular/common';
-import { Component, inject, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -31,6 +31,9 @@ import { PostsActions } from '../../posts.actions';
 export class PostItemComponent {
   private readonly notificationService = inject(NotificationService);
   postMatch = input.required<SearchPostsMatch>();
+  width = input(320);
+  height = input(320);
+  imageUrl = computed(() => `${this.postMatch().imageUrl}?width=${this.width()}&height=${this.height()}&format=webp`);
   reactions = allReactions;
   removePostReaction = dispatch(PostsActions.RemovePostReaction);
   updatePostReaction = dispatch(PostsActions.UpdatePostReaction);

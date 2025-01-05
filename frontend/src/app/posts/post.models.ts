@@ -2,7 +2,7 @@ export interface SearchPostsMatch {
   id: string;
   title: string;
   description?: string;
-  imageUrl: string;
+  imageUrl: string | null;
   authorUserName: string;
   authorEmailHash: string;
   speciesName: string;
@@ -17,7 +17,7 @@ export interface Post {
   id: string;
   title: string;
   description?: string;
-  imageUrl: string;
+  imageUrl: string | null;
   authorUserName: string;
   authorEmailHash: string;
   speciesName: string;
@@ -58,7 +58,7 @@ export enum Reaction {
   Funny = 'funny',
   Crazy = 'crazy',
   Wow = 'wow',
-  Sad = 'sad',
+  Sad = 'sad'
 }
 
 export const allReactions: Reaction[] = [Reaction.Like, Reaction.Funny, Reaction.Crazy, Reaction.Wow, Reaction.Sad];

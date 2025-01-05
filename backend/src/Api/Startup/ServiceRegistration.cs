@@ -1,15 +1,12 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
-using Azure.Storage.Blobs;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Azure;
 using RateMyPet.Core;
-using RateMyPet.Persistence;
-using RateMyPet.Persistence.Services;
+using RateMyPet.Infrastructure;
+using RateMyPet.Infrastructure.Services;
 
 namespace RateMyPet.Api.Startup;
 
@@ -18,10 +15,10 @@ public static class ServiceRegistration
     public static WebApplicationBuilder RegisterServices(this WebApplicationBuilder builder)
     {
         builder.Services
-            .AddPersistence(builder.Configuration)
             .AddIdentity()
             .AddFastEndpoints()
-            .AddSingleton<IMessagePublisher, MessagePublisher>();
+            .AddInfrastructureServices(builder.Configuration)
+            .AddDevelopmentCors(builder.Configuration, builder.Environment);
 
         // open telemetry
         builder.Services.AddOpenTelemetry()
@@ -45,54 +42,7 @@ public static class ServiceRegistration
             options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
         });
 
-        // local development services
-        if (builder.Environment.IsDevelopment())
-        {
-            builder.Services.AddDevelopmentCors(builder.Configuration["Frontend:BaseUrl"]!);
-        }
-
         return builder;
-    }
-
-    private static IServiceCollection AddPersistence(this IServiceCollection services,
-        ConfigurationManager configuration)
-    {
-        services.AddDbContextFactory<ApplicationDbContext>(builder =>
-        {
-            var connectionString = configuration.GetConnectionString("Database");
-            builder.UseSqlServer(connectionString);
-        });
-
-        services.AddAzureClients(factoryBuilder =>
-        {
-            // use connection string if endpoints are not provided
-            var blobEndpoint = configuration["Storage:BlobEndpoint"];
-            var queueEndpoint = configuration["Storage:QueueEndpoint"];
-            if (string.IsNullOrEmpty(blobEndpoint) || string.IsNullOrEmpty(queueEndpoint))
-            {
-                var connectionString = configuration.GetConnectionString("Storage");
-                factoryBuilder.AddBlobServiceClient(connectionString);
-                factoryBuilder.AddQueueServiceClient(connectionString);
-            }
-            else
-            {
-                factoryBuilder.AddBlobServiceClient(new Uri(blobEndpoint));
-                factoryBuilder.AddQueueServiceClient(new Uri(queueEndpoint));
-            }
-
-            factoryBuilder.UseCredential(TokenCredentialFactory.Create());
-            factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
-        });
-
-        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.OriginalImages, (provider, _) =>
-            new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
-                .GetBlobContainerClient(BlobContainerNames.OriginalImages)));
-
-        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.PostImages, (provider, _) =>
-            new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
-                .GetBlobContainerClient(BlobContainerNames.PostImages)));
-
-        return services;
     }
 
     private static IServiceCollection AddIdentity(this IServiceCollection services)
@@ -132,12 +82,22 @@ public static class ServiceRegistration
     /// <summary>
     /// Add CORS policy for local development environment
     /// </summary>
-    private static IServiceCollection AddDevelopmentCors(this IServiceCollection services, string frontEndBaseUrl)
-        => services.AddCors(options => options.AddDefaultPolicy(policyBuilder => policyBuilder
-            .WithOrigins(frontEndBaseUrl)
+    private static void AddDevelopmentCors(this IServiceCollection services,
+        ConfigurationManager configuration, IWebHostEnvironment environment)
+    {
+        // only add CORS policy in development environment
+        if (!environment.IsDevelopment())
+        {
+            return;
+        }
+
+        var frontEndBaseUrl = configuration["Frontend:BaseUrl"];
+        services.AddCors(options => options.AddDefaultPolicy(policyBuilder => policyBuilder
+            .WithOrigins(frontEndBaseUrl!)
             .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .AllowAnyHeader()
             .AllowCredentials()
             .WithExposedHeaders("Location")
             .SetPreflightMaxAge(TimeSpan.FromMinutes(10))));
+    }
 }

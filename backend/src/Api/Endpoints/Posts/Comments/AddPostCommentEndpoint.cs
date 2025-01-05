@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
-using RateMyPet.Persistence.Services;
+using RateMyPet.Infrastructure.Services;
 
 namespace RateMyPet.Api.Endpoints.Posts.Comments;
 

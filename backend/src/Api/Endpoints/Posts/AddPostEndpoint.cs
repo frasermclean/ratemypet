@@ -2,20 +2,19 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
-using RateMyPet.Core.Messages;
-using RateMyPet.Persistence;
-using RateMyPet.Persistence.Services;
-using SpeciesModel = RateMyPet.Core.Species;
+using RateMyPet.Core.Abstractions;
+using RateMyPet.Infrastructure;
+using RateMyPet.Infrastructure.Services;
 using PostsPermissions = RateMyPet.Core.Security.Permissions.Posts;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
 public class AddPostEndpoint(
     ApplicationDbContext dbContext,
-    [FromKeyedServices(BlobContainerNames.OriginalImages)]
-    IBlobContainerManager blobContainerManager,
-    IMessagePublisher messagePublisher)
-    : Endpoint<AddPostRequest, Results<Created, ErrorResponse>>
+    IPostImageProcessor imageProcessor,
+    [FromKeyedServices(BlobContainerNames.Images)]
+    IBlobContainerManager imagesManager)
+    : Endpoint<AddPostRequest, Results<Created<PostResponse>, ErrorResponse>, PostResponseMapper>
 {
     public override void Configure()
     {
@@ -25,7 +24,7 @@ public class AddPostEndpoint(
         AllowFileUploads();
     }
 
-    public override async Task<Results<Created, ErrorResponse>> ExecuteAsync(AddPostRequest request,
+    public override async Task<Results<Created<PostResponse>, ErrorResponse>> ExecuteAsync(AddPostRequest request,
         CancellationToken cancellationToken)
     {
         var species = await dbContext.Species.FirstOrDefaultAsync(s => s.Id == request.SpeciesId, cancellationToken);
@@ -35,38 +34,47 @@ public class AddPostEndpoint(
             return new ErrorResponse(ValidationFailures);
         }
 
-        var post = await CreatePostEntityAsync(request, species, cancellationToken);
+        // validate image
+        await using var imageStream = request.Image.OpenReadStream();
+        var imageValidationResult = await imageProcessor.ValidateImageAsync(imageStream, cancellationToken);
+        if (imageValidationResult.IsFailed)
+        {
+            AddError(r => r.Image, imageValidationResult.Errors.First().Message);
+            return new ErrorResponse(ValidationFailures);
+        }
 
-        var blobName = $"{post.Id}/{request.Image.FileName}";
-        await blobContainerManager.CreateBlobAsync(blobName, request.Image.OpenReadStream(), request.Image.ContentType,
+        var postId = Guid.NewGuid();
+        var (width, height) = imageValidationResult.Value;
+
+        // upload image to blob storage
+        imageStream.Position = 0;
+        await imagesManager.CreateBlobAsync(postId.ToString(), imageStream, request.Image.ContentType,
             cancellationToken);
 
-        await messagePublisher.PublishAsync(new PostAddedMessage
-        {
-            PostId = post.Id,
-            ImageBlobName = blobName
-        }, cancellationToken);
-
-        return TypedResults.Created($"/posts/{post.Id}");
-    }
-
-    private async Task<Post> CreatePostEntityAsync(AddPostRequest request, SpeciesModel species,
-        CancellationToken cancellationToken)
-    {
-        var user = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken);
+        // create new post
         var post = new Post
         {
+            Id = postId,
             Title = request.Title,
             Description = request.Description,
-            User = user,
-            Species = species
+            User = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken),
+            Species = species,
+            Image = new PostImage
+            {
+                FileName = request.Image.FileName,
+                MimeType = request.Image.ContentType,
+                Width = width,
+                Height = height,
+                Size = request.Image.Length
+            }
         };
 
+        // save the post entity
         dbContext.Posts.Add(post);
         await dbContext.SaveChangesAsync(cancellationToken);
-
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
 
-        return post;
+        var response = Map.FromEntity(post);
+        return TypedResults.Created($"/posts/{response.Id}", response);
     }
 }

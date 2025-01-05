@@ -10,7 +10,7 @@
 </div>
 } @case ('ready') { @if(post(); as post) {
 <div id="post-container">
-  <img class="full-image mat-elevation-z8" [src]="post.imageUrl" [alt]="post.title" />
+  <img class="full-image mat-elevation-z8" [src]="imageUrl()" [alt]="post.title" />
   <mat-card class="mat-elevation-z8">
     <mat-card-header>
       <mat-card-title class="title">{{ post.title }}</mat-card-title>
