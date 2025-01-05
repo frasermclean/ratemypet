@@ -15,6 +15,7 @@ public class PostResponseMapper(IHttpContextAccessor httpContextAccessor) : Resp
         AuthorUserName = post.User.UserName!,
         AuthorEmailHash = post.User.Email.ToSha256Hash(),
         SpeciesName = post.Species.Name,
-        CreatedAtUtc = post.CreatedAtUtc
+        CreatedAtUtc = post.CreatedAtUtc,
+        UpdatedAtUtc = post.UpdatedAtUtc,
     };
 }
