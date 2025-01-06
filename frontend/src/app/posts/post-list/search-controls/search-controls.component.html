@@ -1,0 +1,27 @@
+<mat-accordion>
+  <mat-expansion-panel [expanded]="expanded()">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon class="title-icon">search</mat-icon>
+        Search Controls
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="controls-container">
+      <div class="control-group">
+        <h4>Show me</h4>
+        <mat-button-toggle-group>
+          <mat-button-toggle value="cats">Cats</mat-button-toggle>
+          <mat-button-toggle value="dogs">Dogs</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+      <div class="control-group">
+        <h4>Sort by</h4>
+        <mat-button-toggle-group>
+          <mat-button-toggle value="latest">Latest</mat-button-toggle>
+          <mat-button-toggle value="ratings">Ratings</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>

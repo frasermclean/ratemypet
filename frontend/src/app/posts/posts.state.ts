@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext, StateToken } from '@ngxs/store';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, finalize, of, tap } from 'rxjs';
 import { Post, SearchPostsMatch } from './post.models';
 import { PostsActions } from './posts.actions';
 import { PostsService } from './posts.service';
@@ -34,11 +34,10 @@ export class PostsState {
     context.patchState({ status: 'busy' });
     return this.postsService.searchPosts().pipe(
       tap((paging) => {
-        context.patchState({ status: 'ready', matches: paging.data, totalMatches: paging.count });
+        context.patchState({ matches: paging.data, totalMatches: paging.count });
       }),
-      catchError((error) => {
-        context.patchState({ status: 'error', error, matches: [], totalMatches: 0 });
-        return of([]);
+      finalize(() => {
+        context.patchState({ status: 'ready' });
       })
     );
   }
@@ -146,6 +145,11 @@ export class PostsState {
         }
       })
     );
+  }
+
+  @Selector([POSTS_STATE_TOKEN])
+  static isBusy(state: PostsStateModel) {
+    return state.status === 'busy';
   }
 
   @Selector([POSTS_STATE_TOKEN])

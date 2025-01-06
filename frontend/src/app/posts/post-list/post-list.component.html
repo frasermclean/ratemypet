@@ -1,17 +1,12 @@
-@switch (status()) { @case ('busy') {
+@if (isBusy()) {
 <div class="centered-container">
   <h2>Loading posts</h2>
   <mat-spinner></mat-spinner>
 </div>
-} @case ('error') {
-<div class="centered-container">
-  <h2>An error occurred while loading posts.</h2>
-  <p>No posts could be loaded from the server. Please try again later.</p>
-  <button mat-raised-button (click)="searchPosts()">Try again</button>
-</div>
-} @case ('ready') { @if (matches(); as matches) {
+} @else {
+<app-search-controls />
 <section id="posts">
-  @for (match of matches; track match.id) {
+  @for (match of matches(); track match.id) {
   <app-post-list-item [postMatch]="match" />
   } @empty {
   <div class="centered-container">
@@ -25,4 +20,4 @@
   </a>
   }
 </section>
-} } }
+}

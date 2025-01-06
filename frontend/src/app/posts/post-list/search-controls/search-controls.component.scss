@@ -1,0 +1,35 @@
+@use "@angular/material" as mat;
+
+mat-expansion-panel {
+  min-width: 320px;
+}
+
+mat-button-toggle {
+  @include mat.button-toggle-overrides(
+    (
+      selected-state-background-color: #9e39bc
+    )
+  );
+}
+
+.title-icon {
+  margin-right: 8px;
+}
+
+.controls-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  .control-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    h4 {
+      padding-top: 5px;
+      margin-bottom: 0;
+    }
+  }
+}
