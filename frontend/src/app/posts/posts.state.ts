@@ -1,3 +1,4 @@
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext, StateToken } from '@ngxs/store';
 import { catchError, finalize, of, tap } from 'rxjs';
@@ -7,7 +8,7 @@ import { PostsService } from './posts.service';
 
 interface PostsStateModel {
   status: 'ready' | 'busy' | 'error';
-  error: any;
+  errorMessage: string | null;
   matches: SearchPostsMatch[];
   totalMatches: number;
   currentPost: Post | null;
@@ -19,7 +20,7 @@ const POSTS_STATE_TOKEN = new StateToken<PostsStateModel>('posts');
   name: POSTS_STATE_TOKEN,
   defaults: {
     status: 'ready',
-    error: null,
+    errorMessage: null,
     matches: [],
     totalMatches: 0,
     currentPost: null
@@ -44,10 +45,10 @@ export class PostsState {
 
   @Action(PostsActions.GetPost)
   getPost(context: StateContext<PostsStateModel>, action: PostsActions.GetPost) {
-    // if the current post is the one we want to get, return it
+    // prevent fetching the same post multiple times
     const currentPost = context.getState().currentPost;
     if (currentPost?.id === action.postId) {
-      return of(currentPost);
+      return;
     }
 
     context.patchState({ status: 'busy' });
@@ -55,9 +56,17 @@ export class PostsState {
       tap((post) => {
         context.patchState({ status: 'ready', currentPost: post });
       }),
-      catchError((error) => {
-        context.patchState({ status: 'error', error });
-        return of(null);
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === HttpStatusCode.NotFound) {
+          context.patchState({
+            status: 'error',
+            currentPost: null,
+            errorMessage: `Post with ID ${action.postId} could not be found`
+          });
+          return of(null);
+        }
+
+        throw error;
       })
     );
   }
@@ -68,10 +77,6 @@ export class PostsState {
     return this.postsService.addPost(action.request).pipe(
       tap((post) => {
         context.patchState({ status: 'ready', currentPost: post });
-      }),
-      catchError((error) => {
-        context.patchState({ status: 'error', error });
-        throw error;
       })
     );
   }
@@ -82,10 +87,6 @@ export class PostsState {
     return this.postsService.deletePost(action.postId).pipe(
       tap(() => {
         context.patchState({ status: 'ready' });
-      }),
-      catchError((error) => {
-        context.patchState({ status: 'error', error });
-        throw error;
       })
     );
   }
@@ -155,6 +156,11 @@ export class PostsState {
   @Selector([POSTS_STATE_TOKEN])
   static status(state: PostsStateModel) {
     return state.status;
+  }
+
+  @Selector([POSTS_STATE_TOKEN])
+  static errorMessage(state: PostsStateModel) {
+    return state.errorMessage;
   }
 
   @Selector([POSTS_STATE_TOKEN])

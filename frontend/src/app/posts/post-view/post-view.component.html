@@ -5,8 +5,8 @@
 </div>
 } @case ('error') {
 <div class="centered-container">
-  <h2>An error occurred while loading the post.</h2>
-  <p>Could not load the requested post from the server.</p>
+  <h2>Not Found</h2>
+  <p>{{ errorMessage() }}</p>
 </div>
 } @case ('ready') { @if(post(); as post) {
 <div id="post-container">
@@ -14,7 +14,7 @@
   <mat-card class="mat-elevation-z8">
     <mat-card-header>
       <mat-card-title class="title">{{ post.title }}</mat-card-title>
-      <mat-card-subtitle>Posted by: {{ post.authorUserName }} on {{ post.createdAtUtc | date }}</mat-card-subtitle>
+      <mat-card-subtitle>Posted by: {{ post.authorUserName }} on {{ post.createdAt | date }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
       <p>{{ post.description }}</p>
