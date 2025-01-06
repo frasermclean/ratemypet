@@ -1,3 +1,11 @@
+export interface SearchPostsRequest {
+  page: number;
+  pageSize: number;
+  speciesName: string;
+  orderBy: string;
+  descending: boolean;
+}
+
 export interface SearchPostsMatch {
   id: string;
   title: string;

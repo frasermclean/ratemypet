@@ -30,9 +30,9 @@ export class PostsState {
   private readonly postsService = inject(PostsService);
 
   @Action(PostsActions.SearchPosts)
-  searchPosts(context: StateContext<PostsStateModel>) {
+  searchPosts(context: StateContext<PostsStateModel>, action: PostsActions.SearchPosts) {
     context.patchState({ status: 'busy' });
-    return this.postsService.searchPosts().pipe(
+    return this.postsService.searchPosts(action.request).pipe(
       tap((paging) => {
         context.patchState({ matches: paging.data, totalMatches: paging.count });
       }),

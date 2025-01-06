@@ -1,8 +1,9 @@
-import { AddPostRequest, Reaction } from './post.models';
+import { AddPostRequest, Reaction, SearchPostsRequest } from './post.models';
 
 export namespace PostsActions {
   export class SearchPosts {
     static readonly type = '[Posts] Search Posts';
+    constructor(public request: Partial<SearchPostsRequest> = {}) {}
   }
 
   export class GetPost {
