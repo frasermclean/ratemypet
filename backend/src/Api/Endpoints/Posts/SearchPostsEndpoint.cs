@@ -37,8 +37,8 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext)
                 AuthorUserName = post.User.UserName!,
                 AuthorEmailHash = post.User.Email.ToSha256Hash(),
                 SpeciesName = post.Species.Name,
-                CreatedAtUtc = post.CreatedAtUtc,
-                UpdatedAtUtc = post.UpdatedAtUtc,
+                CreatedAt = post.CreatedAtUtc,
+                UpdatedAt = post.UpdatedAtUtc,
                 Reactions = new PostReactionsResponse
                 {
                     LikeCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Like),

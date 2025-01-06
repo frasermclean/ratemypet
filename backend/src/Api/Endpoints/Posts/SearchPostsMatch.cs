@@ -12,10 +12,10 @@ public class SearchPostsMatch
     public required string AuthorUserName { get; init; }
     public required string AuthorEmailHash { get; init; }
     public required string SpeciesName { get; init; }
-    public required DateTime CreatedAtUtc { get; init; }
+    public required DateTime CreatedAt { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public DateTime? UpdatedAtUtc { get; init; }
+    public DateTime? UpdatedAt { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Reaction? UserReaction { get; init; }

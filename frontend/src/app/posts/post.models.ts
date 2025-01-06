@@ -1,26 +1,3 @@
-export interface SearchPostsRequest {
-  page: number;
-  pageSize: number;
-  speciesName: string;
-  orderBy: string;
-  descending: boolean;
-}
-
-export interface SearchPostsMatch {
-  id: string;
-  title: string;
-  description?: string;
-  imageUrl: string | null;
-  authorUserName: string;
-  authorEmailHash: string;
-  speciesName: string;
-  createdAtUtc: string;
-  updatedAtUtc?: string;
-  userReaction?: Reaction;
-  reactions: PostReactions;
-  commentCount: number;
-}
-
 export interface Post {
   id: string;
   title: string;
@@ -29,8 +6,8 @@ export interface Post {
   authorUserName: string;
   authorEmailHash: string;
   speciesName: string;
-  createdAtUtc: string;
-  updatedAtUtc?: string;
+  createdAt: string;
+  updatedAt?: string;
   userReaction?: Reaction;
   reactions: PostReactions;
   comments: PostComment[];
@@ -59,6 +36,30 @@ export interface AddPostRequest {
   description: string;
   image: File;
   speciesId: number;
+}
+
+export interface SearchPostsRequest {
+  page: number;
+  pageSize: number;
+  speciesName: string;
+  orderBy: 'createdAt' | 'reactionCount';
+  descending: boolean;
+}
+
+export interface SearchPostsMatch {
+  id: string;
+  title: string;
+  description?: string;
+  imageUrl: string | null;
+  authorUserName: string;
+  authorEmailHash: string;
+  speciesName: string;
+  createdAt: string;
+  updatedAt?: string;
+  userReaction?: Reaction;
+  reactions: PostReactions;
+  reactionCount: number;
+  commentCount: number;
 }
 
 export enum Reaction {
