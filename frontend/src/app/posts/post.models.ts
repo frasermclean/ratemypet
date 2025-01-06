@@ -42,9 +42,11 @@ export interface SearchPostsRequest {
   page: number;
   pageSize: number;
   speciesName: string;
-  orderBy: 'createdAt' | 'reactionCount';
+  orderBy: SearchPostsOrderBy;
   descending: boolean;
 }
+
+export type SearchPostsOrderBy = 'createdAt' | 'reactionCount';
 
 export interface SearchPostsMatch {
   id: string;

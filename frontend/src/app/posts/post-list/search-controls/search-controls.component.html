@@ -8,18 +8,22 @@
     </mat-expansion-panel-header>
     <div class="controls-container">
       <div class="control-group">
-        <h4>Show me</h4>
-        <mat-button-toggle-group>
-          <mat-button-toggle value="cats">Cats</mat-button-toggle>
-          <mat-button-toggle value="dogs">Dogs</mat-button-toggle>
+        <h4>Species</h4>
+        <mat-button-toggle-group (change)="speciesName.set($event.value)" [disabled]="isBusy()">
+          @for (option of speciesOptions; track $index) {
+          <mat-button-toggle [value]="option.value" [checked]="speciesName() === option.value">
+            {{ option.label }}
+          </mat-button-toggle>
+          }
         </mat-button-toggle-group>
       </div>
 
       <div class="control-group">
-        <h4>Sort by</h4>
-        <mat-button-toggle-group>
-          <mat-button-toggle value="latest">Latest</mat-button-toggle>
-          <mat-button-toggle value="ratings">Ratings</mat-button-toggle>
+        <h4>Order</h4>
+        <mat-button-toggle-group (change)="onOrderChange($event.value)" [disabled]="isBusy()">
+          @for (option of orderByOptions; track $index) {
+          <mat-button-toggle [value]="option.value">{{ option.label }}</mat-button-toggle>
+          }
         </mat-button-toggle-group>
       </div>
     </div>
