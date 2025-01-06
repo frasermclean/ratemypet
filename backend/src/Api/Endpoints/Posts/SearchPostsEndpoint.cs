@@ -47,6 +47,7 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext)
                     WowCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Wow),
                     SadCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Sad)
                 },
+                ReactionCount = post.Reactions.Count,
                 UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == userId)!.Reaction,
                 CommentCount = post.Comments.Count
             })
