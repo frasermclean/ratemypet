@@ -1,35 +1,41 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, inject, input, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, input, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Navigate } from '@ngxs/router-plugin';
 import { Actions, dispatch, ofActionSuccessful, select, Store } from '@ngxs/store';
-import { ConfirmationComponent, ConfirmationData } from '@shared/components/confirmation/confirmation.component';
-import { NotificationService } from '@shared/services/notification.service';
 import { SharedActions } from '@shared/shared.actions';
-import { filter, Subject, takeUntil } from 'rxjs';
 import { AuthState } from '../../auth/auth.state';
 import { PostsActions } from '../posts.actions';
 import { PostsState } from '../posts.state';
 import { PostCommentsComponent } from './post-comments/post-comments.component';
+import { PostDeleteButtonComponent } from './post-delete-button/post-delete-button.component';
 
 @Component({
   selector: 'app-post-view',
-  imports: [DatePipe, MatButtonModule, MatCardModule, MatIconModule, MatProgressSpinnerModule, PostCommentsComponent],
+  imports: [
+    DatePipe,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    PostCommentsComponent,
+    PostDeleteButtonComponent
+  ],
   templateUrl: './post-view.component.html',
   styleUrl: './post-view.component.scss'
 })
-export class PostViewComponent implements OnInit, OnDestroy {
+export class PostViewComponent implements OnInit {
   readonly postId = input.required<string>();
   readonly status = select(PostsState.status);
   readonly post = select(PostsState.currentPost);
   readonly userName = select(AuthState.userName);
   readonly errorMessage = select(PostsState.errorMessage);
   readonly getPost = dispatch(PostsActions.GetPost);
-  readonly deletePost = dispatch(PostsActions.DeletePost);
+
   readonly setPageTitle = dispatch(SharedActions.SetPageTitle);
   readonly navigate = dispatch(Navigate);
 
@@ -38,48 +44,15 @@ export class PostViewComponent implements OnInit, OnDestroy {
     return post ? `${post.imageUrl}?width=1024&height=1024&format=webp` : '';
   });
 
-  private readonly dialog = inject(MatDialog);
-  private readonly destroy$ = new Subject<void>();
-
-  constructor(actions$: Actions, notificationService: NotificationService, store: Store) {
-    actions$.pipe(ofActionSuccessful(PostsActions.GetPost), takeUntil(this.destroy$)).subscribe(() => {
+  constructor(actions$: Actions, store: Store) {
+    actions$.pipe(ofActionSuccessful(PostsActions.GetPost), takeUntilDestroyed()).subscribe(() => {
       const title = this.post()!.title;
       const url = store.selectSnapshot((state) => state.router.state.url) as string;
       this.setPageTitle(title, url);
-    });
-
-    actions$.pipe(ofActionSuccessful(PostsActions.DeletePost), takeUntil(this.destroy$)).subscribe(() => {
-      notificationService.showInformation('Post deleted successfully');
-      this.navigate(['/posts']);
     });
   }
 
   ngOnInit(): void {
     this.getPost(this.postId());
   }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  onDelete() {
-    this.dialog
-      .open<ConfirmationComponent, ConfirmationData, boolean>(ConfirmationComponent, {
-        data: DELETE_DIALOG_DATA
-      })
-      .afterClosed()
-      .pipe(
-        filter((isConfirmed) => !!isConfirmed),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(() => this.deletePost(this.postId()));
-  }
 }
-
-const DELETE_DIALOG_DATA: ConfirmationData = {
-  title: 'Delete Post',
-  message: 'Are you sure you want to delete this post?',
-  confirmText: 'Yes, delete it',
-  cancelText: 'No, keep it'
-};

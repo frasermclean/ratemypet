@@ -26,10 +26,7 @@
         <mat-icon>edit</mat-icon>
         Edit
       </button>
-      <button mat-button (click)="onDelete()">
-        <mat-icon>delete</mat-icon>
-        Delete
-      </button>
+      <app-post-delete-button [postId]="post.id" />
     </mat-card-actions>
     }
   </mat-card>
