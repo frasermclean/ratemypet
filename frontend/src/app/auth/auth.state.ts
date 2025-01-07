@@ -68,7 +68,6 @@ export class AuthState implements NgxsOnInit {
           emailHash: null,
           roles: []
         });
-        this.notificationService.showInformation('You have been logged out.');
       }),
       finalize(() => {
         context.patchState({ isBusy: false });

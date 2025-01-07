@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { dispatch, select } from '@ngxs/store';
-
 import { RouterLink } from '@angular/router';
+import { Actions, dispatch, ofActionSuccessful, select } from '@ngxs/store';
 import { GravatarComponent } from '@shared/components/gravatar/gravatar.component';
+import { NotificationService } from '@shared/services/notification.service';
 import { AuthActions } from '../../../auth/auth.actions';
 import { Role } from '../../../auth/auth.models';
 import { AuthState } from '../../../auth/auth.state';
@@ -21,4 +21,10 @@ export class UserMenuComponent {
   userRoles = select(AuthState.roles);
   logout = dispatch(AuthActions.Logout);
   contributor = Role.Contributor;
+
+  constructor(actions$: Actions, notificationService: NotificationService) {
+    actions$.pipe(ofActionSuccessful(AuthActions.Logout)).subscribe(() => {
+      notificationService.showInformation('You have been logged out.');
+    });
+  }
 }
