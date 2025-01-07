@@ -4,9 +4,10 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, TitleStrategy, withComponentInputBinding } from '@angular/router';
 import { ApplicationinsightsAngularpluginErrorService } from '@microsoft/applicationinsights-angularplugin-js';
-import { withNgxsRouterPlugin } from '@ngxs/router-plugin';
+import { RouterStateSerializer, withNgxsRouterPlugin } from '@ngxs/router-plugin';
 import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { provideStore } from '@ngxs/store';
+import { AppRouterStateSerializer } from '@shared/router-state-serializer';
 import { PageTitleService } from '@shared/services/page-title.service';
 import { SharedState } from '@shared/shared.state';
 import { environment } from '../environments/environment';
@@ -33,6 +34,10 @@ export const appConfig: ApplicationConfig = {
         ...environment.ngxsPlugins
       ]
     ),
+    {
+      provide: RouterStateSerializer,
+      useClass: AppRouterStateSerializer
+    },
     {
       provide: TitleStrategy,
       useClass: PageTitleService
