@@ -6,7 +6,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Actions, dispatch, ofActionSuccessful } from '@ngxs/store';
 import { NotificationService } from '@shared/services/notification.service';
-import { Post } from '../../../post.models';
 import { PostsActions } from '../../../posts.actions';
 
 @Component({
@@ -16,7 +15,7 @@ import { PostsActions } from '../../../posts.actions';
   styleUrl: './add-comment.component.scss'
 })
 export class AddCommentComponent {
-  post = input.required<Post>();
+  postId = input.required<string>();
   formBuilder = inject(NonNullableFormBuilder);
   formGroup = this.formBuilder.group({
     content: ['', Validators.required]
@@ -31,9 +30,8 @@ export class AddCommentComponent {
   addPostComment = dispatch(PostsActions.AddPostComment);
 
   onSubmit() {
-    const postId = this.post().id;
     const content = this.formGroup.getRawValue().content;
-    this.addPostComment(postId, content);
+    this.addPostComment(this.postId(), content);
     this.formGroup.reset();
   }
 }

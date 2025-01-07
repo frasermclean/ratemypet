@@ -4,7 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTreeModule } from '@angular/material/tree';
 import { select } from '@ngxs/store';
 import { AuthState } from '../../../auth/auth.state';
-import { Post, PostComment } from '../../post.models';
+import { PostComment } from '../../post.models';
 import { AddCommentComponent } from './add-comment/add-comment.component';
 import { PostCommentComponent } from './post-comment/post-comment.component';
 
@@ -15,7 +15,8 @@ import { PostCommentComponent } from './post-comment/post-comment.component';
   styleUrl: './post-comments.component.scss'
 })
 export class PostCommentsComponent {
-  post = input.required<Post>();
+  postId = input.required<string>();
+  comments = input.required<PostComment[]>();
   isLoggedIn = select(AuthState.isLoggedIn);
 
   getReplies = (comment: PostComment) => comment.replies ?? [];

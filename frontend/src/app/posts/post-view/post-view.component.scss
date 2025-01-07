@@ -1,15 +1,25 @@
 :host {
   width: 100%;
-  padding: 0 16px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 8px;
+
+  .title {
+    margin: 0;
+  }
+
+  .author-and-date {
+    margin-bottom: 4px;
+  }
+
+  .comment-count {
+    font-size: smaller;
+  }
 
   mat-card {
     width: 100%;
-    max-width: 800px;
-    min-width: 320px;
 
     mat-card-header {
       .title {
@@ -21,14 +31,6 @@
       margin-top: 1rem;
     }
   }
-}
-
-img.full-image {
-  width: inherit;
-  height: auto;
-  max-height: 600px;
-  object-fit: cover;
-  border-radius: 16px;
 }
 
 .centered-container {
