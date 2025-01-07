@@ -103,17 +103,6 @@ export class AuthState implements NgxsOnInit {
   register(context: StateContext<AuthStateModel>, action: AuthActions.Register) {
     context.patchState({ isBusy: true });
     return this.authService.register(action.request).pipe(
-      tap(() => {
-        this.notificationService.showInformation(
-          'Registration successful. Please check your email for a confirmation link.'
-        );
-        context.dispatch(new Navigate(['/']));
-      }),
-      catchError((error) => {
-        this.notificationService.showError('An error occured while trying to register.');
-        context.patchState({ error });
-        throw error;
-      }),
       finalize(() => {
         context.patchState({ isBusy: false });
       })
