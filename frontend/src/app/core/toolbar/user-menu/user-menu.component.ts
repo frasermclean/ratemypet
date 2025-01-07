@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -23,7 +24,7 @@ export class UserMenuComponent {
   contributor = Role.Contributor;
 
   constructor(actions$: Actions, notificationService: NotificationService) {
-    actions$.pipe(ofActionSuccessful(AuthActions.Logout)).subscribe(() => {
+    actions$.pipe(ofActionSuccessful(AuthActions.Logout), takeUntilDestroyed()).subscribe(() => {
       notificationService.showInformation('You have been logged out.');
     });
   }

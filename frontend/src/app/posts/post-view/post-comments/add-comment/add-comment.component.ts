@@ -23,12 +23,9 @@ export class AddCommentComponent {
   });
 
   constructor(actions$: Actions, notificationService: NotificationService) {
-    actions$
-      .pipe(ofActionSuccessful(PostsActions.AddPostComment))
-      .pipe(takeUntilDestroyed())
-      .subscribe((x) => {
-        notificationService.showInformation('Comment added successfully.');
-      });
+    actions$.pipe(ofActionSuccessful(PostsActions.AddPostComment), takeUntilDestroyed()).subscribe((x) => {
+      notificationService.showInformation('Comment added successfully.');
+    });
   }
 
   addPostComment = dispatch(PostsActions.AddPostComment);

@@ -39,13 +39,10 @@ export class PostViewComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   constructor(actions$: Actions, notificationService: NotificationService, router: Router) {
-    actions$
-      .pipe(ofActionSuccessful(PostsActions.DeletePost))
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        notificationService.showInformation('Post deleted successfully');
-        router.navigate(['/posts']);
-      });
+    actions$.pipe(ofActionSuccessful(PostsActions.DeletePost), takeUntil(this.destroy$)).subscribe(() => {
+      notificationService.showInformation('Post deleted successfully');
+      router.navigate(['/posts']);
+    });
   }
 
   ngOnInit(): void {
