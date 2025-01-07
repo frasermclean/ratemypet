@@ -18,8 +18,4 @@
 </mat-tree>
 } @else {
 <p>This post doesn't have any comments yet. Be bold and make your mark!</p>
-} @if (isLoggedIn()) {
-<app-add-comment [postId]="postId()" />
-} @else {
-<p>You must be logged in to comment.</p>
 }

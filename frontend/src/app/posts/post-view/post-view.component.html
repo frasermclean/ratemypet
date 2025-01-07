@@ -17,7 +17,7 @@
 </p>
 
 <!-- Comments -->
-<mat-card class="mat-elevation-z8">
+<mat-card class="mat-elevation-z8" id="comments">
   <mat-card-header>
     <mat-card-title class="title">
       Comments @if (post.comments.length > 0) {
@@ -28,11 +28,17 @@
   <mat-card-content>
     <app-post-comments [postId]="post.id" [comments]="post.comments" />
   </mat-card-content>
+  <mat-card-actions>
+    <button mat-button [disabled]="!userName()" (click)="onAddComment()">
+      <mat-icon>add_comment</mat-icon>
+      Add Comment
+    </button>
+  </mat-card-actions>
 </mat-card>
 
 <!-- Controls -->
 @if (userName() === post.authorUserName) {
-<mat-card class="mat-elevation-z8">
+<mat-card class="mat-elevation-z8" id="controls">
   <mat-card-header>
     <mat-card-title class="title">Controls</mat-card-title>
   </mat-card-header>

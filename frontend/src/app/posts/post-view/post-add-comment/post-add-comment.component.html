@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Add Comment</h2>
+
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <mat-form-field class="full-width">
+      <mat-label>Comment text</mat-label>
+      <input matInput formControlName="comment" placeholder="What's on your mind?" />
+      <mat-error>Comment is required</mat-error>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    @if (isBusy()) {
+    <mat-progress-bar mode="indeterminate" />
+    } @else {
+    <button mat-button type="submit">Add Comment</button>
+    <button mat-button mat-dialog-close>Cancel</button>
+    }
+  </mat-dialog-actions>
+</form>

@@ -5,12 +5,11 @@ import { MatTreeModule } from '@angular/material/tree';
 import { select } from '@ngxs/store';
 import { AuthState } from '../../../auth/auth.state';
 import { PostComment } from '../../post.models';
-import { AddCommentComponent } from './add-comment/add-comment.component';
 import { PostCommentComponent } from './post-comment/post-comment.component';
 
 @Component({
   selector: 'app-post-comments',
-  imports: [MatButtonModule, MatIconModule, MatTreeModule, PostCommentComponent, AddCommentComponent],
+  imports: [MatButtonModule, MatIconModule, MatTreeModule, PostCommentComponent],
   templateUrl: './post-comments.component.html',
   styleUrl: './post-comments.component.scss'
 })
