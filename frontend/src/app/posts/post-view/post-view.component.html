@@ -12,6 +12,7 @@
 
 <h2 class="title">{{ post.title }}</h2>
 <app-post-image [post]="post" />
+<p class="description">{{ post.description }}</p>
 <p class="author-and-date">
   Posted by: <strong>{{ post.authorUserName }}</strong> on {{ post.createdAt | date }}
 </p>
