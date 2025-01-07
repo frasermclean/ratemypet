@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-import { ToolbarComponent } from './core/toolbar/toolbar.component';
+import { select } from '@ngxs/store';
+import { SharedState } from '@shared/shared.state';
 import { FooterComponent } from './core/footer/footer.component';
+import { ToolbarComponent } from './core/toolbar/toolbar.component';
 
 @Component({
   selector: 'app-root',
@@ -11,5 +13,5 @@ import { FooterComponent } from './core/footer/footer.component';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'Rate My Pet';
+  title = select(SharedState.appName);
 }

@@ -8,6 +8,7 @@ import { withNgxsRouterPlugin } from '@ngxs/router-plugin';
 import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { provideStore } from '@ngxs/store';
 import { PageTitleService } from '@shared/services/page-title.service';
+import { SharedState } from '@shared/shared.state';
 import { environment } from '../environments/environment';
 import initializeApp from './app.initializer';
 import { routes } from './app.routes';
@@ -22,7 +23,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideAppInitializer(initializeApp),
     provideStore(
-      [AuthState],
+      [AuthState, SharedState],
       { developmentMode: environment.name === 'development' },
       ...[
         withNgxsRouterPlugin(),

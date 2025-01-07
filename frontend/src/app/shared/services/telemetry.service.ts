@@ -1,9 +1,10 @@
 import { inject, Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, ResolveEnd, Router } from '@angular/router';
 import { AngularPlugin } from '@microsoft/applicationinsights-angularplugin-js';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
-import { Actions, ofActionSuccessful, select } from '@ngxs/store';
-import { filter } from 'rxjs';
+import { RouterNavigated } from '@ngxs/router-plugin';
+import { Actions, ofActionSuccessful, Store } from '@ngxs/store';
+import { SharedActions } from '@shared/shared.actions';
+import { SharedState } from '@shared/shared.state';
 import { environment } from '../../../environments/environment';
 import { AuthActions } from '../../auth/auth.actions';
 import { AuthState } from '../../auth/auth.state';
@@ -13,9 +14,10 @@ import { AuthState } from '../../auth/auth.state';
 })
 export class TelemetryService {
   private readonly actions$ = inject(Actions);
-  private readonly router = inject(Router);
-  private readonly userId = select(AuthState.userId);
+  private readonly store = inject(Store);
+
   private readonly angularPlugin = new AngularPlugin();
+
   private readonly appInsights = new ApplicationInsights({
     config: {
       connectionString: environment.applicationInsights.connectionString,
@@ -36,34 +38,29 @@ export class TelemetryService {
       item.tags['ai.cloud.role'] = 'frontend';
     });
 
-    this.registerRouterEventHandlers();
+    this.registerPageTrackingEventHandlers();
     this.registerUserContextHandlers();
   }
 
-  private registerRouterEventHandlers(): void {
-    // enable page view tracking with active component name
-    this.router.events.pipe(filter((event): event is ResolveEnd => event instanceof ResolveEnd)).subscribe((event) => {
-      const activatedComponent = getActivatedComponent(event.state.root);
-      if (activatedComponent) {
-        this.appInsights.trackPageView({
-          name: activatedComponent.name,
-          uri: event.urlAfterRedirects
-        });
-      }
+  private registerPageTrackingEventHandlers(): void {
+    // start tracking page view on page title change
+    this.actions$.pipe(ofActionSuccessful(SharedActions.SetPageTitle)).subscribe(() => {
+      const name = this.store.selectSnapshot(SharedState.pageTitle);
+      this.appInsights.startTrackPage(name);
     });
 
-    function getActivatedComponent(snapshot: ActivatedRouteSnapshot): any {
-      if (snapshot.firstChild) {
-        return getActivatedComponent(snapshot.firstChild);
-      }
-      return snapshot.component;
-    }
+    // stop tracking page view on router navigated event
+    this.actions$.pipe(ofActionSuccessful(RouterNavigated)).subscribe(() => {
+      const name = this.store.selectSnapshot(SharedState.pageTitle);
+      const url = this.store.selectSnapshot(SharedState.pageUrl);
+      this.appInsights.stopTrackPage(name, url);
+    });
   }
 
   private registerUserContextHandlers(): void {
     // track authenticated user id on login and verify user
     this.actions$.pipe(ofActionSuccessful(AuthActions.Login, AuthActions.VerifyUser)).subscribe(() => {
-      const userId = this.userId()!; // should not be null as the user is authenticated
+      const userId = this.store.selectSnapshot(AuthState.userId)!; // should not be null as the user is authenticated
       this.appInsights.setAuthenticatedUserContext(userId, undefined, true);
     });
 

@@ -5,10 +5,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Router } from '@angular/router';
-import { Actions, dispatch, ofActionSuccessful, select } from '@ngxs/store';
+import { Navigate } from '@ngxs/router-plugin';
+import { Actions, dispatch, ofActionSuccessful, select, Store } from '@ngxs/store';
 import { ConfirmationComponent, ConfirmationData } from '@shared/components/confirmation/confirmation.component';
 import { NotificationService } from '@shared/services/notification.service';
+import { SharedActions } from '@shared/shared.actions';
 import { filter, Subject, takeUntil } from 'rxjs';
 import { AuthState } from '../../auth/auth.state';
 import { PostsActions } from '../posts.actions';
@@ -29,6 +30,8 @@ export class PostViewComponent implements OnInit, OnDestroy {
   readonly errorMessage = select(PostsState.errorMessage);
   readonly getPost = dispatch(PostsActions.GetPost);
   readonly deletePost = dispatch(PostsActions.DeletePost);
+  readonly setPageTitle = dispatch(SharedActions.SetPageTitle);
+  readonly navigate = dispatch(Navigate);
 
   readonly imageUrl = computed(() => {
     const post = this.post();
@@ -38,10 +41,16 @@ export class PostViewComponent implements OnInit, OnDestroy {
   private readonly dialog = inject(MatDialog);
   private readonly destroy$ = new Subject<void>();
 
-  constructor(actions$: Actions, notificationService: NotificationService, router: Router) {
+  constructor(actions$: Actions, notificationService: NotificationService, store: Store) {
+    actions$.pipe(ofActionSuccessful(PostsActions.GetPost), takeUntil(this.destroy$)).subscribe(() => {
+      const title = this.post()!.title;
+      const url = store.selectSnapshot((state) => state.router.state.url) as string;
+      this.setPageTitle(title, url);
+    });
+
     actions$.pipe(ofActionSuccessful(PostsActions.DeletePost), takeUntil(this.destroy$)).subscribe(() => {
       notificationService.showInformation('Post deleted successfully');
-      router.navigate(['/posts']);
+      this.navigate(['/posts']);
     });
   }
 

@@ -15,7 +15,7 @@ import { UserMenuComponent } from './user-menu/user-menu.component';
   styleUrl: './toolbar.component.scss'
 })
 export class ToolbarComponent {
-  title = input('Rate My Pet');
+  title = input.required<string>();
   store = inject(Store);
   router = inject(Router);
   isBusy = select(AuthState.isBusy);
