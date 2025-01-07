@@ -126,7 +126,6 @@ export class PostsState {
           context.patchState({
             currentPost: {
               ...currentPost,
-              commentCount: currentPost.commentCount + 1,
               comments: [...currentPost.comments, comment]
             }
           });
@@ -142,7 +141,7 @@ export class PostsState {
         const currentPost = context.getState().currentPost;
         if (currentPost) {
           const comments = currentPost.comments.filter((comment) => comment.id !== action.commentId);
-          context.patchState({ currentPost: { ...currentPost, commentCount: currentPost.commentCount - 1, comments } });
+          context.patchState({ currentPost: { ...currentPost, comments } });
         }
       })
     );

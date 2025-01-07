@@ -52,8 +52,7 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
                         CreatedAtUtc = comment.CreatedAtUtc,
                         UpdatedAtUtc = comment.UpdatedAtUtc,
                         ParentId = comment.Parent == null ? null : comment.Parent.Id,
-                    }).ToCommentTree(),
-                CommentCount = post.Comments.Count
+                    }).ToCommentTree()
             })
             .AsNoTracking()
             .FirstOrDefaultAsync(cancellationToken);

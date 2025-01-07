@@ -11,7 +11,6 @@ export interface Post {
   userReaction?: Reaction;
   reactions: PostReactions;
   comments: PostComment[];
-  commentCount: number;
 }
 
 export interface PostReactions {

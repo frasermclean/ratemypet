@@ -22,5 +22,4 @@ public class PostResponse
 
     public PostReactionsResponse Reactions { get; init; } = new();
     public IEnumerable<PostCommentResponse> Comments { get; init; } = [];
-    public int CommentCount { get; init; }
 }
