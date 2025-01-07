@@ -7,7 +7,6 @@ import { filter } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthActions } from '../../auth/auth.actions';
 import { AuthState } from '../../auth/auth.state';
-import { ErrorService } from './error.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +14,6 @@ import { ErrorService } from './error.service';
 export class TelemetryService {
   private readonly actions$ = inject(Actions);
   private readonly router = inject(Router);
-  private readonly errorService = inject(ErrorService);
   private readonly userId = select(AuthState.userId);
   private readonly angularPlugin = new AngularPlugin();
   private readonly appInsights = new ApplicationInsights({
@@ -23,9 +21,7 @@ export class TelemetryService {
       connectionString: environment.applicationInsights.connectionString,
       extensions: [this.angularPlugin],
       extensionConfig: {
-        [this.angularPlugin.identifier]: {
-          // errorServices: [this.errorService]
-        }
+        [this.angularPlugin.identifier]: {}
       },
       enableCorsCorrelation: true,
       enableRequestHeaderTracking: true,
