@@ -4,27 +4,16 @@ mat-card {
   max-width: $card-width;
 
   mat-card-header {
-    white-space: nowrap;
-
     .title,
     .description {
       max-width: $card-width - 64px;
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
     }
-  }
-
-  img.preview-image {
-    object-fit: cover;
-    width: $card-width;
-    height: $card-width;
   }
 }
 
 .spacer {
   flex: 1 1 auto;
-}
-
-.selected {
-  background: rgb(173, 79, 60)
 }
