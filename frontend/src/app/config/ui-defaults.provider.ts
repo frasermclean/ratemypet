@@ -2,7 +2,7 @@ import { DATE_PIPE_DEFAULT_OPTIONS } from '@angular/common';
 import { Provider } from '@angular/core';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 
-export default function provideUiDefaults(): Provider[] {
+export function provideUiDefaults(): Provider[] {
   return [
     {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
@@ -14,3 +14,5 @@ export default function provideUiDefaults(): Provider[] {
     }
   ];
 }
+
+export default provideUiDefaults;
