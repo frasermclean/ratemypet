@@ -1,3 +1,5 @@
+@use "colors";
+
 .selected {
-  background: rgb(173, 79, 60);
+  background: colors.$accent-orange;
 }
