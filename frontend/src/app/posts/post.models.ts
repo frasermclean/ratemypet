@@ -1,18 +1,3 @@
-export interface SearchPostsMatch {
-  id: string;
-  title: string;
-  description?: string;
-  imageUrl: string | null;
-  authorUserName: string;
-  authorEmailHash: string;
-  speciesName: string;
-  createdAtUtc: string;
-  updatedAtUtc?: string;
-  userReaction?: Reaction;
-  reactions: PostReactions;
-  commentCount: number;
-}
-
 export interface Post {
   id: string;
   title: string;
@@ -21,12 +6,11 @@ export interface Post {
   authorUserName: string;
   authorEmailHash: string;
   speciesName: string;
-  createdAtUtc: string;
-  updatedAtUtc?: string;
+  createdAt: string;
+  updatedAt?: string;
   userReaction?: Reaction;
   reactions: PostReactions;
   comments: PostComment[];
-  commentCount: number;
 }
 
 export interface PostReactions {
@@ -53,12 +37,37 @@ export interface AddPostRequest {
   speciesId: number;
 }
 
+export interface SearchPostsRequest {
+  page: number;
+  pageSize: number;
+  speciesName: string;
+  orderBy: SearchPostsOrderBy;
+  descending: boolean;
+}
+
+export type SearchPostsOrderBy = 'createdAt' | 'reactionCount';
+
+export interface SearchPostsMatch {
+  id: string;
+  title: string;
+  description?: string;
+  imageUrl: string | null;
+  authorUserName: string;
+  authorEmailHash: string;
+  speciesName: string;
+  createdAt: string;
+  updatedAt?: string;
+  userReaction?: Reaction;
+  reactions: PostReactions;
+  reactionCount: number;
+  commentCount: number;
+}
+
 export enum Reaction {
   Like = 'like',
   Funny = 'funny',
   Crazy = 'crazy',
-  Wow = 'wow',
-  Sad = 'sad'
+  Wow = 'wow'
 }
 
-export const allReactions: Reaction[] = [Reaction.Like, Reaction.Funny, Reaction.Crazy, Reaction.Wow, Reaction.Sad];
+export const allReactions: Reaction[] = [Reaction.Like, Reaction.Funny, Reaction.Crazy, Reaction.Wow];

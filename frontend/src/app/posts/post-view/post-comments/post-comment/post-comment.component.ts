@@ -23,12 +23,9 @@ export class PostCommentComponent {
   deleteComment = dispatch(PostsActions.DeletePostComment);
 
   constructor(actions$: Actions, notificationService: NotificationService) {
-    actions$
-      .pipe(ofActionSuccessful(PostsActions.DeletePostComment))
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        notificationService.showInformation('Comment has been removed.');
-      });
+    actions$.pipe(ofActionSuccessful(PostsActions.DeletePostComment), takeUntilDestroyed()).subscribe(() => {
+      notificationService.showInformation('Comment has been removed.');
+    });
   }
 
   onDelete() {

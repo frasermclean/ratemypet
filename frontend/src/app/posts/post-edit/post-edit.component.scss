@@ -1,12 +1,12 @@
+@use "utils";
+
 mat-card {
-  max-width: 800px;
   mat-card-content {
     .image-upload-container {
       width: 100%;
       margin-bottom: 16px;
       display: flex;
       justify-content: center;
-
     }
   }
 }

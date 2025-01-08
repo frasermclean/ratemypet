@@ -17,6 +17,8 @@
         <mat-error>Username must be at least 3 characters long</mat-error>
         } @else if (formGroup.controls.userName.hasError('maxlength')) {
         <mat-error>Username cannot be longer than 30 characters</mat-error>
+        } @else if (formGroup.controls.userName.hasError('duplicateUserName')) {
+        <mat-error>Username is already taken</mat-error>
         }
       </mat-form-field>
       <mat-form-field class="form-field">
@@ -28,6 +30,8 @@
         <mat-error>Email address is required</mat-error>
         } @else if (formGroup.controls.emailAddress.hasError('email')) {
         <mat-error>Invalid email address provided</mat-error>
+        } @else if (formGroup.controls.emailAddress.hasError('duplicateEmail')) {
+        <mat-error>Email address is already in use</mat-error>
         }
       </mat-form-field>
       <mat-form-field class="form-field">

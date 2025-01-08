@@ -1,9 +1,7 @@
-import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Navigate } from '@ngxs/router-plugin';
 import { Action, NgxsOnInit, Selector, State, StateContext, StateToken } from '@ngxs/store';
 import { NotificationService } from '@shared/services/notification.service';
-import { TelemetryService } from '@shared/services/telemetry.service';
 import { catchError, finalize, of, tap } from 'rxjs';
 import { AuthActions } from './auth.actions';
 import { Role } from './auth.models';
@@ -36,7 +34,6 @@ const AUTH_STATE_TOKEN = new StateToken<AuthStateModel>('auth');
 @Injectable()
 export class AuthState implements NgxsOnInit {
   private readonly authService = inject(AuthService);
-  private readonly telemetryService = inject(TelemetryService);
   private readonly notificationService = inject(NotificationService);
 
   ngxsOnInit(context: StateContext<AuthStateModel>): void {
@@ -52,17 +49,6 @@ export class AuthState implements NgxsOnInit {
     return this.authService.login(action.request).pipe(
       tap((response) => {
         context.patchState(response);
-        this.notificationService.showInformation(`Welcome back, ${response.userName}!`);
-        this.telemetryService.setTrackedUser(response.userId);
-        context.dispatch(new Navigate(['/']));
-      }),
-      catchError((error: HttpErrorResponse) => {
-        context.patchState({ error });
-        if (error?.status === HttpStatusCode.Unauthorized) {
-          this.notificationService.showError('Invalid username or password.');
-          return of(null);
-        }
-        throw error;
       }),
       finalize(() => {
         context.patchState({ isBusy: false });
@@ -82,8 +68,6 @@ export class AuthState implements NgxsOnInit {
           emailHash: null,
           roles: []
         });
-        this.telemetryService.clearTrackedUser();
-        this.notificationService.showInformation('You have been logged out.');
       }),
       finalize(() => {
         context.patchState({ isBusy: false });
@@ -97,7 +81,6 @@ export class AuthState implements NgxsOnInit {
     return this.authService.verifyUser().pipe(
       tap((response) => {
         context.patchState(response);
-        this.telemetryService.setTrackedUser(response.userId);
       }),
       catchError((error) => {
         context.patchState({
@@ -120,17 +103,6 @@ export class AuthState implements NgxsOnInit {
   register(context: StateContext<AuthStateModel>, action: AuthActions.Register) {
     context.patchState({ isBusy: true });
     return this.authService.register(action.request).pipe(
-      tap(() => {
-        this.notificationService.showInformation(
-          'Registration successful. Please check your email for a confirmation link.'
-        );
-        context.dispatch(new Navigate(['/']));
-      }),
-      catchError((error) => {
-        this.notificationService.showError('An error occured while trying to register.');
-        context.patchState({ error });
-        throw error;
-      }),
       finalize(() => {
         context.patchState({ isBusy: false });
       })
@@ -202,6 +174,11 @@ export class AuthState implements NgxsOnInit {
   @Selector([AUTH_STATE_TOKEN])
   static isLoggedIn(state: AuthStateModel) {
     return !!state.userId;
+  }
+
+  @Selector([AUTH_STATE_TOKEN])
+  static userId(state: AuthStateModel) {
+    return state.userId;
   }
 
   @Selector([AUTH_STATE_TOKEN])

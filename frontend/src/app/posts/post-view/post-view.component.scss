@@ -1,15 +1,31 @@
 :host {
   width: 100%;
-  padding: 0 16px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 8px;
+
+  h2,
+  p {
+    margin: 0;
+  }
+
+  .description {
+    font-size: 20px;
+  }
+
+  .author-and-date {
+    font-size: 16px;
+  }
+
+  .count {
+    font-size: 20px;
+    color: #bbb;
+  }
 
   mat-card {
     width: 100%;
-    max-width: 800px;
-    min-width: 320px;
 
     mat-card-header {
       .title {
@@ -21,14 +37,6 @@
       margin-top: 1rem;
     }
   }
-}
-
-img.full-image {
-  width: inherit;
-  height: auto;
-  max-height: 600px;
-  object-fit: cover;
-  border-radius: 16px;
 }
 
 .centered-container {

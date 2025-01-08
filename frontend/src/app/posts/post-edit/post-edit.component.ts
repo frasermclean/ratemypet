@@ -42,13 +42,10 @@ export class PostEditComponent {
   });
 
   constructor(actions$: Actions, notificationService: NotificationService, router: Router) {
-    actions$
-      .pipe(ofActionSuccessful(PostsActions.AddPost))
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        notificationService.showInformation('Post created successfully');
-        router.navigate(['/posts', this.currentPost()?.id]);
-      });
+    actions$.pipe(ofActionSuccessful(PostsActions.AddPost), takeUntilDestroyed()).subscribe(() => {
+      notificationService.showInformation('Post created successfully');
+      router.navigate(['/posts', this.currentPost()?.id]);
+    });
   }
 
   onImageFileChange(file: File | null) {

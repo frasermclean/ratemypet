@@ -1,13 +1,14 @@
+import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext, StateToken } from '@ngxs/store';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, finalize, of, tap } from 'rxjs';
 import { Post, SearchPostsMatch } from './post.models';
 import { PostsActions } from './posts.actions';
 import { PostsService } from './posts.service';
 
 interface PostsStateModel {
   status: 'ready' | 'busy' | 'error';
-  error: any;
+  errorMessage: string | null;
   matches: SearchPostsMatch[];
   totalMatches: number;
   currentPost: Post | null;
@@ -19,7 +20,7 @@ const POSTS_STATE_TOKEN = new StateToken<PostsStateModel>('posts');
   name: POSTS_STATE_TOKEN,
   defaults: {
     status: 'ready',
-    error: null,
+    errorMessage: null,
     matches: [],
     totalMatches: 0,
     currentPost: null
@@ -30,25 +31,24 @@ export class PostsState {
   private readonly postsService = inject(PostsService);
 
   @Action(PostsActions.SearchPosts)
-  searchPosts(context: StateContext<PostsStateModel>) {
+  searchPosts(context: StateContext<PostsStateModel>, action: PostsActions.SearchPosts) {
     context.patchState({ status: 'busy' });
-    return this.postsService.searchPosts().pipe(
+    return this.postsService.searchPosts(action.request).pipe(
       tap((paging) => {
-        context.patchState({ status: 'ready', matches: paging.data, totalMatches: paging.count });
+        context.patchState({ matches: paging.data, totalMatches: paging.count });
       }),
-      catchError((error) => {
-        context.patchState({ status: 'error', error, matches: [], totalMatches: 0 });
-        return of([]);
+      finalize(() => {
+        context.patchState({ status: 'ready' });
       })
     );
   }
 
   @Action(PostsActions.GetPost)
   getPost(context: StateContext<PostsStateModel>, action: PostsActions.GetPost) {
-    // if the current post is the one we want to get, return it
+    // prevent fetching the same post multiple times
     const currentPost = context.getState().currentPost;
     if (currentPost?.id === action.postId) {
-      return of(currentPost);
+      return;
     }
 
     context.patchState({ status: 'busy' });
@@ -56,9 +56,17 @@ export class PostsState {
       tap((post) => {
         context.patchState({ status: 'ready', currentPost: post });
       }),
-      catchError((error) => {
-        context.patchState({ status: 'error', error });
-        return of(null);
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === HttpStatusCode.NotFound) {
+          context.patchState({
+            status: 'error',
+            currentPost: null,
+            errorMessage: `Post with ID ${action.postId} could not be found`
+          });
+          return of(null);
+        }
+
+        throw error;
       })
     );
   }
@@ -69,10 +77,6 @@ export class PostsState {
     return this.postsService.addPost(action.request).pipe(
       tap((post) => {
         context.patchState({ status: 'ready', currentPost: post });
-      }),
-      catchError((error) => {
-        context.patchState({ status: 'error', error });
-        throw error;
       })
     );
   }
@@ -83,10 +87,6 @@ export class PostsState {
     return this.postsService.deletePost(action.postId).pipe(
       tap(() => {
         context.patchState({ status: 'ready' });
-      }),
-      catchError((error) => {
-        context.patchState({ status: 'error', error });
-        throw error;
       })
     );
   }
@@ -99,6 +99,9 @@ export class PostsState {
         const matches = state.matches.map((match) =>
           match.id === action.postId ? { ...match, reactions, userReaction: action.reaction } : match
         );
+        if (state.currentPost?.id === action.postId) {
+          context.patchState({ currentPost: { ...state.currentPost, reactions, userReaction: action.reaction } });
+        }
         context.patchState({ status: 'ready', matches });
       })
     );
@@ -112,6 +115,9 @@ export class PostsState {
         const matches = state.matches.map((match) =>
           match.id === action.postId ? { ...match, reactions, userReaction: undefined } : match
         );
+        if (state.currentPost?.id === action.postId) {
+          context.patchState({ currentPost: { ...state.currentPost, reactions, userReaction: undefined } });
+        }
         context.patchState({ status: 'ready', matches });
       })
     );
@@ -126,7 +132,6 @@ export class PostsState {
           context.patchState({
             currentPost: {
               ...currentPost,
-              commentCount: currentPost.commentCount + 1,
               comments: [...currentPost.comments, comment]
             }
           });
@@ -142,15 +147,25 @@ export class PostsState {
         const currentPost = context.getState().currentPost;
         if (currentPost) {
           const comments = currentPost.comments.filter((comment) => comment.id !== action.commentId);
-          context.patchState({ currentPost: { ...currentPost, commentCount: currentPost.commentCount - 1, comments } });
+          context.patchState({ currentPost: { ...currentPost, comments } });
         }
       })
     );
   }
 
   @Selector([POSTS_STATE_TOKEN])
+  static isBusy(state: PostsStateModel) {
+    return state.status === 'busy';
+  }
+
+  @Selector([POSTS_STATE_TOKEN])
   static status(state: PostsStateModel) {
     return state.status;
+  }
+
+  @Selector([POSTS_STATE_TOKEN])
+  static errorMessage(state: PostsStateModel) {
+    return state.errorMessage;
   }
 
   @Selector([POSTS_STATE_TOKEN])

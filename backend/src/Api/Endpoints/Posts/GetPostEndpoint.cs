@@ -31,8 +31,8 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
                 AuthorUserName = post.User.UserName!,
                 AuthorEmailHash = post.User.Email.ToSha256Hash(),
                 SpeciesName = post.Species.Name,
-                CreatedAtUtc = post.CreatedAtUtc,
-                UpdatedAtUtc = post.UpdatedAtUtc,
+                CreatedAt = post.CreatedAtUtc,
+                UpdatedAt = post.UpdatedAtUtc,
                 UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == userId)!.Reaction,
                 Reactions = new PostReactionsResponse
                 {
@@ -52,8 +52,7 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
                         CreatedAtUtc = comment.CreatedAtUtc,
                         UpdatedAtUtc = comment.UpdatedAtUtc,
                         ParentId = comment.Parent == null ? null : comment.Parent.Id,
-                    }).ToCommentTree(),
-                CommentCount = post.Comments.Count
+                    }).ToCommentTree()
             })
             .AsNoTracking()
             .FirstOrDefaultAsync(cancellationToken);

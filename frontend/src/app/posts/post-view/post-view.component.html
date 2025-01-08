@@ -5,33 +5,76 @@
 </div>
 } @case ('error') {
 <div class="centered-container">
-  <h2>An error occurred while loading the post.</h2>
-  <p>Could not load the requested post from the server.</p>
+  <h2>Not Found</h2>
+  <p>{{ errorMessage() }}</p>
 </div>
 } @case ('ready') { @if(post(); as post) {
-<div id="post-container">
-  <img class="full-image mat-elevation-z8" [src]="imageUrl()" [alt]="post.title" />
-  <mat-card class="mat-elevation-z8">
-    <mat-card-header>
-      <mat-card-title class="title">{{ post.title }}</mat-card-title>
-      <mat-card-subtitle>Posted by: {{ post.authorUserName }} on {{ post.createdAtUtc | date }}</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <p>{{ post.description }}</p>
-      <app-post-comments [post]="post" />
-    </mat-card-content>
-    @if (userName() === post.authorUserName) {
-    <mat-card-actions>
-      <button mat-button>
-        <mat-icon>edit</mat-icon>
-        Edit
-      </button>
-      <button mat-button (click)="onDelete()">
-        <mat-icon>delete</mat-icon>
-        Delete
-      </button>
-    </mat-card-actions>
+
+<h2 class="title">{{ post.title }}</h2>
+@if (post.imageUrl) {
+<app-post-image [baseUrl]="post.imageUrl" [title]="post.title" />
+}
+<p class="description">{{ post.description }}</p>
+<p class="author-and-date">
+  Posted by: <strong>{{ post.authorUserName }}</strong> on {{ post.createdAt | date }}
+</p>
+
+<!-- Reactions -->
+<mat-card class="mat-elevation-z8" id="comments">
+  <mat-card-header>
+    <mat-card-title class="title">
+      Reactions @if (reactionCount()) {
+      <span class="count">({{ reactionCount() }})</span>
+      }
+    </mat-card-title>
+    <mat-card-subtitle class="subtitle">
+      {{ userName() ? "What is your reaction?" : "Log in leave your reaction" }}
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    @for (reaction of allReactions; track $index) {
+    <app-post-reaction
+      [postId]="post.id"
+      [reaction]="reaction"
+      [count]="post.reactions[reaction]"
+      [userReaction]="post.userReaction"
+    />
     }
-  </mat-card>
-</div>
-} } }
+  </mat-card-content>
+</mat-card>
+
+<!-- Comments -->
+<mat-card class="mat-elevation-z8" id="comments">
+  <mat-card-header>
+    <mat-card-title class="title">
+      Comments @if (post.comments.length > 0) {
+      <span class="count">({{ post.comments.length }})</span>
+      }
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <app-post-comments [postId]="post.id" [comments]="post.comments" />
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-button [disabled]="!userName()" (click)="onAddComment()">
+      <mat-icon>add_comment</mat-icon>
+      Add Comment
+    </button>
+  </mat-card-actions>
+</mat-card>
+
+<!-- Controls -->
+@if (userName() === post.authorUserName) {
+<mat-card class="mat-elevation-z8" id="controls">
+  <mat-card-header>
+    <mat-card-title class="title">Controls</mat-card-title>
+  </mat-card-header>
+  <mat-card-actions>
+    <button mat-button>
+      <mat-icon>edit</mat-icon>
+      Edit
+    </button>
+    <app-post-delete-button [postId]="post.id" />
+  </mat-card-actions>
+</mat-card>
+} } } }

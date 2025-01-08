@@ -13,9 +13,14 @@ const routes: Routes = [
     path: '',
     pathMatch: 'prefix',
     children: [
-      { path: 'add', component: PostEditComponent, canActivate: [isAuthenticated, isRoleContributor] },
+      {
+        path: 'add',
+        component: PostEditComponent,
+        title: 'Add Post',
+        canActivate: [isAuthenticated, isRoleContributor]
+      },
       { path: ':postId', component: PostViewComponent },
-      { path: '', component: PostListComponent, title: 'Posts' }
+      { path: '', component: PostListComponent, title: 'Posts List' }
     ],
     providers: [provideStates([PostsState]), PostsService]
   }

@@ -1,27 +1,29 @@
 import { inject, Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, ResolveEnd, Router } from '@angular/router';
 import { AngularPlugin } from '@microsoft/applicationinsights-angularplugin-js';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
-import { filter } from 'rxjs';
+import { RouterNavigated } from '@ngxs/router-plugin';
+import { Actions, ofActionSuccessful, Store } from '@ngxs/store';
+import { SharedActions } from '@shared/shared.actions';
+import { SharedState } from '@shared/shared.state';
 import { environment } from '../../../environments/environment';
-import { ErrorService } from './error.service';
+import { AuthActions } from '../../auth/auth.actions';
+import { AuthState } from '../../auth/auth.state';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TelemetryService {
-  private readonly router = inject(Router);
-  private readonly errorService = inject(ErrorService);
+  private readonly actions$ = inject(Actions);
+  private readonly store = inject(Store);
+
   private readonly angularPlugin = new AngularPlugin();
+
   private readonly appInsights = new ApplicationInsights({
     config: {
       connectionString: environment.applicationInsights.connectionString,
       extensions: [this.angularPlugin],
       extensionConfig: {
-        [this.angularPlugin.identifier]: {
-          router: this.router,
-          errorServices: [this.errorService]
-        }
+        [this.angularPlugin.identifier]: {}
       },
       enableCorsCorrelation: true,
       enableRequestHeaderTracking: true,
@@ -36,30 +38,35 @@ export class TelemetryService {
       item.tags['ai.cloud.role'] = 'frontend';
     });
 
-    // enable page view tracking with active component name
-    this.router.events.pipe(filter((event): event is ResolveEnd => event instanceof ResolveEnd)).subscribe((event) => {
-      const activatedComponent = this.getActivatedComponent(event.state.root);
-      if (activatedComponent) {
-        this.appInsights.trackPageView({
-          name: activatedComponent.name,
-          uri: event.urlAfterRedirects
-        });
-      }
+    this.registerPageTrackingEventHandlers();
+    this.registerUserContextHandlers();
+  }
+
+  private registerPageTrackingEventHandlers(): void {
+    // start tracking page view on page title change
+    this.actions$.pipe(ofActionSuccessful(SharedActions.SetPageTitle)).subscribe(() => {
+      const name = this.store.selectSnapshot(SharedState.pageTitle);
+      this.appInsights.startTrackPage(name);
+    });
+
+    // stop tracking page view on router navigated event
+    this.actions$.pipe(ofActionSuccessful(RouterNavigated)).subscribe(() => {
+      const name = this.store.selectSnapshot(SharedState.pageTitle);
+      const url = this.store.selectSnapshot(SharedState.pageUrl);
+      this.appInsights.stopTrackPage(name, url);
     });
   }
 
-  public setTrackedUser(userId: string) {
-    this.appInsights.setAuthenticatedUserContext(userId);
-  }
+  private registerUserContextHandlers(): void {
+    // track authenticated user id on login and verify user
+    this.actions$.pipe(ofActionSuccessful(AuthActions.Login, AuthActions.VerifyUser)).subscribe(() => {
+      const userId = this.store.selectSnapshot(AuthState.userId)!; // should not be null as the user is authenticated
+      this.appInsights.setAuthenticatedUserContext(userId, undefined, true);
+    });
 
-  public clearTrackedUser() {
-    this.appInsights.clearAuthenticatedUserContext();
-  }
-
-  private getActivatedComponent(snapshot: ActivatedRouteSnapshot): any {
-    if (snapshot.firstChild) {
-      return this.getActivatedComponent(snapshot.firstChild);
-    }
-    return snapshot.component;
+    // clear user id on logout
+    this.actions$
+      .pipe(ofActionSuccessful(AuthActions.Logout))
+      .subscribe(() => this.appInsights.clearAuthenticatedUserContext());
   }
 }

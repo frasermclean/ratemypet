@@ -12,15 +12,14 @@ public class PostResponse
     public required string AuthorUserName { get; init; }
     public required string AuthorEmailHash { get; init; }
     public required string SpeciesName { get; init; }
-    public DateTime CreatedAtUtc { get; init; }
+    public DateTime CreatedAt { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public DateTime? UpdatedAtUtc { get; init; }
+    public DateTime? UpdatedAt { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Reaction? UserReaction { get; init; }
 
     public PostReactionsResponse Reactions { get; init; } = new();
     public IEnumerable<PostCommentResponse> Comments { get; init; } = [];
-    public int CommentCount { get; init; }
 }

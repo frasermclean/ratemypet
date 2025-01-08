@@ -1,0 +1,10 @@
+<button
+  mat-icon-button
+  [matBadge]="count() || null"
+  [class.selected]="userReaction() === reaction()"
+  (click)="onClick()"
+  aria-label="Reaction button"
+  matTooltip="{{ reaction() | titlecase }}"
+>
+  <mat-icon svgIcon="reactions:{{ reaction() }}" class="reaction-icon" />
+</button>
