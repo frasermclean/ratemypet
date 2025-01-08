@@ -99,6 +99,9 @@ export class PostsState {
         const matches = state.matches.map((match) =>
           match.id === action.postId ? { ...match, reactions, userReaction: action.reaction } : match
         );
+        if (state.currentPost?.id === action.postId) {
+          context.patchState({ currentPost: { ...state.currentPost, reactions, userReaction: action.reaction } });
+        }
         context.patchState({ status: 'ready', matches });
       })
     );
@@ -112,6 +115,9 @@ export class PostsState {
         const matches = state.matches.map((match) =>
           match.id === action.postId ? { ...match, reactions, userReaction: undefined } : match
         );
+        if (state.currentPost?.id === action.postId) {
+          context.patchState({ currentPost: { ...state.currentPost, reactions, userReaction: undefined } });
+        }
         context.patchState({ status: 'ready', matches });
       })
     );

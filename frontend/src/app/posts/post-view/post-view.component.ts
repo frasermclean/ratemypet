@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject, input, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, inject, input, OnDestroy, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,6 +11,8 @@ import { SharedActions } from '@shared/shared.actions';
 import { Subject, takeUntil } from 'rxjs';
 import { AuthState } from '../../auth/auth.state';
 import { PostImageComponent } from '../post-image/post-image.component';
+import { PostReactionComponent } from '../post-reaction/post-reaction.component';
+import { allReactions } from '../post.models';
 import { PostsActions } from '../posts.actions';
 import { PostsState } from '../posts.state';
 import { PostAddCommentComponent, PostAddCommentData } from './post-add-comment/post-add-comment.component';
@@ -27,7 +29,8 @@ import { PostDeleteButtonComponent } from './post-delete-button/post-delete-butt
     MatProgressSpinnerModule,
     PostCommentsComponent,
     PostDeleteButtonComponent,
-    PostImageComponent
+    PostImageComponent,
+    PostReactionComponent
   ],
   templateUrl: './post-view.component.html',
   styleUrl: './post-view.component.scss'
@@ -44,6 +47,16 @@ export class PostViewComponent implements OnInit, OnDestroy {
   readonly setPageTitle = dispatch(SharedActions.SetPageTitle);
   readonly navigate = dispatch(Navigate);
   readonly destroy$ = new Subject<void>();
+  readonly allReactions = allReactions;
+
+  reactionCount = computed<number>(() => {
+    const reactions = this.post()?.reactions;
+    if (!reactions) {
+      return 0;
+    }
+
+    return Object.values(reactions).reduce((acc, value) => acc + value, 0);
+  });
 
   constructor(actions$: Actions, store: Store) {
     actions$.pipe(ofActionSuccessful(PostsActions.GetPost), takeUntil(this.destroy$)).subscribe(() => {

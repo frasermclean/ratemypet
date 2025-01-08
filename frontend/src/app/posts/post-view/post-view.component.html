@@ -17,12 +17,36 @@
   Posted by: <strong>{{ post.authorUserName }}</strong> on {{ post.createdAt | date }}
 </p>
 
+<!-- Reactions -->
+<mat-card class="mat-elevation-z8" id="comments">
+  <mat-card-header>
+    <mat-card-title class="title">
+      Reactions @if (reactionCount()) {
+      <span class="count">({{ reactionCount() }})</span>
+      }
+    </mat-card-title>
+    <mat-card-subtitle class="subtitle">
+      {{ userName() ? "What is your reaction?" : "Log in leave your reaction" }}
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    @for (reaction of allReactions; track $index) {
+    <app-post-reaction
+      [postId]="post.id"
+      [reaction]="reaction"
+      [count]="post.reactions[reaction]"
+      [userReaction]="post.userReaction"
+    />
+    }
+  </mat-card-content>
+</mat-card>
+
 <!-- Comments -->
 <mat-card class="mat-elevation-z8" id="comments">
   <mat-card-header>
     <mat-card-title class="title">
       Comments @if (post.comments.length > 0) {
-      <span class="comment-count">({{ post.comments.length }})</span>
+      <span class="count">({{ post.comments.length }})</span>
       }
     </mat-card-title>
   </mat-card-header>
