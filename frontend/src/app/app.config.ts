@@ -1,6 +1,5 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, ErrorHandler, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
-import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, TitleStrategy, withComponentInputBinding } from '@angular/router';
 import { ApplicationinsightsAngularpluginErrorService } from '@microsoft/applicationinsights-angularplugin-js';
@@ -15,6 +14,7 @@ import initializeApp from './app.initializer';
 import { routes } from './app.routes';
 import { authInterceptor } from './auth/auth.interceptor';
 import { AuthState } from './auth/auth.state';
+import provideUiDefaults from './config/ui-defaults.provider';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,6 +23,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     provideAnimationsAsync(),
     provideAppInitializer(initializeApp),
+    provideUiDefaults(),
     provideStore(
       [AuthState, SharedState],
       { developmentMode: environment.name === 'development' },
@@ -45,10 +46,6 @@ export const appConfig: ApplicationConfig = {
     {
       provide: ErrorHandler,
       useClass: ApplicationinsightsAngularpluginErrorService
-    },
-    {
-      provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
-      useValue: { duration: 5000 }
     }
   ]
 };
