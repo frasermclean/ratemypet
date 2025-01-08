@@ -67,8 +67,7 @@ export enum Reaction {
   Like = 'like',
   Funny = 'funny',
   Crazy = 'crazy',
-  Wow = 'wow',
-  Sad = 'sad'
+  Wow = 'wow'
 }
 
-export const allReactions: Reaction[] = [Reaction.Like, Reaction.Funny, Reaction.Crazy, Reaction.Wow, Reaction.Sad];
+export const allReactions: Reaction[] = [Reaction.Like, Reaction.Funny, Reaction.Crazy, Reaction.Wow];
