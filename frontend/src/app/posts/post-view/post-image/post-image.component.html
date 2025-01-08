@@ -1,5 +1,5 @@
 <picture>
   <source [srcset]="getImageUrl(400)" media="(max-width: 400px)" />
   <source [srcset]="getImageUrl(768)" media="(max-width: 768px)" />
-  <img class="mat-elevation-z8" [src]="getImageUrl()" [alt]="post().title" />
+  <img class="mat-elevation-z8" [src]="getImageUrl()" [alt]="title()" />
 </picture>
