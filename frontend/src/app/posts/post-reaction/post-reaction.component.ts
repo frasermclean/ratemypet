@@ -21,6 +21,7 @@ export class PostReactionComponent {
   reaction = input.required<Reaction>();
   count = input.required<number>();
   userReaction = input<Reaction>();
+  size = input<'normal' | 'large'>('normal');
   notificationService = inject(NotificationService);
   removePostReaction = dispatch(PostsActions.RemovePostReaction);
   updatePostReaction = dispatch(PostsActions.UpdatePostReaction);
