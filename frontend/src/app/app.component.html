@@ -2,7 +2,7 @@
 
 <mat-sidenav-container>
   <mat-sidenav #sidenav>
-    <app-nav-menu />
+    <app-nav-menu (itemClicked)="sidenav.close()" />
   </mat-sidenav>
   <mat-sidenav-content>
     <div id="app-content">

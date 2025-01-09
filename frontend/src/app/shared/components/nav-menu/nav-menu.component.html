@@ -1,10 +1,14 @@
 <mat-nav-list>
-  <a mat-list-item routerLink="/" routerLinkActive="link-active" [routerLinkActiveOptions]="{ exact: true }">
-    <mat-icon matListItemIcon>home</mat-icon>
-    Home
+  @for (item of links; track $index) {
+  <a
+    mat-list-item
+    [routerLink]="item.path"
+    routerLinkActive="link-active"
+    [routerLinkActiveOptions]="{ exact: true }"
+    (click)="itemClicked.emit()"
+  >
+    <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+    {{ item.label }}
   </a>
-  <a mat-list-item routerLink="/posts" routerLinkActive="link-active" [routerLinkActiveOptions]="{ exact: true }">
-    <mat-icon matListItemIcon>photo_library</mat-icon>
-    Posts
-  </a>
+  }
 </mat-nav-list>
