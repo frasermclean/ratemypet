@@ -5,10 +5,13 @@
     <app-nav-menu />
   </mat-sidenav>
   <mat-sidenav-content>
-    <router-outlet />
-    <p class="footer">
-      {{ title() }} is a just-for-fun, non-profit,
-      <a href="https://github.com/frasermclean/ratemypet" target="_blank">open-source project</a>
-    </p>
+    <div id="app-content">
+      <router-outlet />
+      <div class="spacer"></div>
+      <p class="footer">
+        {{ title() }} is a just-for-fun, non-profit,
+        <a href="https://github.com/frasermclean/ratemypet" target="_blank">open-source project</a>
+      </p>
+    </div>
   </mat-sidenav-content>
 </mat-sidenav-container>
