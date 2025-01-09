@@ -1,6 +1,10 @@
 <button
   mat-icon-button
   [matBadge]="count() || null"
+  [class.like]="reaction() === 'like'"
+  [class.funny]="reaction() === 'funny'"
+  [class.crazy]="reaction() === 'crazy'"
+  [class.wow]="reaction() === 'wow'"
   [class.selected]="userReaction() === reaction()"
   (click)="onClick()"
   aria-label="Reaction button"

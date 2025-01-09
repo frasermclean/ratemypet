@@ -1,5 +1,34 @@
+@use "sass:color";
 @use "colors";
 
-.selected {
-  background: colors.$accent-orange;
+.like {
+  color: colors.$like;
+
+  &.selected {
+    background: color.adjust(colors.$like, $lightness: -30%);
+  }
+}
+
+.funny {
+  color: colors.$funny;
+
+  &.selected {
+    background: color.adjust(colors.$funny, $lightness: -40%);
+  }
+}
+
+.crazy {
+  color: colors.$crazy;
+
+  &.selected {
+    background: color.adjust(colors.$crazy, $lightness: -30%);
+  }
+}
+
+.wow {
+  color: colors.$wow;
+
+  &.selected {
+    background: color.adjust(colors.$wow, $lightness: -35%);
+  }
 }
