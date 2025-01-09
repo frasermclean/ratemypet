@@ -1,15 +1,5 @@
-@use "@angular/material" as mat;
-
 mat-expansion-panel {
   min-width: 320px;
-}
-
-mat-button-toggle {
-  @include mat.button-toggle-overrides(
-    (
-      selected-state-background-color: #9e39bc
-    )
-  );
 }
 
 .title-icon {

@@ -1,3 +1,55 @@
-.selected {
-  background: rgb(173, 79, 60);
+@use "sass:color";
+@use "@angular/material" as mat;
+@use "colors";
+
+$large-button-size: 56px;
+$large-icon-size: 40px;
+
+.like {
+  color: colors.$like;
+
+  &.selected {
+    background: color.adjust(colors.$like, $lightness: -30%);
+  }
+}
+
+.funny {
+  color: colors.$funny;
+
+  &.selected {
+    background: color.adjust(colors.$funny, $lightness: -40%);
+  }
+}
+
+.crazy {
+  color: colors.$crazy;
+
+  &.selected {
+    background: color.adjust(colors.$crazy, $lightness: -30%);
+  }
+}
+
+.wow {
+  color: colors.$wow;
+
+  &.selected {
+    background: color.adjust(colors.$wow, $lightness: -40%);
+  }
+}
+
+.large-button {
+  width: $large-button-size;
+  height: $large-button-size;
+
+  @include mat.icon-button-overrides(
+    (
+      icon-size: $large-icon-size,
+      state-layer-size: $large-button-size
+    )
+  );
+}
+
+.large-icon {
+  width: $large-icon-size;
+  height: $large-icon-size;
 }

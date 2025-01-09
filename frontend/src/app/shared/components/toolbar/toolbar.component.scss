@@ -1,0 +1,21 @@
+@use "utils";
+
+:host {
+  width: 100%;
+
+  mat-toolbar {
+    .title {
+      margin-left: 8px;
+      text-decoration: none;
+      font-size: 1.8rem;
+      letter-spacing: 0.1rem;
+      color: var(--mat-app-text-color, var(--mat-app-on-background, inherit));
+    }
+
+    .user-content {
+      display: flex;
+      align-items: end;
+      gap: 8px;
+    }
+  }
+}

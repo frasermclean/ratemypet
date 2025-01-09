@@ -1,13 +1,9 @@
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
 @use "@angular/material" as mat;
-// Plus imports for other components in your app.
+@use "themes";
+@use "colors";
 
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
+@include mat.typography-hierarchy(themes.$dark-theme);
 @include mat.elevation-classes();
-@include mat.app-background();
 
 // workaround until https://github.com/angular/components/issues/26094 is resolved
 @for $i from 0 through 24 {
@@ -16,40 +12,44 @@
   }
 }
 
-// Define the theme object.
-$theme: mat.define-theme(
-  (
-    color: (
-      theme-type: dark,
-      primary: mat.$magenta-palette,
-      tertiary: mat.$orange-palette
-    ),
-    typography: (
-      plain-family: "Quicksand",
-      brand-family: "Bebas Neue",
-      bold-weight: 700,
-      medium-weight: 500,
-      regular-weight: 300
-    ),
-    density: (
-      scale: 0
-    )
-  )
-);
-
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
 :root {
-  @include mat.all-component-themes($theme);
+  // component styles
+  @include mat.core-theme(themes.$dark-theme); // common styles for all components
+  @include mat.badge-theme(themes.$dark-theme);
+  @include mat.button-theme(themes.$dark-theme);
+  @include mat.button-toggle-theme(themes.$dark-theme);
+  @include mat.card-theme(themes.$dark-theme);
+  @include mat.dialog-theme(themes.$dark-theme);
+  @include mat.expansion-theme(themes.$dark-theme);
+  @include mat.fab-theme(themes.$dark-theme);
+  @include mat.form-field-theme(themes.$dark-theme);
+  @include mat.icon-theme(themes.$dark-theme);
+  @include mat.list-theme(themes.$dark-theme);
+  @include mat.menu-theme(themes.$dark-theme);
+  @include mat.progress-spinner-theme(themes.$dark-theme);
+  @include mat.sidenav-theme(themes.$dark-theme);
+  @include mat.snack-bar-theme(themes.$dark-theme);
+  @include mat.toolbar-theme(themes.$dark-theme);
+  @include mat.tooltip-theme(themes.$dark-theme);
+  @include mat.tree-theme(themes.$dark-theme);
+
+  // sidenav overrides
+  @include mat.sidenav-overrides(
+    (
+      container-shape: 0px,
+      container-width: 256px,
+      container-background-color: colors.$nav-menu-background,
+      content-background-color: transparent
+    )
+  );
+
+  // button toggle overrides
+  @include mat.button-toggle-overrides(
+    (
+      selected-state-background-color: colors.$accent-magenta
+    )
+  );
 }
-
-// Comment out the line below if you want to use the pre-defined typography utility classes.
-// For more information: https://material.angular.io/guide/typography#using-typography-styles-in-your-application.
-@include mat.typography-hierarchy($theme);
-
-// Comment out the line below if you want to use the deprecated `color` inputs.
-// @include mat.color-variants-backwards-compatibility($ratemypet-web-theme);
 
 * {
   box-sizing: border-box;
@@ -71,7 +71,7 @@ a {
 }
 
 .app-background {
-  background-color: #501270;
+  background-color: colors.$app-background;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' %3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' x2='0' y1='0' y2='1'%3E%3Cstop offset='0' stop-color='%23460B7C'/%3E%3Cstop offset='1' stop-color='%238E3C11'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpattern id='b' width='48' height='48' patternUnits='userSpaceOnUse'%3E%3Ccircle fill='%23FFFFFF' cx='24' cy='24' r='24'/%3E%3C/pattern%3E%3Crect width='100%25' height='100%25' fill='url(%23a)'/%3E%3Crect width='100%25' height='100%25' fill='url(%23b)' fill-opacity='0.05'/%3E%3C/svg%3E");
   background-attachment: fixed;
 }

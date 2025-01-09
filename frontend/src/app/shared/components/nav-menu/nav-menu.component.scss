@@ -1,0 +1,13 @@
+@use "colors";
+
+mat-nav-list {
+  padding: 16px;
+
+  a {
+    margin-bottom: 8px;
+  }
+}
+
+.link-active {
+  background-color: colors.$accent-orange;
+}

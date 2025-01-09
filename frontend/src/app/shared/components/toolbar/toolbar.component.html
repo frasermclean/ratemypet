@@ -1,5 +1,5 @@
 <mat-toolbar color="primary" class="mat-elevation-z8">
-  <button mat-icon-button>
+  <button mat-icon-button (click)="menuClicked.emit()">
     <mat-icon>menu</mat-icon>
   </button>
   <a class="title" routerLink="/">{{ title() }}</a>

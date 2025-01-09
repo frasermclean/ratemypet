@@ -1,9 +1,17 @@
-<app-toolbar [title]="title()" />
+<app-toolbar [title]="title()" (menuClicked)="sidenav.toggle()" />
 
-<div id="app-container">
-  <section id="app-content">
-    <router-outlet />
-  </section>
-</div>
-
-<app-footer />
+<mat-sidenav-container>
+  <mat-sidenav #sidenav>
+    <app-nav-menu (itemClicked)="sidenav.close()" />
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div id="app-content">
+      <router-outlet />
+      <div class="spacer"></div>
+      <p class="footer">
+        {{ title() }} is a just-for-fun, non-profit,
+        <a href="https://github.com/frasermclean/ratemypet" target="_blank">open-source project</a>
+      </p>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

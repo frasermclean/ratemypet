@@ -1,10 +1,15 @@
 <button
   mat-icon-button
   [matBadge]="count() || null"
+  [class.like]="reaction() === 'like'"
+  [class.funny]="reaction() === 'funny'"
+  [class.crazy]="reaction() === 'crazy'"
+  [class.wow]="reaction() === 'wow'"
   [class.selected]="userReaction() === reaction()"
+  [class.large-button]="size() === 'large'"
   (click)="onClick()"
   aria-label="Reaction button"
   matTooltip="{{ reaction() | titlecase }}"
 >
-  <mat-icon svgIcon="reactions:{{ reaction() }}" class="reaction-icon" />
+  <mat-icon svgIcon="reactions:{{ reaction() }}" [class.large-icon]="size() === 'large'" />
 </button>

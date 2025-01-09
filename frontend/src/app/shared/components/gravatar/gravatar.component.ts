@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 @Component({
   selector: 'app-gravatar',
@@ -12,7 +12,7 @@ export class GravatarComponent {
   rating = input<'g' | 'pg' | 'r' | 'x'>('g');
   shape = input<'circle' | 'rounded'>('circle');
 
-  get gravatarUrl(): string {
-    return `https://gravatar.com/avatar/${this.emailHash()}?s=${this.size()}&d=${this.defaultImage()}&r=${this.rating()}`;
-  }
+  gravatarUrl = computed(
+    () => `https://gravatar.com/avatar/${this.emailHash()}?s=${this.size()}&d=${this.defaultImage()}&r=${this.rating()}`
+  );
 }

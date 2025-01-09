@@ -1,0 +1,22 @@
+@use "@angular/material" as mat;
+
+// dark theme
+$dark-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$magenta-palette,
+      tertiary: mat.$orange-palette
+    ),
+    typography: (
+      plain-family: "Quicksand",
+      brand-family: "Bebas Neue",
+      bold-weight: 700,
+      medium-weight: 500,
+      regular-weight: 300
+    ),
+    density: (
+      scale: 0
+    )
+  )
+);

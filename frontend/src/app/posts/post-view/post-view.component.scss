@@ -1,3 +1,5 @@
+$max-width: 1024px;
+
 :host {
   width: 100%;
   display: flex;
@@ -9,6 +11,7 @@
   h2,
   p {
     margin: 0;
+    max-width: $max-width;
   }
 
   .description {
@@ -24,8 +27,13 @@
     color: #bbb;
   }
 
+  app-post-image {
+    max-width: $max-width;
+  }
+
   mat-card {
     width: 100%;
+    max-width: $max-width;
 
     mat-card-header {
       .title {
@@ -35,6 +43,11 @@
 
     mat-card-content {
       margin-top: 1rem;
+
+      &.reactions {
+        display: flex;
+        gap: 8px;
+      }
     }
   }
 }
