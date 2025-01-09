@@ -2,7 +2,6 @@
 @use "themes";
 @use "colors";
 
-@include mat.app-background();
 @include mat.typography-hierarchy(themes.$dark-theme);
 @include mat.elevation-classes();
 
@@ -25,14 +24,26 @@
   @include mat.fab-theme(themes.$dark-theme);
   @include mat.form-field-theme(themes.$dark-theme);
   @include mat.icon-theme(themes.$dark-theme);
+  @include mat.list-theme(themes.$dark-theme);
   @include mat.menu-theme(themes.$dark-theme);
   @include mat.progress-spinner-theme(themes.$dark-theme);
+  @include mat.sidenav-theme(themes.$dark-theme);
   @include mat.snack-bar-theme(themes.$dark-theme);
   @include mat.toolbar-theme(themes.$dark-theme);
   @include mat.tooltip-theme(themes.$dark-theme);
   @include mat.tree-theme(themes.$dark-theme);
 
-  // overrides
+  // sidenav overrides
+  @include mat.sidenav-overrides(
+    (
+      container-shape: 0px,
+      container-width: 256px,
+      container-background-color: colors.$nav-menu-background,
+      content-background-color: transparent
+    )
+  );
+
+  // button toggle overrides
   @include mat.button-toggle-overrides(
     (
       selected-state-background-color: colors.$accent-magenta

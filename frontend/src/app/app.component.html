@@ -1,9 +1,11 @@
-<app-toolbar [title]="title()" />
+<app-toolbar [title]="title()" (menuClicked)="sidenav.toggle()" />
 
-<div id="app-container">
-  <section id="app-content">
+<mat-sidenav-container>
+  <mat-sidenav #sidenav>
+    <app-nav-menu />
+  </mat-sidenav>
+  <mat-sidenav-content>
     <router-outlet />
-  </section>
-</div>
-
-<app-footer />
+    <app-footer />
+  </mat-sidenav-content>
+</mat-sidenav-container>

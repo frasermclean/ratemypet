@@ -4,12 +4,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterLink } from '@angular/router';
+import { AuthActions } from '@auth/auth.actions';
+import { Role } from '@auth/auth.models';
+import { AuthState } from '@auth/auth.state';
 import { Actions, dispatch, ofActionSuccessful, select } from '@ngxs/store';
 import { GravatarComponent } from '@shared/components/gravatar/gravatar.component';
 import { NotificationService } from '@shared/services/notification.service';
-import { AuthActions } from '../../../auth/auth.actions';
-import { Role } from '../../../auth/auth.models';
-import { AuthState } from '../../../auth/auth.state';
 
 @Component({
   selector: 'app-user-menu',

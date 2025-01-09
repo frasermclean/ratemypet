@@ -1,17 +1,19 @@
-:host {
-  display: grid;
+$toolbar-height: 64px;
+
+app-toolbar {
+  position: fixed;
+  top: 0;
+  z-index: 2;
+}
+
+mat-sidenav-container {
   height: 100%;
-  grid-template-rows: auto 1fr auto;
 
-  #app-container {
-    width: 100%;
-    padding: 16px 16px 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  mat-sidenav {
+    padding-top: $toolbar-height;
+  }
 
-    #app-content {
-      max-width: 1920px;
-    }
+  mat-sidenav-content {
+    padding: $toolbar-height + 16px 16px 0 16px; // padding to accommodate toolbar and space out from sides
   }
 }
