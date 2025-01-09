@@ -35,6 +35,11 @@
 
     mat-card-content {
       margin-top: 1rem;
+
+      &.reactions {
+        display: flex;
+        gap: 8px;
+      }
     }
   }
 }
