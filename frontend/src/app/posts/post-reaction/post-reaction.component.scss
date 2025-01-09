@@ -33,7 +33,7 @@ $large-icon-size: 40px;
   color: colors.$wow;
 
   &.selected {
-    background: color.adjust(colors.$wow, $lightness: -35%);
+    background: color.adjust(colors.$wow, $lightness: -40%);
   }
 }
 
