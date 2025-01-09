@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
+import { Role } from '@auth/auth.models';
+import { AuthState } from '@auth/auth.state';
 import { select } from '@ngxs/store';
-import { Role } from '../../auth/auth.models';
-import { AuthState } from '../../auth/auth.state';
 
 @Component({
   selector: 'app-home',
