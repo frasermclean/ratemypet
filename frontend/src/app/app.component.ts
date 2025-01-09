@@ -5,11 +5,10 @@ import { select } from '@ngxs/store';
 import { NavMenuComponent } from '@shared/components/nav-menu/nav-menu.component';
 import { ToolbarComponent } from '@shared/components/toolbar/toolbar.component';
 import { SharedState } from '@shared/shared.state';
-import { FooterComponent } from './core/footer/footer.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, MatSidenavModule, ToolbarComponent, NavMenuComponent, FooterComponent],
+  imports: [RouterOutlet, MatSidenavModule, ToolbarComponent, NavMenuComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
