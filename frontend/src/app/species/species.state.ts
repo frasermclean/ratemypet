@@ -24,7 +24,12 @@ export class SpeciesState {
   private readonly speciesService = inject(SpeciesService);
 
   @Action(SpeciesActions.GetAllSpecies)
-  getAllSpecies(context: StateContext<SpeciesStateModel>, action: SpeciesActions.GetAllSpecies) {
+  getAllSpecies(context: StateContext<SpeciesStateModel>) {
+    const species = context.getState().species;
+    if (species.length) {
+      return;
+    }
+
     context.patchState({ isBusy: true });
     return this.speciesService.getAllSpecies().pipe(
       tap((species) => {
