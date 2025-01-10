@@ -57,7 +57,7 @@
     <app-post-comments [postId]="post.id" [comments]="post.comments" />
   </mat-card-content>
   <mat-card-actions>
-    <button mat-button [disabled]="!userName()" (click)="onAddComment()">
+    <button mat-button [disabled]="!userName()" (click)="showCommentDialog()">
       <mat-icon>add_comment</mat-icon>
       Add Comment
     </button>
