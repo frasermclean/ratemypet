@@ -21,6 +21,7 @@ public class GetAllSpeciesEndpoint(ApplicationDbContext dbContext)
             {
                 Id = species.Id,
                 Name = species.Name,
+                PluralName = species.PluralName,
                 PostCount = species.Posts.Count
             })
             .ToListAsync(cancellationToken);

@@ -6,6 +6,7 @@ public class Species
 
     public int Id { get; init; }
     public required string Name { get; set; }
+    public required string PluralName { get; set; }
     public ulong RowVersion { get; init; }
     public ICollection<Post> Posts { get; } = [];
 }
