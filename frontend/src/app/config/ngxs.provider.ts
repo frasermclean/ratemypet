@@ -5,11 +5,12 @@ import { AppRouterStateSerializer } from '@shared/router-state-serializer';
 import { SharedState } from '@shared/shared.state';
 import { environment } from '../../environments/environment';
 import { AuthState } from '../auth/auth.state';
+import { SpeciesState } from '../species/species.state';
 
 export function provideNgxsStore() {
   return [
     provideStore(
-      [AuthState, SharedState],
+      [AuthState, SharedState, SpeciesState],
       { developmentMode: environment.name === 'development' },
       ...[
         withNgxsRouterPlugin(),
