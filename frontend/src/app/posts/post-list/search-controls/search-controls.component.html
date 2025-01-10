@@ -10,9 +10,9 @@
       <div class="control-group">
         <h4>Species</h4>
         <mat-button-toggle-group (change)="speciesName.set($event.value)" [disabled]="isBusy()">
-          @for (option of speciesOptions; track $index) {
-          <mat-button-toggle [value]="option.value" [checked]="speciesName() === option.value">
-            {{ option.label }}
+          @for (species of allSpecies(); track species.id) {
+          <mat-button-toggle [value]="species.name" [checked]="speciesName() === species.name">
+            {{ species.pluralName }}
           </mat-button-toggle>
           }
         </mat-button-toggle-group>

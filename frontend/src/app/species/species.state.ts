@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Action, State, StateContext, StateToken } from '@ngxs/store';
+import { Action, Selector, State, StateContext, StateToken } from '@ngxs/store';
 import { finalize, tap } from 'rxjs';
 import { SpeciesActions } from './species.actions';
 import { Species } from './species.models';
@@ -34,5 +34,10 @@ export class SpeciesState {
         context.patchState({ isBusy: false });
       })
     );
+  }
+
+  @Selector()
+  static allSpecies(state: SpeciesStateModel) {
+    return state.species;
   }
 }
