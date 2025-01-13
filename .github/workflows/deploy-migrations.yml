@@ -48,7 +48,7 @@ jobs:
       # Get runner IP address
       - name: Get runner IP address
         run: |
-          RUNNER_IP="$(curl --silent https://ifconfig.co)"
+          RUNNER_IP="$(curl --silent https://api.ipify.org)"
           echo "Runner IP address: $RUNNER_IP"
 
       # Login to Azure
