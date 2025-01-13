@@ -112,7 +112,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
           DRY_RUN: true
-          PRERELEASE: github.ref != 'refs/heads/main'
+          PRERELEASE: ${{ github.ref != 'refs/heads/main' }}
 
       # Login to GitHub Container Registry
       - name: Login to GitHub Container Registry
