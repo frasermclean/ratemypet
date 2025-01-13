@@ -152,11 +152,36 @@ jobs:
           path: ${{ github.workspace }}/jobs
           include-hidden-files: true
 
-  deploy_api:
-    name: Deploy API application
+  deploy_migrations:
+    name: Deploy migrations
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     needs: build
+    environment: prod
+    permissions:
+      id-token: write
+    steps:
+      # Login to Azure
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Allow runner IP address
+      - name: Allow runner IP address
+        run: |
+          $RUNNER_IP="$(curl ifconfig.co)"
+          echo "Runner IP address: $RUNNER_IP"
+
+  deploy_api:
+    name: Deploy API application
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - deploy_migrations
     environment: prod
     permissions:
       id-token: write
@@ -180,9 +205,9 @@ jobs:
   # Deploy jobs application
   deploy_jobs:
     name: Deploy jobs application
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: build
+    needs: deploy_migrations
     permissions:
       id-token: write
     environment: prod
