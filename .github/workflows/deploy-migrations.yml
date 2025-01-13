@@ -57,7 +57,7 @@ jobs:
 
       # Get runner IP address
       - name: Get runner IP address
-        run: >-
+        run: |
           RUNNER_IP="$(curl --silent https://api.ipify.org)"
           echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_ENV
 
