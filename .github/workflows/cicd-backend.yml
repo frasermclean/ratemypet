@@ -172,7 +172,7 @@ jobs:
       # Allow runner IP address
       - name: Allow runner IP address
         run: |
-          $RUNNER_IP="$(curl ifconfig.co)"
+          RUNNER_IP="$(curl --silent ifconfig.co)"
           echo "Runner IP address: $RUNNER_IP"
 
   deploy_api:
