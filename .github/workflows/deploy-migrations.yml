@@ -1,0 +1,58 @@
+name: Deploy EF Migrations
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - feature/migrations-deployment
+    paths:
+      - .github/workflows/deploy-migrations.yml
+      - backend/src/Infrastructure/Migrations/**
+
+jobs:
+  deploy:
+    name: Deploy migrations
+    runs-on: ubuntu-latest
+    env:
+      BUILD_CONFIGURATION: Release
+    environment: prod
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha}}
+
+      # Setup .NET
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9
+
+      # Install EF tool
+      - name: Install EF tool
+        run: dotnet tool install --global dotnet-ef
+
+      # Build migrations bundle
+      - name: Build migrations bundle
+        run: >-
+          dotnet ef migrations bundle
+          --no-build
+          --configuration ${{ env.BUILD_CONFIGURATION }}
+          --project src/Infrastructure/Infrastructure.csproj
+          --startup-project src/Api/Api.csproj
+
+      # Get runner IP address
+      - name: Get runner IP address
+        run: |
+          RUNNER_IP="$(curl --silent https://ifconfig.co)"
+          echo "Runner IP address: $RUNNER_IP"
+
+      # Login to Azure
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
