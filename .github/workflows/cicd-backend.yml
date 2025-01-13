@@ -89,6 +89,7 @@ jobs:
         run: >-
           dotnet ef migrations bundle
           --no-build
+          --configuration ${{ env.BUILD_CONFIGURATION }}
           --project src/Infrastructure/Infrastructure.csproj
           --startup-project src/Api/Api.csproj
 
