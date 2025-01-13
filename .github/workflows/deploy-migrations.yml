@@ -47,12 +47,6 @@ jobs:
           --project src/Infrastructure/Infrastructure.csproj
           --startup-project src/Api/Api.csproj
 
-      # Get runner IP address
-      - name: Get runner IP address
-        run: |
-          RUNNER_IP="$(curl --silent https://api.ipify.org)"
-          echo "Runner IP address: $RUNNER_IP"
-
       # Login to Azure
       - name: Login to Azure
         uses: azure/login@v2
@@ -60,3 +54,27 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Get runner IP address
+      - name: Get runner IP address
+        run: >-
+          RUNNER_IP="$(curl --silent https://api.ipify.org)"
+          echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_ENV
+
+      # Allow runner IP address
+      - name: Allow runner IP address
+        run: >-
+          az sql server firewall-rule create
+          --name allow-runner-rule
+          --server ratemypet-prod-sql
+          --resource-group ratemypet-prod-rg
+          --start-ip-address $RUNNER_IP
+          --end-ip-address $RUNNER_IP
+
+      # Remove runner rule
+      - name: Remove runner rule
+        run: >-
+          az sql server firewall-rule delete
+          --name allow-runner-rule
+          --server ratemypet-prod-sql
+          --resource-group ratemypet-prod-rg
