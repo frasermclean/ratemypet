@@ -74,8 +74,8 @@ jobs:
       # Apply migrations
       - name: Apply migrations
         env:
-          CONNECTION_STRING: Server=tcp:ratemypet-prod-sql.database.windows.net,1433;Initial Catalog=ratemypet-prod-sqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=\"Active Directory Default\";
-        run: ./efbundle --connection {CONNECTION_STRING}
+          CONNECTION_STRING: Server=tcp:ratemypet-prod-sql.database.windows.net,1433;Initial Catalog=ratemypet-prod-sqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;
+        run: ./efbundle --connection ${{ env.CONNECTION_STRING }}
 
       # Remove runner rule
       - name: Remove runner rule
