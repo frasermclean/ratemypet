@@ -88,8 +88,17 @@ jobs:
         if: github.event_name != 'pull_request'
         run: >-
           dotnet ef migrations bundle
+          --no-build
           --project src/Infrastructure/Infrastructure.csproj
           --startup-project src/Api/Api.csproj
+
+      # Upload migrations bundle
+      - name: Upload migrations bundle
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: efbundle
+          path: ${{ github.workspace }}/backend/efbundle
 
       # Calculate next version
       - name: Calculate next version
