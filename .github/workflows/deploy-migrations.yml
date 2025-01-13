@@ -57,9 +57,11 @@ jobs:
 
       # Get runner IP address
       - name: Get runner IP address
+        id: get-runner-ip
         run: |
           RUNNER_IP="$(curl --silent https://api.ipify.org)"
-          echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_ENV
+          echo "Runner IP address: $RUNNER_IP"
+          echo "ip-address=$RUNNER_IP" >> $GITHUB_OUTPUT
 
       # Allow runner IP address
       - name: Allow runner IP address
@@ -68,8 +70,8 @@ jobs:
           --name allow-runner-rule
           --server ratemypet-prod-sql
           --resource-group ratemypet-prod-rg
-          --start-ip-address $RUNNER_IP
-          --end-ip-address $RUNNER_IP
+          --start-ip-address ${{ steps.get-runner-ip.outputs.ip-address }}
+          --end-ip-address ${{ steps.get-runner-ip.outputs.ip-address }}
 
       # Apply migrations
       - name: Apply migrations
@@ -79,6 +81,7 @@ jobs:
 
       # Remove runner rule
       - name: Remove runner rule
+        if: always()
         run: >-
           az sql server firewall-rule delete
           --name allow-runner-rule
