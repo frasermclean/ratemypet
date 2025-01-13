@@ -15,6 +15,8 @@ jobs:
     name: Deploy migrations
     runs-on: ubuntu-latest
     environment: prod
+    permissions:
+      id-token: write
     env:
       BUILD_CONFIGURATION: Release
     defaults:
