@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feature/migrations-deployment
     paths:
       - .github/workflows/cicd-backend.yml
       - backend/**
@@ -76,6 +77,19 @@ jobs:
           files: ${{ github.workspace }}/backend/tests/**/TestResults/*.trx
           check_name: Test results
           action_fail: true
+
+      # Install EF tool
+      - name: Install EF tool
+        if: github.event_name != 'pull_request'
+        run: dotnet tool install --global dotnet-ef
+
+      # Build migrations bundle
+      - name: Build migrations bundle
+        if: github.event_name != 'pull_request'
+        run: >-
+          dotnet ef migrations bundle
+          --project src/Infrastructure/Infrastructure.csproj
+          --startup-project src/Api/Api.csproj
 
       # Calculate next version
       - name: Calculate next version
