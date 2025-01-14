@@ -20,6 +20,7 @@ jobs:
     env:
       BUILD_CONFIGURATION: Release
       FIREWALL_RULE_NAME: allow-runner-rule
+      MIGRATIONS_SCRIPT: ${{ github.workspace }}/migrations.sql
       SQL_SERVER_NAME: ratemypet-prod-sql
       SQL_DATABASE_NAME: ratemypet-prod-sqldb
       RESOURCE_GROUP: ratemypet-prod-rg
@@ -31,32 +32,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Login to Azure
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      # Get runner IP address
-      - name: Get runner IP address
-        id: get-runner-ip
-        run: |
-          RUNNER_IP="$(curl --silent https://api.ipify.org)"
-          echo "Runner IPv4 address: $RUNNER_IP"
-          echo "ip=$RUNNER_IP" >> $GITHUB_OUTPUT
-
-      # Add runner firewall rule
-      - name: Add runner firewall rule
-        run: >-
-          az sql server firewall-rule create
-          --name ${{ env.FIREWALL_RULE_NAME }}
-          --server ${{ env.SQL_SERVER_NAME }}
-          --resource-group ${{ env.RESOURCE_GROUP }}
-          --start-ip-address ${{ steps.get-runner-ip.outputs.ip }}
-          --end-ip-address ${{ steps.get-runner-ip.outputs.ip }}
-
       # Setup .NET
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -67,16 +42,27 @@ jobs:
       - name: Install EF tool
         run: dotnet tool install --global dotnet-ef
 
-      # Build migrations bundle
-      - name: Build migrations bundle
+      # Build migrations script
+      - name: Build migrations script
         run: >-
-          dotnet ef migrations bundle
+          dotnet ef migrations script
+          --output ${{ env.MIGRATIONS_SCRIPT }}
+          --idempotent
           --configuration ${{ env.BUILD_CONFIGURATION }}
           --project src/Infrastructure/Infrastructure.csproj
           --startup-project src/Api/Api.csproj
 
-      # Apply migrations
-      - name: Apply migrations
+      # Login to Azure
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Deploy migrations script
+      - name: Deploy migrations script
+        uses: azure/sql-action@v2.3
         env:
           CONNECTION_STRING: >-
             Server=tcp:${{ env.SQL_SERVER_NAME}}.database.windows.net,1433;
@@ -85,13 +71,6 @@ jobs:
             TrustServerCertificate=False;
             Connection Timeout=30;
             Authentication=Active Directory Default;
-        run: ./efbundle --connection ${{ env.CONNECTION_STRING }}
-
-      # Remove runner firewall rule
-      - name: Remove runner firewall rules
-        if: always()
-        run: >-
-          az sql server firewall-rule delete
-          --name ${{ env.FIREWALL_RULE_NAME }}
-          --server ${{ env.SQL_SERVER_NAME }}
-          --resource-group ${{ env.RESOURCE_GROUP }}
+        with:
+          path: ${{ env.MIGRATIONS_SCRIPT }}
+          connection-string: ${{ env.CONNECTION_STRING }}
