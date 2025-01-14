@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, viewChild } from '@angular/core';
+import { Component, computed, inject, input, OnInit, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -33,10 +33,17 @@ import { PostsState } from '../posts.state';
 })
 export class PostEditComponent implements OnInit {
   private readonly formBuilder = inject(NonNullableFormBuilder);
+  postId = input('');
+  getPost = dispatch(PostsActions.GetPost);
   addPost = dispatch(PostsActions.AddPost);
+  updatePost = dispatch(PostsActions.UpdatePost);
   getAllSpecies = dispatch(SpeciesActions.GetAllSpecies);
   currentPost = select(PostsState.currentPost);
   allSpecies = select(SpeciesState.allSpecies);
+
+  isEditing = computed<boolean>(() => {
+    return !!this.postId();
+  });
 
   imageUpload = viewChild.required(ImageUploadComponent);
 
@@ -48,14 +55,32 @@ export class PostEditComponent implements OnInit {
   });
 
   constructor(actions$: Actions, notificationService: NotificationService, router: Router) {
+    actions$.pipe(ofActionSuccessful(PostsActions.GetPost), takeUntilDestroyed()).subscribe(() => {
+      this.formGroup.patchValue({
+        title: this.currentPost()!.title,
+        description: this.currentPost()!.description,
+        speciesId: this.currentPost()!.speciesId
+      });
+    });
+
     actions$.pipe(ofActionSuccessful(PostsActions.AddPost), takeUntilDestroyed()).subscribe(() => {
       notificationService.showInformation('Post created successfully');
-      router.navigate(['/posts', this.currentPost()?.id]);
+      router.navigate(['/posts', this.currentPost()!.id]);
+    });
+
+    actions$.pipe(ofActionSuccessful(PostsActions.UpdatePost), takeUntilDestroyed()).subscribe(() => {
+      notificationService.showInformation('Post updated successfully');
+      router.navigate(['/posts', this.currentPost()!.id]);
     });
   }
 
   ngOnInit(): void {
     this.getAllSpecies();
+
+    if (this.isEditing()) {
+      this.getPost(this.postId());
+      this.formGroup.controls.image.clearValidators();
+    }
   }
 
   onImageFileChange(file: File | null) {
@@ -65,7 +90,11 @@ export class PostEditComponent implements OnInit {
 
   onSubmitForm() {
     const formValue = this.formGroup.getRawValue();
-    this.addPost({ ...formValue, image: formValue.image! });
+    if (this.isEditing()) {
+      this.updatePost({ id: this.postId(), ...formValue });
+    } else {
+      this.addPost({ ...formValue, image: formValue.image! });
+    }
   }
 
   onResetForm() {

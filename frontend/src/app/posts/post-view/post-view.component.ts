@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RouterLink } from '@angular/router';
 import { RouterState } from '@ngxs/router-plugin';
 import { Actions, dispatch, ofActionSuccessful, select, Store } from '@ngxs/store';
 import { SharedActions } from '@shared/shared.actions';
@@ -30,7 +31,8 @@ import { PostImageComponent } from './post-image/post-image.component';
     PostCommentsComponent,
     PostDeleteButtonComponent,
     PostImageComponent,
-    PostReactionComponent
+    PostReactionComponent,
+    RouterLink
   ],
   templateUrl: './post-view.component.html',
   styleUrl: './post-view.component.scss'

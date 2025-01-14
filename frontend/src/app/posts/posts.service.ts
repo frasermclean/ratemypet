@@ -10,7 +10,8 @@ import {
   PostReactions,
   Reaction,
   SearchPostsMatch,
-  SearchPostsRequest
+  SearchPostsRequest,
+  UpdatePostRequest
 } from './post.models';
 
 const DEFAULT_PAGE = 1;
@@ -59,6 +60,10 @@ export class PostsService {
     formData.append('speciesId', request.speciesId.toString());
 
     return this.httpClient.post<Post>(this.baseUrl, formData);
+  }
+
+  updatePost(request: UpdatePostRequest): Observable<Post> {
+    return this.httpClient.put<Post>(`${this.baseUrl}/${request.id}`, request);
   }
 
   deletePost(postId: string) {

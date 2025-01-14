@@ -81,6 +81,16 @@ export class PostsState {
     );
   }
 
+  @Action(PostsActions.UpdatePost)
+  updatePost(context: StateContext<PostsStateModel>, action: PostsActions.UpdatePost) {
+    context.patchState({ status: 'busy' });
+    return this.postsService.updatePost(action.request).pipe(
+      tap((post) => {
+        context.patchState({ status: 'ready', currentPost: post });
+      })
+    );
+  }
+
   @Action(PostsActions.DeletePost)
   deletePost(context: StateContext<PostsStateModel>, action: PostsActions.DeletePost) {
     context.patchState({ status: 'busy' });

@@ -20,6 +20,12 @@ const routes: Routes = [
         canActivate: [isAuthenticated, isRoleContributor]
       },
       { path: ':postId', component: PostViewComponent },
+      {
+        path: ':postId/edit',
+        component: PostEditComponent,
+        title: 'Edit Post',
+        canActivate: [isAuthenticated, isRoleContributor]
+      },
       { path: '', component: PostListComponent, title: 'Posts List' }
     ],
     providers: [provideStates([PostsState]), PostsService]

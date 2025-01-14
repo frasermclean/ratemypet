@@ -1,10 +1,13 @@
-<h2>Create a new post</h2>
+<h2>{{ isEditing() ? "Edit your post" : "Create a new post" }}</h2>
 <form [formGroup]="formGroup" (ngSubmit)="onSubmitForm()">
   <mat-card>
     <mat-card-content>
+      @if (!isEditing()) {
       <div class="image-upload-container">
         <app-image-upload (fileChange)="onImageFileChange($event)" />
       </div>
+      }
+
       <mat-form-field class="full-width">
         <mat-label>Title</mat-label>
         <input matInput formControlName="title" placeholder="Title of your post" required />

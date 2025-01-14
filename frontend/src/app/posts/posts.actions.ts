@@ -1,4 +1,4 @@
-import { AddPostRequest, Reaction, SearchPostsRequest } from './post.models';
+import { AddPostRequest, Reaction, SearchPostsRequest, UpdatePostRequest } from './post.models';
 
 export namespace PostsActions {
   export class SearchPosts {
@@ -14,6 +14,11 @@ export namespace PostsActions {
   export class AddPost {
     static readonly type = '[Posts] Add Post';
     constructor(public request: AddPostRequest) {}
+  }
+
+  export class UpdatePost {
+    static readonly type = '[Posts] Update Post';
+    constructor(public request: UpdatePostRequest) {}
   }
 
   export class DeletePost {
