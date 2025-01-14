@@ -57,7 +57,7 @@
     <app-post-comments [postId]="post.id" [comments]="post.comments" />
   </mat-card-content>
   <mat-card-actions>
-    <button mat-button [disabled]="!userName()" (click)="onAddComment()">
+    <button mat-button [disabled]="!userName()" (click)="showCommentDialog()">
       <mat-icon>add_comment</mat-icon>
       Add Comment
     </button>
@@ -71,7 +71,7 @@
     <mat-card-title class="title">Controls</mat-card-title>
   </mat-card-header>
   <mat-card-actions>
-    <button mat-button>
+    <button mat-button routerLink="edit">
       <mat-icon>edit</mat-icon>
       Edit
     </button>

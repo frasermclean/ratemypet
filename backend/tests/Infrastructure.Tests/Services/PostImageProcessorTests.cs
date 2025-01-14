@@ -89,7 +89,11 @@ public class PostImageProcessorTests
     {
         Title = "My first post",
         User = new User(),
-        Species = new Species { Name = "Dog" },
+        Species = new Species
+        {
+            Name = "Dog",
+            PluralName = "Dogs"
+        },
         Image = new PostImage
         {
             FileName = "image1.png",

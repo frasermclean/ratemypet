@@ -5,7 +5,7 @@ export interface Post {
   imageUrl: string | null;
   authorUserName: string;
   authorEmailHash: string;
-  speciesName: string;
+  speciesId: number;
   createdAt: string;
   updatedAt?: string;
   userReaction?: Reaction;
@@ -34,6 +34,13 @@ export interface AddPostRequest {
   title: string;
   description: string;
   image: File;
+  speciesId: number;
+}
+
+export interface UpdatePostRequest {
+  id: string;
+  title: string;
+  description: string;
   speciesId: number;
 }
 

@@ -30,7 +30,7 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
                 ImageUrl = post.GetImageUrl(HttpContext.Request),
                 AuthorUserName = post.User.UserName!,
                 AuthorEmailHash = post.User.Email.ToSha256Hash(),
-                SpeciesName = post.Species.Name,
+                SpeciesId = post.Species.Id,
                 CreatedAt = post.CreatedAtUtc,
                 UpdatedAt = post.UpdatedAtUtc,
                 UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == userId)!.Reaction,

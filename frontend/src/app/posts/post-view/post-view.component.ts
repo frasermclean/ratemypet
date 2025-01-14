@@ -6,7 +6,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Navigate } from '@ngxs/router-plugin';
+import { RouterLink } from '@angular/router';
+import { RouterState } from '@ngxs/router-plugin';
 import { Actions, dispatch, ofActionSuccessful, select, Store } from '@ngxs/store';
 import { SharedActions } from '@shared/shared.actions';
 import { AuthState } from '../../auth/auth.state';
@@ -30,7 +31,8 @@ import { PostImageComponent } from './post-image/post-image.component';
     PostCommentsComponent,
     PostDeleteButtonComponent,
     PostImageComponent,
-    PostReactionComponent
+    PostReactionComponent,
+    RouterLink
   ],
   templateUrl: './post-view.component.html',
   styleUrl: './post-view.component.scss'
@@ -45,7 +47,6 @@ export class PostViewComponent implements OnInit {
   readonly getPost = dispatch(PostsActions.GetPost);
   readonly addPostComment = dispatch(PostsActions.AddPostComment);
   readonly setPageTitle = dispatch(SharedActions.SetPageTitle);
-  readonly navigate = dispatch(Navigate);
   readonly allReactions = allReactions;
 
   reactionCount = computed<number>(() => {
@@ -60,7 +61,7 @@ export class PostViewComponent implements OnInit {
   constructor(actions$: Actions, store: Store) {
     actions$.pipe(ofActionSuccessful(PostsActions.GetPost), takeUntilDestroyed()).subscribe(() => {
       const title = this.post()!.title;
-      const url = store.selectSnapshot((state) => state.router.state.url) as string;
+      const url = store.selectSnapshot(RouterState.url)!;
       this.setPageTitle(title, url);
     });
   }
@@ -69,7 +70,7 @@ export class PostViewComponent implements OnInit {
     this.getPost(this.postId());
   }
 
-  onAddComment() {
+  showCommentDialog() {
     this.dialog.open<PostAddCommentComponent, PostAddCommentData>(PostAddCommentComponent, {
       data: { postId: this.postId() }
     });

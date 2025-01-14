@@ -14,7 +14,7 @@ public class PostResponseMapper(IHttpContextAccessor httpContextAccessor) : Resp
         ImageUrl = post.GetImageUrl(httpContextAccessor.HttpContext?.Request),
         AuthorUserName = post.User.UserName!,
         AuthorEmailHash = post.User.Email.ToSha256Hash(),
-        SpeciesName = post.Species.Name,
+        SpeciesId = post.Species.Id,
         CreatedAt = post.CreatedAtUtc,
         UpdatedAt = post.UpdatedAtUtc,
     };

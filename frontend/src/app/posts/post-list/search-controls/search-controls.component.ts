@@ -1,26 +1,13 @@
-import { Component, effect, input, model } from '@angular/core';
+import { Component, effect, input, model, OnInit } from '@angular/core';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { dispatch, select } from '@ngxs/store';
+import { SpeciesActions } from '../../../species/species.actions';
+import { SpeciesState } from '../../../species/species.state';
 import { SearchPostsOrderBy } from '../../post.models';
 import { PostsActions } from '../../posts.actions';
 import { PostsState } from '../../posts.state';
-
-const SPECIES_OPTIONS = [
-  {
-    label: 'Birds',
-    value: 'Bird'
-  },
-  {
-    label: 'Cats',
-    value: 'Cat'
-  },
-  {
-    label: 'Dogs',
-    value: 'Dog'
-  }
-];
 
 const ORDER_BY_OPTIONS = [
   {
@@ -51,14 +38,14 @@ export interface SearchControlsChangeEvent {
   templateUrl: './search-controls.component.html',
   styleUrl: './search-controls.component.scss'
 })
-export class SearchControlsComponent {
-  readonly speciesOptions = SPECIES_OPTIONS;
+export class SearchControlsComponent implements OnInit {
   readonly orderByOptions = ORDER_BY_OPTIONS;
   expanded = input(false);
-
   speciesName = model('');
   orderBy = model<SearchPostsOrderBy>('createdAt');
   descending = model(true);
+  allSpecies = select(SpeciesState.allSpecies);
+  getAllSpecies = dispatch(SpeciesActions.GetAllSpecies);
 
   isBusy = select(PostsState.isBusy);
   searchPosts = dispatch(PostsActions.SearchPosts);
@@ -72,6 +59,10 @@ export class SearchControlsComponent {
       };
       this.searchPosts(request);
     });
+  }
+
+  ngOnInit(): void {
+    this.getAllSpecies();
   }
 
   onOrderChange(value: { orderBy: SearchPostsOrderBy; descending: boolean }) {

@@ -11,6 +11,9 @@ public class SpeciesConfiguration : IEntityTypeConfiguration<Species>
         builder.Property(species => species.Name)
             .HasMaxLength(Species.NameMaxLength);
 
+        builder.Property(species => species.PluralName)
+            .HasMaxLength(Species.NameMaxLength);
+
         builder.Property(species => species.RowVersion)
             .IsRowVersion()
             .HasConversion<byte[]>();
@@ -19,16 +22,19 @@ public class SpeciesConfiguration : IEntityTypeConfiguration<Species>
             new Species
             {
                 Id = 1,
-                Name = "Dog"
+                Name = "Dog",
+                PluralName = "Dogs"
             }, new Species
             {
                 Id = 2,
-                Name = "Cat"
+                Name = "Cat",
+                PluralName = "Cats"
             },
             new Species
             {
                 Id = 3,
-                Name = "Bird"
+                Name = "Bird",
+                PluralName = "Birds"
             }
         );
     }

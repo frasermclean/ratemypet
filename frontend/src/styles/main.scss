@@ -27,6 +27,7 @@
   @include mat.list-theme(themes.$dark-theme);
   @include mat.menu-theme(themes.$dark-theme);
   @include mat.progress-spinner-theme(themes.$dark-theme);
+  @include mat.select-theme(themes.$dark-theme);
   @include mat.sidenav-theme(themes.$dark-theme);
   @include mat.snack-bar-theme(themes.$dark-theme);
   @include mat.toolbar-theme(themes.$dark-theme);
