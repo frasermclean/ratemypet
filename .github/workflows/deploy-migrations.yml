@@ -1,56 +1,35 @@
 name: Deploy EF Migrations
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-      - feature/migrations-deployment
-    paths:
-      - .github/workflows/deploy-migrations.yml
-      - backend/src/Infrastructure/Migrations/**
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        description: The environment to deploy to
+        required: true
+      artifact-name:
+        type: string
+        description: The name of the artifact containing the migrations script
+        default: migrations
+      script-name:
+        type: string
+        description: The name of the script to deploy
+        default: migrations.sql
 
 jobs:
   deploy:
     name: Deploy migrations
     runs-on: ubuntu-latest
-    environment: prod
+    environment: ${{ inputs.environment }}
     permissions:
       id-token: write
-    env:
-      BUILD_CONFIGURATION: Release
-      FIREWALL_RULE_NAME: allow-runner-rule
-      MIGRATIONS_SCRIPT: ${{ github.workspace }}/migrations.sql
-      SQL_SERVER_NAME: ratemypet-prod-sql
-      SQL_DATABASE_NAME: ratemypet-prod-sqldb
-      RESOURCE_GROUP: ratemypet-prod-rg
-    defaults:
-      run:
-        working-directory: ${{ github.workspace }}/backend
     steps:
-      # Checkout the repository
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # Setup .NET
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      # Download artifact
+      - name: Download artifact
+        id: download-artifact
+        uses: actions/download-artifact@v4
         with:
-          dotnet-version: 9
-
-      # Install EF tool
-      - name: Install EF tool
-        run: dotnet tool install --global dotnet-ef
-
-      # Build migrations script
-      - name: Build migrations script
-        run: >-
-          dotnet ef migrations script
-          --output ${{ env.MIGRATIONS_SCRIPT }}
-          --idempotent
-          --configuration ${{ env.BUILD_CONFIGURATION }}
-          --project src/Infrastructure/Infrastructure.csproj
-          --startup-project src/Api/Api.csproj
+          name: ${{ inputs.artifact-name }}
 
       # Login to Azure
       - name: Login to Azure
@@ -65,12 +44,12 @@ jobs:
         uses: azure/sql-action@v2.3
         env:
           CONNECTION_STRING: >-
-            Server=tcp:${{ env.SQL_SERVER_NAME}}.database.windows.net,1433;
-            Initial Catalog=${{ env.SQL_DATABASE_NAME }};
+            Server=tcp:ratemypet-${{ inputs.environment }}-sql.database.windows.net,1433;
+            Initial Catalog=ratemypet-${{ inputs.environment }}-sqldb;
             Encrypt=True;
             TrustServerCertificate=False;
             Connection Timeout=30;
             Authentication=Active Directory Default;
         with:
-          path: ${{ env.MIGRATIONS_SCRIPT }}
+          path: ${{ steps.download-artifact.outputs.download-path }}/${{ inputs.script-name }}
           connection-string: ${{ env.CONNECTION_STRING }}

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feature/migrations-deployment
     paths:
       - .github/workflows/cicd-backend.yml
       - backend/**
@@ -33,6 +34,7 @@ jobs:
       pull-requests: write
     env:
       BUILD_CONFIGURATION: Release
+      MIGRATIONS_SCRIPT: ${{ github.workspace }}/backend/migrations.sql
     defaults:
       run:
         working-directory: ${{ github.workspace }}/backend
@@ -84,23 +86,24 @@ jobs:
         if: github.event_name != 'pull_request'
         run: dotnet tool install --global dotnet-ef
 
-      # Build migrations bundle
-      - name: Build migrations bundle
-        if: github.event_name != 'pull_request'
+      # Build migrations script
+      - name: Build migrations script
         run: >-
-          dotnet ef migrations bundle
+          dotnet ef migrations script
           --no-build
+          --idempotent
+          --output ${{ env.MIGRATIONS_SCRIPT }}
           --configuration ${{ env.BUILD_CONFIGURATION }}
           --project src/Infrastructure/Infrastructure.csproj
           --startup-project src/Api/Api.csproj
 
-      # Upload migrations bundle
-      - name: Upload migrations bundle
+      # Upload migrations script
+      - name: Upload migrations script
         if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: efbundle
-          path: ${{ github.workspace }}/backend/efbundle
+          name: migrations
+          path: ${{ env.MIGRATIONS_SCRIPT }}
 
       # Calculate next version
       - name: Calculate next version
@@ -154,25 +157,10 @@ jobs:
   deploy_migrations:
     name: Deploy migrations
     if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    needs: build
-    environment: prod
-    permissions:
-      id-token: write
-    steps:
-      # Login to Azure
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      # Allow runner IP address
-      - name: Allow runner IP address
-        run: |
-          RUNNER_IP="$(curl --silent ifconfig.co)"
-          echo "Runner IP address: $RUNNER_IP"
+    uses: ./.github/workflows/deploy-migrations.yml
+    with:
+      environment: prod
+    secrets: inherit
 
   deploy_api:
     name: Deploy API application
