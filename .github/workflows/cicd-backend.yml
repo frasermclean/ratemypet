@@ -33,6 +33,7 @@ jobs:
       pull-requests: write
     env:
       BUILD_CONFIGURATION: Release
+      MIGRATIONS_SCRIPT: ${{ github.workspace }}/backend/migrations.sql
     defaults:
       run:
         working-directory: ${{ github.workspace }}/backend
@@ -43,6 +44,8 @@ jobs:
       # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
 
       # Setup .NET
       - name: Setup .NET
@@ -77,6 +80,31 @@ jobs:
           check_name: Test results
           action_fail: true
 
+      # Install EF tool
+      - name: Install EF tool
+        if: github.event_name != 'pull_request'
+        run: dotnet tool install --global dotnet-ef
+
+      # Build migrations script
+      - name: Build migrations script
+        if: github.event_name != 'pull_request'
+        run: >-
+          dotnet ef migrations script
+          --no-build
+          --idempotent
+          --output ${{ env.MIGRATIONS_SCRIPT }}
+          --configuration ${{ env.BUILD_CONFIGURATION }}
+          --project src/Infrastructure/Infrastructure.csproj
+          --startup-project src/Api/Api.csproj
+
+      # Upload migrations script
+      - name: Upload migrations script
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: migrations
+          path: ${{ env.MIGRATIONS_SCRIPT }}
+
       # Calculate next version
       - name: Calculate next version
         uses: anothrNick/github-tag-action@v1
@@ -86,6 +114,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
           DRY_RUN: true
+          PRERELEASE: ${{ github.ref != 'refs/heads/main' }}
 
       # Login to GitHub Container Registry
       - name: Login to GitHub Container Registry
@@ -125,11 +154,22 @@ jobs:
           path: ${{ github.workspace }}/jobs
           include-hidden-files: true
 
+  deploy_migrations:
+    name: Deploy migrations
+    if: github.event_name != 'pull_request'
+    needs: build
+    uses: ./.github/workflows/deploy-migrations.yml
+    with:
+      environment: prod
+    secrets: inherit
+
   deploy_api:
     name: Deploy API application
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - build
+      - deploy_migrations
     environment: prod
     permissions:
       id-token: write
@@ -153,9 +193,9 @@ jobs:
   # Deploy jobs application
   deploy_jobs:
     name: Deploy jobs application
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: build
+    needs: deploy_migrations
     permissions:
       id-token: write
     environment: prod
