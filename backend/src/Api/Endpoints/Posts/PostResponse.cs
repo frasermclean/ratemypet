@@ -11,7 +11,7 @@ public class PostResponse
     public required Uri? ImageUrl { get; init; }
     public required string AuthorUserName { get; init; }
     public required string AuthorEmailHash { get; init; }
-    public required string SpeciesName { get; init; }
+    public required int SpeciesId { get; init; }
     public DateTime CreatedAt { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
