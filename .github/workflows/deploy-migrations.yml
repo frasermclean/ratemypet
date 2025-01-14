@@ -27,11 +27,35 @@ jobs:
       run:
         working-directory: ${{ github.workspace }}/backend
     steps:
+      # Login to Azure
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Get runner IP address
+      - name: Get runner IP address
+        id: get-runner-ip
+        run: |
+          RUNNER_IP="$(curl --silent https://api.ipify.org)"
+          echo "Runner IPv4 address: $RUNNER_IP"
+          echo "ip=$RUNNER_IP" >> $GITHUB_OUTPUT
+
+      # Add runner firewall rule
+      - name: Add runner firewall rule
+        run: >-
+          az sql server firewall-rule create
+          --name ${{ env.FIREWALL_RULE_NAME }}
+          --server ${{ env.SQL_SERVER_NAME }}
+          --resource-group ${{ env.RESOURCE_GROUP }}
+          --start-ip-address ${{ steps.get-runner-ip.outputs.ip }}
+          --end-ip-address ${{ steps.get-runner-ip.outputs.ip }}
+
       # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha}}
 
       # Setup .NET
       - name: Setup .NET
@@ -51,39 +75,19 @@ jobs:
           --project src/Infrastructure/Infrastructure.csproj
           --startup-project src/Api/Api.csproj
 
-      # Login to Azure
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      # Get runner IP address
-      - name: Get runner IP addresses
-        id: get-runner-ip
-        run: |
-          RUNNER_IP="$(curl --silent https://api.ipify.org)"
-          echo "Runner IPv4 address: $RUNNER_IP"
-          echo "ip=$RUNNER_IP" >> $GITHUB_OUTPUT
-
-      # Allow runner IPv4 address
-      - name: Allow runner address
-        run: >-
-          az sql server firewall-rule create
-          --name ${{ env.FIREWALL_RULE_NAME }}
-          --server ${{ env.SQL_SERVER_NAME }}
-          --resource-group ${{ env.RESOURCE_GROUP }}
-          --start-ip-address ${{ steps.get-runner-ip.outputs.ip }}
-          --end-ip-address ${{ steps.get-runner-ip.outputs.ip }}
-
       # Apply migrations
       - name: Apply migrations
         env:
-          CONNECTION_STRING: Server=tcp:${{ env.SQL_SERVER_NAME}}.database.windows.net,1433;Initial Catalog=${{ env.SQL_DATABASE_NAME }};Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;
+          CONNECTION_STRING: >-
+            Server=tcp:${{ env.SQL_SERVER_NAME}}.database.windows.net,1433;
+            Initial Catalog=${{ env.SQL_DATABASE_NAME }};
+            Encrypt=True;
+            TrustServerCertificate=False;
+            Connection Timeout=30;
+            Authentication=Active Directory Default;
         run: ./efbundle --connection ${{ env.CONNECTION_STRING }}
 
-      # Remove runner firewall rules
+      # Remove runner firewall rule
       - name: Remove runner firewall rules
         if: always()
         run: >-
