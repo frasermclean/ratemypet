@@ -19,6 +19,8 @@ jobs:
       id-token: write
     env:
       BUILD_CONFIGURATION: Release
+      RULE_IPV4_NAME: allow-runner-rule
+      RULE_IPV6_NAME: allow-runner-ipv6-rule
     defaults:
       run:
         working-directory: ${{ github.workspace }}/backend
@@ -56,22 +58,35 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       # Get runner IP address
-      - name: Get runner IP address
-        id: get-runner-ip
+      - name: Get runner IP addresses
+        id: get-runner-ips
         run: |
-          RUNNER_IP="$(curl --silent https://api.ipify.org)"
-          echo "Runner IP address: $RUNNER_IP"
-          echo "ip-address=$RUNNER_IP" >> $GITHUB_OUTPUT
+          RUNNER_IPV4="$(curl --silent https://api.ipify.org)"
+          echo "Runner IPv4 address: $RUNNER_IPV4"
+          echo "ipv4=$RUNNER_IPV4" >> $GITHUB_OUTPUT
+          RUNNER_IPV6="$(curl --silent https://api6.ipify.org)"
+          echo "Runner IPv6 address: $RUNNER_IPV6"
+          echo "ipv6=$RUNNER_IPV6" >> $GITHUB_OUTPUT
 
-      # Allow runner IP address
-      - name: Allow runner IP address
+      # Allow runner IPv4 address
+      - name: Allow runner IPv4 address
         run: >-
           az sql server firewall-rule create
-          --name allow-runner-rule
+          --name ${{ env.RULE_IPV4_NAME }}
           --server ratemypet-prod-sql
           --resource-group ratemypet-prod-rg
-          --start-ip-address ${{ steps.get-runner-ip.outputs.ip-address }}
-          --end-ip-address ${{ steps.get-runner-ip.outputs.ip-address }}
+          --start-ip-address ${{ steps.get-runner-ips.outputs.ipv4 }}
+          --end-ip-address ${{ steps.get-runner-ips.outputs.ipv4 }}
+
+      # Allow runner IPv6 address
+      - name: Allow runner IPv6 address
+        run: >-
+          az sql server ipv6-firewall-rule create
+          --name ${{ env.RULE_IPV6_NAME }}
+          --server ratemypet-prod-sql
+          --resource-group ratemypet-prod-rg
+          --start-ip-address ${{ steps.get-runner-ips.outputs.ipv6 }}
+          --end-ip-address ${{ steps.get-runner-ips.outputs.ipv6 }}
 
       # Apply migrations
       - name: Apply migrations
@@ -79,11 +94,9 @@ jobs:
           CONNECTION_STRING: Server=tcp:ratemypet-prod-sql.database.windows.net,1433;Initial Catalog=ratemypet-prod-sqldb;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=Active Directory Default;
         run: ./efbundle --connection ${{ env.CONNECTION_STRING }}
 
-      # Remove runner rule
-      - name: Remove runner rule
+      # Remove runner firewall rules
+      - name: Remove runner firewall rules
         if: always()
-        run: >-
-          az sql server firewall-rule delete
-          --name allow-runner-rule
-          --server ratemypet-prod-sql
-          --resource-group ratemypet-prod-rg
+        run: |
+          az sql server firewall-rule delete --name ${{ env.RULE_IPV4_NAME }} --server ratemypet-prod-sql --resource-group ratemypet-prod-rg
+          az sql server ipv6-firewall-rule delete --name ${{ env.RULE_IPV6_NAME }} --server ratemypet-prod-sql --resource-group ratemypet-prod-rg
