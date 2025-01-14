@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feature/migrations-deployment
     paths:
       - .github/workflows/cicd-backend.yml
       - backend/**
@@ -46,7 +45,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha}}
+          ref: ${{ github.sha }}
 
       # Setup .NET
       - name: Setup .NET
@@ -88,6 +87,7 @@ jobs:
 
       # Build migrations script
       - name: Build migrations script
+        if: github.event_name != 'pull_request'
         run: >-
           dotnet ef migrations script
           --no-build
