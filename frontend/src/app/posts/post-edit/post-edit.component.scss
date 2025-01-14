@@ -1,6 +1,12 @@
 @use "utils";
 
+:host {
+  height: 100%;
+  @include utils.flex-col-center;
+}
+
 mat-card {
+  max-width: 400px;
   mat-card-content {
     .image-upload-container {
       width: 100%;
