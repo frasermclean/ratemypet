@@ -157,6 +157,7 @@ jobs:
   deploy_migrations:
     name: Deploy migrations
     if: github.event_name != 'pull_request'
+    needs: build
     uses: ./.github/workflows/deploy-migrations.yml
     with:
       environment: prod
