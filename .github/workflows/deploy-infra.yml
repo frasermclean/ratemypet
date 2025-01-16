@@ -1,0 +1,33 @@
+name: Deploy infrastructure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/deploy-infra.yml
+      - deploy/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/deploy-infra.yml
+      - deploy/**
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+env:
+  ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
+
+jobs:
+  deploy:
+    name: Deploy infrastructure
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
+    concurrency: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}-infra
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
