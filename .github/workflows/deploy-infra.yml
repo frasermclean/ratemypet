@@ -18,9 +18,6 @@ on:
       - synchronize
       - reopened
 
-env:
-  ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
-
 jobs:
   deploy:
     name: Deploy infrastructure
@@ -48,6 +45,6 @@ jobs:
         id: deploy_shared
         with:
           scope: resourcegroup
-          resourceGroupName: ratemypet-shared-rg
+          resourceGroupName: ${{ vars.SHARED_RESOURCE_GROUP }}
           template: ${{ github.workspace }}/deploy/shared/main.bicep
           parameters: ${{ github.workspace }}/deploy/shared/main.bicepparam
