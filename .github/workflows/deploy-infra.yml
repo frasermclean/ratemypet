@@ -50,6 +50,7 @@ jobs:
           resourceGroupName: ${{ vars.SHARED_RESOURCE_GROUP }}
           template: ${{ github.workspace }}/deploy/shared/main.bicep
           parameters: ${{ github.workspace }}/deploy/shared/main.bicepparam
+          failOnStdErr: false
 
       # Deploy app resources
       - name: Deploy app resources
@@ -64,3 +65,4 @@ jobs:
             sharedResourceGroup=${{ vars.SHARED_RESOURCE_GROUP }}
             keyVaultName=${{ steps.deploy_shared.outputs.keyVaultName }}
             appConfigurationName=${{ steps.deploy_shared.outputs.appConfigurationName }}
+          failOnStdErr: false
