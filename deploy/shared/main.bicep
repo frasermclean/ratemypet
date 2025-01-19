@@ -23,8 +23,8 @@ param containerRegistryPassword string = ''
 #disable-next-line secure-secrets-in-params
 param containerRegistryPasswordExpiry string = ''
 
-@description('Array of prinicpal IDs that have administrative roles')
-param adminPrincipalIds array = []
+@description('Application administrator group object ID')
+param adminGroupObjectId string
 
 @description('Current date and time in UTC')
 param now string = utcNow()
@@ -33,6 +33,8 @@ var tags = {
   workload: workload
   category: category
 }
+
+var environments = ['prod', 'test']
 
 // root DNS zone
 resource rootDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
@@ -233,14 +235,17 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-
   location: location
   tags: tags
 
-  resource mainBranchCredentials 'federatedIdentityCredentials' = {
-    name: 'main-creds'
-    properties: {
-      issuer: 'https://token.actions.githubusercontent.com'
-      audiences: ['api://AzureADTokenExchange']
-      subject: 'repo:frasermclean/ratemypet:ref:refs/heads/main'
+  @batchSize(1)
+  resource credentials 'federatedIdentityCredentials' = [
+    for env in environments: {
+      name: '${env}-creds'
+      properties: {
+        issuer: 'https://token.actions.githubusercontent.com'
+        audiences: ['api://AzureADTokenExchange']
+        subject: 'repo:frasermclean/ratemypet:environment:${env}'
+      }
     }
-  }
+  ]
 }
 
 // role assignments
@@ -248,11 +253,11 @@ module roleAssignments './roleAssignments.bicep' = {
   name: 'roleAssignments'
   params: {
     keyVaultName: keyVault.name
-    keyVaultAdministrators: adminPrincipalIds
+    keyVaultAdministrators: [adminGroupObjectId]
     keyVaultSecretsUsers: [managedIdentity.properties.principalId]
     appConfigurationName: appConfiguration.name
-    configurationDataOwners: adminPrincipalIds
+    configurationDataOwners: [adminGroupObjectId, managedIdentity.properties.principalId]
     communicationServicesName: communicationServices.name
-    communicationAndEmailServiceOwners: adminPrincipalIds
+    communicationAndEmailServiceOwners: [adminGroupObjectId]
   }
 }

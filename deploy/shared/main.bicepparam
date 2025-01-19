@@ -10,6 +10,4 @@ param emailDataLocation = 'Australia'
 param containerRegistryPassword = ''
 param containerRegistryPasswordExpiry = ''
 
-param adminPrincipalIds = [
-  'e4721a75-4d03-4a91-8709-9cb50418d15d'
-]
+param adminGroupObjectId = 'e4721a75-4d03-4a91-8709-9cb50418d15d'
