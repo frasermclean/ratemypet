@@ -258,3 +258,9 @@ module roleAssignments './roleAssignments.bicep' = {
     communicationAndEmailServiceOwners: [adminGroupObjectId]
   }
 }
+
+@description('Name of the key vault')
+output keyVaultName string = keyVault.name
+
+@description('Name of the shared app configuration')
+output appConfigurationName string = appConfiguration.name
