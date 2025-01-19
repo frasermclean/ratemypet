@@ -252,12 +252,9 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-
 module roleAssignments './roleAssignments.bicep' = {
   name: 'roleAssignments'
   params: {
-    keyVaultName: keyVault.name
     keyVaultAdministrators: [adminGroupObjectId]
     keyVaultSecretsUsers: [managedIdentity.properties.principalId]
-    appConfigurationName: appConfiguration.name
     configurationDataOwners: [adminGroupObjectId, managedIdentity.properties.principalId]
-    communicationServicesName: communicationServices.name
     communicationAndEmailServiceOwners: [adminGroupObjectId]
   }
 }

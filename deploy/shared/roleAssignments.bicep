@@ -1,7 +1,7 @@
 targetScope = 'resourceGroup'
 
 @description('Name of the key vault')
-param keyVaultName string
+param keyVaultName string = 'ratemypet-shared-kv'
 
 @description('Array of prinicpal IDs that have administrative access to the key vault')
 param keyVaultAdministrators array = []
@@ -10,7 +10,7 @@ param keyVaultAdministrators array = []
 param keyVaultSecretsUsers array = []
 
 @description('Name of the app configuration')
-param appConfigurationName string
+param appConfigurationName string = 'ratemypet-shared-ac'
 
 @description('Array of prinicpal IDs that have read and write access to the configuration data')
 param configurationDataOwners array = []
