@@ -33,6 +33,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Remove Bicep configuration file
+      - name: Remove Bicep configuration file
+        run: rm ${{ github.workspace }}/deploy/bicepconfig.json
+
       # Login to Azure
       - name: Login to Azure
         uses: azure/login@v2
