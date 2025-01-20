@@ -1,6 +1,6 @@
 @minLength(3)
 @description('Name of the workload')
-param workload string
+param workload string = 'ratemypet'
 
 @allowed(['prod', 'test'])
 @description('Application environment')
@@ -10,37 +10,37 @@ param appEnv string
 param location string = resourceGroup().location
 
 @description('Domain name')
-param domainName string
+param domainName string = 'ratemy.pet'
 
 @description('Name of the shared resource group')
-param sharedResourceGroup string
+param sharedResourceGroup string = 'ratemypet-shared-rg'
 
 @description('Name of the Azure Key Vault instance')
-param keyVaultName string
+param keyVaultName string = 'ratemypet-shared-kv'
 
 @description('Name of the Azure App Configuration instance')
-param appConfigurationName string
+param appConfigurationName string = 'ratemypet-shared-ac'
 
 @description('Application administrator group name')
-param adminGroupName string
+param adminGroupName string = 'Rate My Pet Administrators'
 
 @description('Application administrator group object ID')
-param adminGroupObjectId string
+param adminGroupObjectId string = '0add1e4f-eec2-48cb-97fc-07911601323e'
 
 @description('Array of allowed external IP addresses. Needs to be an array of objects with name and ipAddress properties.')
 param allowedExternalIpAddresses array = []
 
 @description('Repository of the API container image')
-param apiImageRepository string
+param apiImageRepository string = 'frasermclean/ratemypet-api'
 
 @description('Tag of the API container image')
-param apiImageTag string
+param apiImageTag string = 'latest'
 
 @description('Container registry login server')
-param containerRegistryName string
+param containerRegistryName string = 'ghcr.io'
 
 @description('Username to access the container registry')
-param containerRegistryUsername string
+param containerRegistryUsername string = 'frasermclean'
 
 var tags = {
   workload: workload
