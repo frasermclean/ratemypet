@@ -242,18 +242,6 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-
   name: '${workload}-${category}-id'
   location: location
   tags: tags
-
-  @batchSize(1)
-  resource credentials 'federatedIdentityCredentials' = [
-    for env in environments: {
-      name: '${env}-creds'
-      properties: {
-        issuer: 'https://token.actions.githubusercontent.com'
-        audiences: ['api://AzureADTokenExchange']
-        subject: 'repo:frasermclean/ratemypet:environment:${env}'
-      }
-    }
-  ]
 }
 
 // role assignments
