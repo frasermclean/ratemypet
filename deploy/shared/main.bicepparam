@@ -10,4 +10,6 @@ param emailDataLocation = 'Australia'
 param containerRegistryPassword = ''
 param containerRegistryPasswordExpiry = ''
 
-param adminGroupObjectId = 'e4721a75-4d03-4a91-8709-9cb50418d15d'
+// graph resources
+param adminGroupObjectId = '0add1e4f-eec2-48cb-97fc-07911601323e'
+param deploymentAppPrincipalId = '257de4b4-594b-4746-8452-3a52751bc5ed'
