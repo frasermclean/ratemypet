@@ -9,6 +9,10 @@ param category string = 'shared'
 @description('Location of the resources')
 param location string = resourceGroup().location
 
+@allowed(['eastasia', 'centralus', 'eastus2', 'westeurope', 'westus2'])
+@description('Location of the static web app')
+param swaLocation string = 'eastasia'
+
 @description('Domain name of the root DNS zone')
 param dnsZoneName string = 'ratemy.pet'
 
@@ -58,6 +62,28 @@ resource rootDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
       ]
     }
   }
+
+  // static web app apex record
+  resource apexARecord 'A' = {
+    name: '@'
+    properties: {
+      TTL: 3600
+      targetResource: {
+        id: staticWebApp.id
+      }
+    }
+  }
+
+  // static web app www record
+  resource wwwCnameRecord 'CNAME' = {
+    name: 'www'
+    properties: {
+      TTL: 3600
+      CNAMERecord: {
+        cname: staticWebApp.properties.defaultHostname
+      }
+    }
+  }
 }
 
 // notify subdomain
@@ -101,6 +127,38 @@ resource notifyDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
         cname: emailCommunicationServices::notifyDomain.properties.verificationRecords.DKIM2.value
       }
     }
+  }
+}
+
+// static web app
+resource staticWebApp 'Microsoft.Web/staticSites@2024-04-01' = {
+  name: '${workload}-${category}-swa'
+  location: swaLocation
+  tags: tags
+  sku: {
+    name: 'Free'
+  }
+  properties: {
+    stagingEnvironmentPolicy: 'Enabled'
+    allowConfigFileUpdates: true
+    buildProperties: {
+      skipGithubActionWorkflowGeneration: true
+    }
+  }
+
+  // apex custom domain
+  resource apexCustomDomain 'customDomains' = {
+    name: dnsZoneName
+    dependsOn: [rootDnsZone::apexARecord]
+    properties: {
+      validationMethod: 'dns-txt-token'
+    }
+  }
+
+  // www custom domain
+  resource wwwCustomDomain 'customDomains' = {
+    name: 'www.${dnsZoneName}'
+    dependsOn: [rootDnsZone::wwwCnameRecord]
   }
 }
 
