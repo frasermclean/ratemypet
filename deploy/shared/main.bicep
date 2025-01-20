@@ -1,16 +1,16 @@
 targetScope = 'resourceGroup'
 
 @description('Name of the workload')
-param workload string
+param workload string = 'ratemypet'
 
 @description('Category of the workload')
-param category string
+param category string = 'shared'
 
 @description('Location of the resources')
 param location string = resourceGroup().location
 
 @description('Domain name of the root DNS zone')
-param dnsZoneName string
+param dnsZoneName string = 'ratemy.pet'
 
 @description('Location of the email data')
 param emailDataLocation string = 'Australia'
