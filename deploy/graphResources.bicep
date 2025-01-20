@@ -11,6 +11,16 @@ param appEnvironments array
 @description('GitHub repository')
 param gitHubRepository string
 
+// application administrators group
+resource adminGroup 'Microsoft.Graph/groups@v1.0' = {
+  displayName: 'Rate My Pet Administrators'
+  uniqueName: '${workload}-administrators'
+  description: 'Administrators for Rate My Pet application'
+  mailEnabled: false
+  mailNickname: 'ratemypet-administrators'
+  securityEnabled: true
+}
+
 // deployment application registration
 resource appRegistration 'Microsoft.Graph/applications@v1.0' = {
   displayName: 'Rate My Pet Deployment'
@@ -30,10 +40,13 @@ resource appRegistration 'Microsoft.Graph/applications@v1.0' = {
   ]
 }
 
-// service principal for the github actions application registration
+// service principal for the deployment application
 resource servicePrincipal 'Microsoft.Graph/servicePrincipals@v1.0' = {
   appId: appRegistration.appId
 }
 
-@description('Service principal object ID. Can be used for role assignments')
-output servicePrincipalId string = servicePrincipal.id
+@description('Administrators group object ID')
+output adminGroupObjectId string = adminGroup.id
+
+@description('Service principal object ID for the deployment application')
+output deploymentAppPrincipalId string = servicePrincipal.id

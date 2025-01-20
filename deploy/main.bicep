@@ -32,6 +32,18 @@ resource sharedResourceGroup 'Microsoft.Resources/resourceGroups@2024-07-01' = {
   })
 }
 
+// shared resources deployment
+module sharedResources './shared/main.bicep' = {
+  name: 'main'
+  scope: sharedResourceGroup
+  params: {
+    workload: workload
+    category: 'shared'
+    location: location
+    adminGroupObjectId: graphResources.outputs.adminGroupObjectId
+  }
+}
+
 // application environment resource groups
 resource appResourceGroups 'Microsoft.Resources/resourceGroups@2024-07-01' = [
   for rg in appEnvResourceGroups: {
@@ -44,8 +56,8 @@ resource appResourceGroups 'Microsoft.Resources/resourceGroups@2024-07-01' = [
   }
 ]
 
-// deployment application registration
-module deploymentApp './deploymentApp.bicep' = {
+// graph resources deployment
+module graphResources './graphResources.bicep' = {
   name: '${deployment().name}-deploymentApp'
   params: {
     workload: workload
@@ -60,7 +72,7 @@ module resourceGroupOwnerRoleAssignments './rgOwnerAssignment.bicep' = [
     name: 'resourceGroup-deploymentOwner'
     scope: resourceGroup(rg.resourceGroupName)
     params: {
-      principalId: deploymentApp.outputs.servicePrincipalId
+      principalId: graphResources.outputs.deploymentAppPrincipalId
     }
   }
 ]
