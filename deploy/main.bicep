@@ -12,6 +12,9 @@ param appEnvironments array
 @description('GitHub repository')
 param gitHubRepository string
 
+@description('Application administrators group members object IDs')
+param adminGroupMembers array = []
+
 var tags = {
   workload: workload
 }
@@ -64,6 +67,7 @@ module graphResources './graphResources.bicep' = {
     workload: workload
     appEnvironments: appEnvironments
     gitHubRepository: gitHubRepository
+    adminGroupMembers: adminGroupMembers
   }
 }
 

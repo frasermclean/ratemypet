@@ -11,6 +11,9 @@ param appEnvironments array
 @description('GitHub repository')
 param gitHubRepository string
 
+@description('Application administrators group members object IDs')
+param adminGroupMembers array = []
+
 // application administrators group
 resource adminGroup 'Microsoft.Graph/groups@v1.0' = {
   displayName: 'Rate My Pet Administrators'
@@ -18,6 +21,7 @@ resource adminGroup 'Microsoft.Graph/groups@v1.0' = {
   description: 'Administrators for Rate My Pet application'
   mailEnabled: false
   mailNickname: 'ratemypet-administrators'
+  members: adminGroupMembers
   securityEnabled: true
 }
 
