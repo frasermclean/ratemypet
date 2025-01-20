@@ -26,6 +26,9 @@ param containerRegistryPasswordExpiry string = ''
 @description('Application administrator group object ID')
 param adminGroupObjectId string
 
+@description('Deployment app principal ID')
+param deploymentAppPrincipalId string
+
 @description('Current date and time in UTC')
 param now string = utcNow()
 
@@ -194,6 +197,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
       value: 'https://${communicationServices.properties.hostName}'
       contentType: 'text/plain'
     }
+    dependsOn: [roleAssignments]
   }
 
   resource emailSenderAddressKeyValue 'keyValues' = {
@@ -202,6 +206,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
       value: 'no-reply@notify.${dnsZoneName}'
       contentType: 'text/plain'
     }
+    dependsOn: [roleAssignments]
   }
 
   resource emailFrontendBaseUrlKeyValue 'keyValues' = {
@@ -210,6 +215,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
       value: 'http://localhost:4200'
       contentType: 'text/plain'
     }
+    dependsOn: [roleAssignments]
   }
 
   resource storageBlobEndpointKeyValue 'keyValues' = {
@@ -218,6 +224,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
       value: 'https://localhost:10000/devstoreaccount1'
       contentType: 'text/plain'
     }
+    dependsOn: [roleAssignments]
   }
 
   resource storageQueueEndpointKeyValue 'keyValues' = {
@@ -226,6 +233,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
       value: 'https://localhost:10001/devstoreaccount1'
       contentType: 'text/plain'
     }
+    dependsOn: [roleAssignments]
   }
 }
 
@@ -254,7 +262,7 @@ module roleAssignments './roleAssignments.bicep' = {
   params: {
     keyVaultAdministrators: [adminGroupObjectId]
     keyVaultSecretsUsers: [managedIdentity.properties.principalId]
-    configurationDataOwners: [adminGroupObjectId, managedIdentity.properties.principalId]
+    configurationDataOwners: [adminGroupObjectId, deploymentAppPrincipalId]
     communicationAndEmailServiceOwners: [adminGroupObjectId]
   }
 }

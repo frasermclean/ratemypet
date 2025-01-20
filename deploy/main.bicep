@@ -41,6 +41,7 @@ module sharedResources './shared/main.bicep' = {
     category: 'shared'
     location: location
     adminGroupObjectId: graphResources.outputs.adminGroupObjectId
+    deploymentAppPrincipalId: graphResources.outputs.deploymentAppPrincipalId
   }
 }
 
