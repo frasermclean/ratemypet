@@ -37,8 +37,6 @@ var tags = {
   category: category
 }
 
-var environments = ['prod', 'test']
-
 // root DNS zone
 resource rootDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
   name: dnsZoneName
