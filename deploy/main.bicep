@@ -15,6 +15,9 @@ param gitHubRepository string
 @description('Application administrators group members object IDs')
 param adminGroupMembers array = []
 
+@description('If true, shared resources will be deployed')
+param deploySharedResources bool = false
+
 var tags = {
   workload: workload
 }
@@ -36,7 +39,7 @@ resource sharedResourceGroup 'Microsoft.Resources/resourceGroups@2024-07-01' = {
 }
 
 // shared resources deployment
-module sharedResources './shared/main.bicep' = {
+module sharedResources './shared/main.bicep' = if (deploySharedResources) {
   name: 'main'
   scope: sharedResourceGroup
   params: {
@@ -62,7 +65,7 @@ resource appResourceGroups 'Microsoft.Resources/resourceGroups@2024-07-01' = [
 
 // graph resources deployment
 module graphResources './graphResources.bicep' = {
-  name: '${deployment().name}-deploymentApp'
+  name: '${deployment().name}-graphResources'
   params: {
     workload: workload
     appEnvironments: appEnvironments
