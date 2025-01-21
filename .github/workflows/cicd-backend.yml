@@ -108,8 +108,9 @@ jobs:
         id: calc_tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_BRANCHES: main
           DEFAULT_BUMP: patch
+          DRY_RUN: true
+          PRERELEASE: ${{ github.ref != 'refs/heads/main' }}
 
       # Login to GitHub Container Registry
       - name: Login to GitHub Container Registry
