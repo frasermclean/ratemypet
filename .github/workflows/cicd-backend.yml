@@ -200,6 +200,7 @@ jobs:
       ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
     permissions:
       id-token: write
+    concurrency: azure-infra
     steps:
       # Login to Azure
       - name: Login to Azure

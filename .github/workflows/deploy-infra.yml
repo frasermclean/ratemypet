@@ -23,7 +23,7 @@ jobs:
     name: Deploy infrastructure
     runs-on: ubuntu-latest
     environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
-    concurrency: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}-infra
+    concurrency: azure-infra
     permissions:
       id-token: write
     env:
