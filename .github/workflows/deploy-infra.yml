@@ -1,0 +1,70 @@
+name: Deploy infrastructure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/deploy-infra.yml
+      - deploy/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/deploy-infra.yml
+      - deploy/**
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  deploy:
+    name: Deploy infrastructure
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
+    concurrency: azure-infra
+    permissions:
+      id-token: write
+    env:
+      ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Remove Bicep configuration file (to remove experimental warning)
+      - name: Remove Bicep configuration file
+        run: rm ${{ github.workspace }}/deploy/bicepconfig.json
+
+      # Login to Azure
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Deploy shared resources
+      - name: Deploy shared resources
+        uses: azure/arm-deploy@v2
+        id: deploy_shared
+        with:
+          scope: resourcegroup
+          resourceGroupName: ${{ vars.SHARED_RESOURCE_GROUP }}
+          template: ${{ github.workspace }}/deploy/shared/main.bicep
+          parameters: ${{ github.workspace }}/deploy/shared/main.bicepparam
+
+      # Deploy app resources
+      - name: Deploy app resources
+        uses: azure/arm-deploy@v2
+        id: deploy_app
+        with:
+          scope: resourcegroup
+          resourceGroupName: ratemypet-${{ env.ENVIRONMENT }}-rg
+          template: ${{ github.workspace }}/deploy/apps/main.bicep
+          parameters: >-
+            ${{ github.workspace }}/deploy/apps/main.${{ env.ENVIRONMENT }}.bicepparam
+            sharedResourceGroup=${{ vars.SHARED_RESOURCE_GROUP }}
+            keyVaultName=${{ steps.deploy_shared.outputs.keyVaultName }}
+            appConfigurationName=${{ steps.deploy_shared.outputs.appConfigurationName }}

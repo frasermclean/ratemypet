@@ -1,6 +1,6 @@
 using 'main.bicep'
 
-param appEnv = 'prod'
+param appEnv = 'test'
 
 param allowedExternalIpAddresses = [
   {

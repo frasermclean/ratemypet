@@ -57,6 +57,27 @@
               ],
               "outputHashing": "all"
             },
+            "testing": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kB",
+                  "maximumError": "4kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.testing.ts"
+                }
+              ]
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -76,6 +97,9 @@
           "configurations": {
             "production": {
               "buildTarget": "ratemypet-web:build:production"
+            },
+            "testing": {
+              "buildTarget": "ratemypet-web:build:testing"
             },
             "development": {
               "buildTarget": "ratemypet-web:build:development"

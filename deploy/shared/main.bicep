@@ -1,16 +1,20 @@
 targetScope = 'resourceGroup'
 
 @description('Name of the workload')
-param workload string
+param workload string = 'ratemypet'
 
 @description('Category of the workload')
-param category string
+param category string = 'shared'
 
 @description('Location of the resources')
 param location string = resourceGroup().location
 
+@allowed(['eastasia', 'centralus', 'eastus2', 'westeurope', 'westus2'])
+@description('Location of the static web app')
+param swaLocation string = 'eastasia'
+
 @description('Domain name of the root DNS zone')
-param dnsZoneName string
+param dnsZoneName string = 'ratemy.pet'
 
 @description('Location of the email data')
 param emailDataLocation string = 'Australia'
@@ -23,8 +27,11 @@ param containerRegistryPassword string = ''
 #disable-next-line secure-secrets-in-params
 param containerRegistryPasswordExpiry string = ''
 
-@description('Array of prinicpal IDs that have administrative roles')
-param adminPrincipalIds array = []
+@description('Application administrator group object ID')
+param adminGroupObjectId string
+
+@description('Deployment app principal ID')
+param deploymentAppPrincipalId string
 
 @description('Current date and time in UTC')
 param now string = utcNow()
@@ -53,6 +60,28 @@ resource rootDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
         { nsdname: notifyDnsZone.properties.nameServers[2] }
         { nsdname: notifyDnsZone.properties.nameServers[3] }
       ]
+    }
+  }
+
+  // static web app apex record
+  resource apexARecord 'A' = {
+    name: '@'
+    properties: {
+      TTL: 3600
+      targetResource: {
+        id: staticWebApp.id
+      }
+    }
+  }
+
+  // static web app www record
+  resource wwwCnameRecord 'CNAME' = {
+    name: 'www'
+    properties: {
+      TTL: 3600
+      CNAMERecord: {
+        cname: staticWebApp.properties.defaultHostname
+      }
     }
   }
 }
@@ -98,6 +127,38 @@ resource notifyDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
         cname: emailCommunicationServices::notifyDomain.properties.verificationRecords.DKIM2.value
       }
     }
+  }
+}
+
+// static web app
+resource staticWebApp 'Microsoft.Web/staticSites@2024-04-01' = {
+  name: '${workload}-${category}-swa'
+  location: swaLocation
+  tags: tags
+  sku: {
+    name: 'Free'
+  }
+  properties: {
+    stagingEnvironmentPolicy: 'Enabled'
+    allowConfigFileUpdates: true
+    buildProperties: {
+      skipGithubActionWorkflowGeneration: true
+    }
+  }
+
+  // apex custom domain
+  resource apexCustomDomain 'customDomains' = {
+    name: dnsZoneName
+    dependsOn: [rootDnsZone::apexARecord]
+    properties: {
+      validationMethod: 'dns-txt-token'
+    }
+  }
+
+  // www custom domain
+  resource wwwCustomDomain 'customDomains' = {
+    name: 'www.${dnsZoneName}'
+    dependsOn: [rootDnsZone::wwwCnameRecord]
   }
 }
 
@@ -192,6 +253,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
       value: 'https://${communicationServices.properties.hostName}'
       contentType: 'text/plain'
     }
+    dependsOn: [roleAssignments]
   }
 
   resource emailSenderAddressKeyValue 'keyValues' = {
@@ -200,6 +262,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
       value: 'no-reply@notify.${dnsZoneName}'
       contentType: 'text/plain'
     }
+    dependsOn: [roleAssignments]
   }
 
   resource emailFrontendBaseUrlKeyValue 'keyValues' = {
@@ -208,6 +271,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
       value: 'http://localhost:4200'
       contentType: 'text/plain'
     }
+    dependsOn: [roleAssignments]
   }
 
   resource storageBlobEndpointKeyValue 'keyValues' = {
@@ -216,6 +280,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
       value: 'https://localhost:10000/devstoreaccount1'
       contentType: 'text/plain'
     }
+    dependsOn: [roleAssignments]
   }
 
   resource storageQueueEndpointKeyValue 'keyValues' = {
@@ -224,6 +289,7 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
       value: 'https://localhost:10001/devstoreaccount1'
       contentType: 'text/plain'
     }
+    dependsOn: [roleAssignments]
   }
 }
 
@@ -232,27 +298,21 @@ resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-
   name: '${workload}-${category}-id'
   location: location
   tags: tags
-
-  resource mainBranchCredentials 'federatedIdentityCredentials' = {
-    name: 'main-creds'
-    properties: {
-      issuer: 'https://token.actions.githubusercontent.com'
-      audiences: ['api://AzureADTokenExchange']
-      subject: 'repo:frasermclean/ratemypet:ref:refs/heads/main'
-    }
-  }
 }
 
 // role assignments
 module roleAssignments './roleAssignments.bicep' = {
   name: 'roleAssignments'
   params: {
-    keyVaultName: keyVault.name
-    keyVaultAdministrators: adminPrincipalIds
+    keyVaultAdministrators: [adminGroupObjectId]
     keyVaultSecretsUsers: [managedIdentity.properties.principalId]
-    appConfigurationName: appConfiguration.name
-    configurationDataOwners: adminPrincipalIds
-    communicationServicesName: communicationServices.name
-    communicationAndEmailServiceOwners: adminPrincipalIds
+    configurationDataOwners: [adminGroupObjectId, deploymentAppPrincipalId]
+    communicationAndEmailServiceOwners: [adminGroupObjectId]
   }
 }
+
+@description('Name of the key vault')
+output keyVaultName string = keyVault.name
+
+@description('Name of the shared app configuration')
+output appConfigurationName string = appConfiguration.name

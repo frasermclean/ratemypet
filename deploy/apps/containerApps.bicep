@@ -147,7 +147,7 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
           }
         ]
         corsPolicy: {
-          allowedOrigins: apiAllowedOrigins
+          allowedOrigins: empty(apiAllowedOrigins) ? ['*'] : apiAllowedOrigins
           allowCredentials: true
           allowedHeaders: ['*']
           allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
@@ -208,8 +208,8 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
         }
       ]
       scale: {
-        minReplicas: 1
-        maxReplicas: 3
+        minReplicas: appEnv == 'prod' ? 1 : 0
+        maxReplicas: appEnv == 'prod' ? 3 : 1
         rules: [
           {
             name: 'http-scale-rule'

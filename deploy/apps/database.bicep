@@ -55,14 +55,27 @@ resource sqlServer 'Microsoft.Sql/servers@2023-05-01-preview' = {
     name: '${workload}-${appEnv}-sqldb'
     location: location
     tags: tags
-    sku: {
-      name: 'Basic'
-      tier: 'Basic'
-      capacity: 5
-    }
-    properties: {
-      collation: 'SQL_Latin1_General_CP1_CI_AS'
-    }
+    sku: appEnv == 'prod'
+      ? {
+          name: 'Basic'
+          tier: 'Basic'
+          capacity: 5
+        }
+      : {
+          name: 'GP_S_Gen5_2' // serverless
+          tier: 'GeneralPurpose'
+        }
+    properties: appEnv == 'prod'
+      ? {
+          collation: 'SQL_Latin1_General_CP1_CI_AS'
+        }
+      : {
+          collation: 'SQL_Latin1_General_CP1_CI_AS'
+          maxSizeBytes: 34359738368
+          autoPauseDelay: 60
+          useFreeLimit: true
+          freeLimitExhaustionBehavior: 'AutoPause'
+        }
   }
 
   // firewall rules
