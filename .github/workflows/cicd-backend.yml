@@ -108,9 +108,8 @@ jobs:
         id: calc_tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_BRANCHES: main
           DEFAULT_BUMP: patch
-          DRY_RUN: true
-          PRERELEASE: ${{ github.ref != 'refs/heads/main' }}
 
       # Login to GitHub Container Registry
       - name: Login to GitHub Container Registry
@@ -249,24 +248,3 @@ jobs:
         with:
           app-name: ratemypet-${{ env.ENVIRONMENT }}-jobs-func
           package: ${{ steps.download-artifact.outputs.download-path }}
-
-  update_tag:
-    name: Update repository tag
-    runs-on: ubuntu-latest
-    needs:
-      - build
-      - deploy_api
-      - deploy_jobs
-    permissions:
-      contents: write
-    steps:
-      # Checkout the repository
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # Update version tag
-      - name: Update version tag
-        uses: anothrNick/github-tag-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CUSTOM_TAG: ${{ needs.build.outputs.versionTag }}
