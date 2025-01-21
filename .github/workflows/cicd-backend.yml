@@ -28,7 +28,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
       checks: write
       pull-requests: write
     env:
@@ -112,27 +111,6 @@ jobs:
           DRY_RUN: true
           PRERELEASE: ${{ github.ref != 'refs/heads/main' }}
 
-      # Login to GitHub Container Registry
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.CONTAINER_REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # Build and push API image
-      - name: Build and push API image
-        env:
-          IMAGE_TAGS: ${{ github.ref == 'refs/heads/main' && format('latest\;{0}', steps.calc_tag.outputs.new_tag) ||  steps.calc_tag.outputs.new_tag }}
-        run: >-
-          dotnet publish src/Api/Api.csproj
-          --configuration ${{ env.BUILD_CONFIGURATION }}
-          -p:PublishProfile=DefaultContainer
-          -p:Version=${{ steps.calc_tag.outputs.new_tag }}
-          -p:ContainerRegistry=${{ env.CONTAINER_REGISTRY }}
-          -p:ContainerRepository=${{ env.API_IMAGE_REPOSITORY }}
-          -p:ContainerImageTags=${{ env.IMAGE_TAGS }}
-
       # Publish jobs project
       - name: Publish jobs project
         run: >-
@@ -200,8 +178,13 @@ jobs:
       ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
     permissions:
       id-token: write
+      packages: write
     concurrency: azure-infra
     steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       # Login to Azure
       - name: Login to Azure
         uses: azure/login@v2
@@ -214,7 +197,11 @@ jobs:
       - name: Deploy Container App
         uses: azure/container-apps-deploy-action@v1
         with:
-          imageToDeploy: ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ needs.build.outputs.versionTag }}
+          appSourcePath: ${{ github.workspace }}/backend
+          dockerfilePath: src/Api
+          imageToBuild: ghcr.io/frasermclean/ratemypet-api:${{ github.sha }}
+          registryUsername: ${{ github.actor }}
+          registryPassword: ${{ secrets.GITHUB_TOKEN }}
           containerAppName: ratemypet-${{ env.ENVIRONMENT }}-api-ca
           resourceGroup: ratemypet-${{ env.ENVIRONMENT }}-rg
 
