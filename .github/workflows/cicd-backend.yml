@@ -172,16 +172,18 @@ jobs:
     environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
     env:
       ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
+      CONTAINER_REGISTRY: ghcr.io
+      API_REPOSITORY: frasermclean/ratemypet-api
     permissions:
       id-token: write
       packages: write
     concurrency: azure-infra
     steps:
-      # Login to GitHub Container Registry
-      - name: Login to GitHub Container Registry
+      # Login to container registry
+      - name: Login to container registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.CONTAINER_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -201,8 +203,8 @@ jobs:
           file: src/Api/Dockerfile
           push: true
           tags: |
-            ghcr.io/frasermclean/ratemypet-api:latest
-            ghcr.io/frasermclean/ratemypet-api:${{ needs.build.outputs.versionTag }}
+            ${{ env.CONTAINER_REGISTRY }}/${{ env.API_REPOSITORY }}:latest
+            ${{ env.CONTAINER_REGISTRY }}/${{ env.API_REPOSITORY }}:${{ needs.build.outputs.versionTag }}
 
       # Login to Azure
       - name: Login to Azure
@@ -216,7 +218,7 @@ jobs:
       - name: Deploy Container App
         uses: azure/container-apps-deploy-action@v1
         with:
-          imageToDeploy: ghcr.io/frasermclean/ratemypet-api:${{ needs.build.outputs.versionTag }}
+          imageToDeploy: ${{ env.CONTAINER_REGISTRY }}/${{ env.API_REPOSITORY }}:${{ needs.build.outputs.versionTag }}
           containerAppName: ratemypet-${{ env.ENVIRONMENT }}-api-ca
           resourceGroup: ratemypet-${{ env.ENVIRONMENT }}-rg
 
