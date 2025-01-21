@@ -122,6 +122,8 @@ jobs:
 
       # Build and push API image
       - name: Build and push API image
+        env:
+          IMAGE_TAGS: ${{ github.ref == 'refs/heads/main' && format('latest;{0}', steps.calc_tag.outputs.new_tag) ||  steps.calc_tag.outputs.new_tag }}
         run: >-
           dotnet publish src/Api/Api.csproj
           --configuration ${{ env.BUILD_CONFIGURATION }}
@@ -129,6 +131,7 @@ jobs:
           -p:Version=${{ steps.calc_tag.outputs.new_tag }}
           -p:ContainerRegistry=${{ env.CONTAINER_REGISTRY }}
           -p:ContainerRepository=${{ env.API_IMAGE_REPOSITORY }}
+          -p:ContainerImageTags=${{ env.IMAGE_TAGS }}
 
       # Publish jobs project
       - name: Publish jobs project
@@ -150,6 +153,9 @@ jobs:
     name: Deploy migrations
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      id-token: write
+    environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
     env:
       ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
     steps:
@@ -264,4 +270,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CUSTOM_TAG: ${{ needs.build.outputs.versionTag }}
-          PRERELEASE: ${{ github.ref != 'refs/heads/main' }}
