@@ -194,8 +194,8 @@ jobs:
         uses: azure/container-apps-deploy-action@v1
         with:
           appSourcePath: ${{ github.workspace }}/backend
-          dockerfilePath: src/Api
-          imageToBuild: ghcr.io/frasermclean/ratemypet-api:${{ github.sha }}
+          dockerfilePath: src/Api/Dockerfile
+          imageToBuild: ghcr.io/frasermclean/ratemypet-api:${{ needs.build.outputs.versionTag }}
           registryUrl: ghcr.io
           registryUsername: ${{ github.actor }}
           registryPassword: ${{ secrets.GITHUB_TOKEN }}
