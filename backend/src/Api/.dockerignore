@@ -1,0 +1,5 @@
+# App settings
+appsettings.Development.json
+
+# HTTP files
+*.http
