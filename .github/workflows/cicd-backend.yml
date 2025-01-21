@@ -123,7 +123,7 @@ jobs:
       # Build and push API image
       - name: Build and push API image
         env:
-          IMAGE_TAGS: ${{ github.ref == 'refs/heads/main' && format('latest;{0}', steps.calc_tag.outputs.new_tag) ||  steps.calc_tag.outputs.new_tag }}
+          IMAGE_TAGS: ${{ github.ref == 'refs/heads/main' && format('latest\;{0}', steps.calc_tag.outputs.new_tag) ||  steps.calc_tag.outputs.new_tag }}
         run: >-
           dotnet publish src/Api/Api.csproj
           --configuration ${{ env.BUILD_CONFIGURATION }}
