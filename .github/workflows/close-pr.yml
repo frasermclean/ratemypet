@@ -1,0 +1,19 @@
+name: Close pull request
+
+on:
+  pull_request:
+    branches: [main]
+    types: [closed]
+
+jobs:
+  close_pr:
+    name: Close pull request
+    runs-on: ubuntu-latest
+    steps:
+      # Remove preview environment
+      - name: Remove preview environment
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          action: close
+          azure_static_web_apps_api_token: ${{ secrets.SWA_DEPLOYMENT_TOKEN }}
+          app_location: null
