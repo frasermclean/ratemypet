@@ -18,10 +18,6 @@ on:
       - synchronize
       - reopened
 
-env:
-  CONTAINER_REGISTRY: ghcr.io
-  API_IMAGE_REPOSITORY: frasermclean/ratemypet-api
-
 jobs:
   build:
     name: Build application
@@ -200,6 +196,7 @@ jobs:
           appSourcePath: ${{ github.workspace }}/backend
           dockerfilePath: src/Api
           imageToBuild: ghcr.io/frasermclean/ratemypet-api:${{ github.sha }}
+          registryUrl: ghcr.io
           registryUsername: ${{ github.actor }}
           registryPassword: ${{ secrets.GITHUB_TOKEN }}
           containerAppName: ratemypet-${{ env.ENVIRONMENT }}-api-ca
