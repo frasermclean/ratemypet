@@ -26,6 +26,7 @@ jobs:
       contents: read
       checks: write
       pull-requests: write
+      packages: write
     env:
       BUILD_CONFIGURATION: Release
       MIGRATIONS_SCRIPT: ${{ github.workspace }}/backend/migrations.sql
@@ -99,16 +100,6 @@ jobs:
           name: migrations
           path: ${{ env.MIGRATIONS_SCRIPT }}
 
-      # Calculate next version
-      - name: Calculate next version
-        if: github.event_name == 'push'
-        uses: anothrNick/github-tag-action@v1
-        id: calc_tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: patch
-          DRY_RUN: true
-
       # Set up QEMU
       - name: Set up QEMU
         if: github.event_name == 'push'
@@ -138,7 +129,7 @@ jobs:
           push: true
           tags: |
             ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:latest
-            ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ steps.calc_tag.outputs.new_tag }}
+            ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ github.sha }}
 
       # Publish jobs project
       - name: Publish jobs project
@@ -147,7 +138,6 @@ jobs:
           dotnet publish src/Jobs/Jobs.csproj
           --configuration ${{ env.BUILD_CONFIGURATION }}
           --output ${{ github.workspace }}/jobs
-          -p:Version=${{ steps.calc_tag.outputs.new_tag }}
 
       # Upload jobs artifact
       - name: Upload jobs artifact
@@ -158,7 +148,7 @@ jobs:
           path: ${{ github.workspace }}/jobs
           include-hidden-files: true
     outputs:
-      apiImage: ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ steps.calc_tag.outputs.new_tag }}
+      apiImage: ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ github.sha }}
 
   deploy:
     name: Deploy applications
@@ -167,7 +157,6 @@ jobs:
     needs: build
     permissions:
       id-token: write
-      packages: write
     strategy:
       matrix:
         environment: [test, prod]
