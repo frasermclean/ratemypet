@@ -29,11 +29,11 @@ jobs:
     env:
       BUILD_CONFIGURATION: Release
       MIGRATIONS_SCRIPT: ${{ github.workspace }}/backend/migrations.sql
+      CONTAINER_REGISTRY: ghcr.io
+      API_IMAGE_REPOSITORY: frasermclean/ratemypet-api
     defaults:
       run:
         working-directory: ${{ github.workspace }}/backend
-    outputs:
-      versionTag: ${{ steps.calc_tag.outputs.new_tag }}
     steps:
       # Checkout the repository
       - name: Checkout repository
@@ -109,6 +109,37 @@ jobs:
           DEFAULT_BUMP: patch
           DRY_RUN: true
 
+      # Set up QEMU
+      - name: Set up QEMU
+        if: github.event_name == 'push'
+        uses: docker/setup-qemu-action@v3
+
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        if: github.event_name == 'push'
+        uses: docker/setup-buildx-action@v3
+
+      # Login to container registry
+      - name: Login to container registry
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and push API image
+      - name: Build and push API image
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@v6
+        with:
+          context: "{{defaultContext}}:backend"
+          file: src/Api/Dockerfile
+          push: true
+          tags: |
+            ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:latest
+            ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ steps.calc_tag.outputs.new_tag }}
+
       # Publish jobs project
       - name: Publish jobs project
         if: github.event_name == 'push'
@@ -126,6 +157,8 @@ jobs:
           name: jobs
           path: ${{ github.workspace }}/jobs
           include-hidden-files: true
+    outputs:
+      apiImage: ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ steps.calc_tag.outputs.new_tag }}
 
   deploy:
     name: Deploy applications
@@ -140,33 +173,6 @@ jobs:
         environment: [test, prod]
     environment: ${{ matrix.environment }}
     steps:
-      # Set up QEMU
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      # Set up Docker Buildx
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # Login to container registry
-      - name: Login to container registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # Build and push API image
-      - name: Build and push API image
-        uses: docker/build-push-action@v6
-        with:
-          context: "{{defaultContext}}:backend"
-          file: src/Api/Dockerfile
-          push: true
-          tags: |
-            ghcr.io/frasermclean/ratemypet-api:latest
-            ghcr.io/frasermclean/ratemypet-api:${{ needs.build.outputs.versionTag }}
-
       # Login to Azure
       - name: Login to Azure
         uses: azure/login@v2
@@ -191,7 +197,7 @@ jobs:
       - name: Deploy API application
         uses: azure/container-apps-deploy-action@v1
         with:
-          imageToDeploy: ghcr.io/frasermclean/ratemypet-api:${{ needs.build.outputs.versionTag }}
+          imageToDeploy: ${{ needs.build.outputs.apiImage }}
           containerAppName: ratemypet-${{ matrix.environment }}-api-ca
           resourceGroup: ratemypet-${{ matrix.environment }}-rg
 
