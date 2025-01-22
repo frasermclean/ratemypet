@@ -47,10 +47,6 @@ jobs:
         with:
           dotnet-version: 9
 
-      # Install EF tool
-      - name: Install EF tool
-        run: dotnet tool install --global dotnet-ef
-
       # Restore packages
       - name: Restore packages
         run: dotnet restore
@@ -78,8 +74,14 @@ jobs:
           check_name: Test results
           action_fail: true
 
+      # Install EF tool
+      - name: Install EF tool
+        if: github.event_name == 'push'
+        run: dotnet tool install --global dotnet-ef
+
       # Build migrations script
       - name: Build migrations script
+        if: github.event_name == 'push'
         run: >-
           dotnet ef migrations script
           --no-build
@@ -91,6 +93,7 @@ jobs:
 
       # Upload migrations script
       - name: Upload migrations script
+        if: github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
           name: migrations
@@ -98,16 +101,17 @@ jobs:
 
       # Calculate next version
       - name: Calculate next version
+        if: github.event_name == 'push'
         uses: anothrNick/github-tag-action@v1
         id: calc_tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
           DRY_RUN: true
-          PRERELEASE: ${{ github.ref != 'refs/heads/main' }}
 
       # Publish jobs project
       - name: Publish jobs project
+        if: github.event_name == 'push'
         run: >-
           dotnet publish src/Jobs/Jobs.csproj
           --configuration ${{ env.BUILD_CONFIGURATION }}
@@ -116,6 +120,7 @@ jobs:
 
       # Upload jobs artifact
       - name: Upload jobs artifact
+        if: github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
           name: jobs
@@ -124,6 +129,7 @@ jobs:
 
   deploy:
     name: Deploy applications
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: build
     permissions:
