@@ -131,7 +131,7 @@ jobs:
       id-token: write
     strategy:
       matrix:
-        environment: [prod, test]
+        environment: [test, prod]
     environment: ${{ matrix.environment }}
     steps:
       # Download artifact
@@ -172,7 +172,7 @@ jobs:
       - deploy_migrations
     strategy:
       matrix:
-        environment: [prod, test]
+        environment: [test, prod]
     environment: ${{ matrix.environment }}
     env:
       CONTAINER_REGISTRY: ghcr.io
@@ -232,7 +232,7 @@ jobs:
     needs: deploy_migrations
     strategy:
       matrix:
-        environment: [prod, test]
+        environment: [test, prod]
     environment: ${{ matrix.environment }}
     permissions:
       id-token: write
