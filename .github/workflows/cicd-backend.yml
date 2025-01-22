@@ -138,7 +138,7 @@ jobs:
         env:
           DOCKER_BUILD_RECORD_UPLOAD: false
         with:
-          context: ${{ github.workspace }}/backend
+          context: "{{defaultContext}}:backend"
           file: src/Api/Dockerfile
           push: true
           tags: |
