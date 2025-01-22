@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - fix/build-order
     paths:
       - .github/workflows/cicd-backend.yml
       - backend/**
@@ -100,6 +101,17 @@ jobs:
           name: migrations
           path: ${{ env.MIGRATIONS_SCRIPT }}
 
+      # Calculate next version
+      - name: Calculate next version
+        if: github.event_name == 'push'
+        uses: anothrNick/github-tag-action@v1
+        id: calc_tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          DRY_RUN: true
+          PRERELEASE: ${{ github.ref != 'refs/heads/main' }}
+
       # Set up QEMU
       - name: Set up QEMU
         if: github.event_name == 'push'
@@ -123,13 +135,15 @@ jobs:
       - name: Build and push API image
         if: github.event_name == 'push'
         uses: docker/build-push-action@v6
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
         with:
-          context: "{{defaultContext}}:backend"
+          context: ${{ github.workspace }}/backend
           file: src/Api/Dockerfile
           push: true
           tags: |
             ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:latest
-            ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ github.sha }}
+            ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ steps.calc_tag.outputs.new_tag }}
 
       # Publish jobs project
       - name: Publish jobs project
@@ -138,6 +152,7 @@ jobs:
           dotnet publish src/Jobs/Jobs.csproj
           --configuration ${{ env.BUILD_CONFIGURATION }}
           --output ${{ github.workspace }}/jobs
+          -p:Version=${{ steps.calc_tag.outputs.new_tag }}
 
       # Upload jobs artifact
       - name: Upload jobs artifact
@@ -148,7 +163,7 @@ jobs:
           path: ${{ github.workspace }}/jobs
           include-hidden-files: true
     outputs:
-      apiImage: ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ github.sha }}
+      apiImage: ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ steps.calc_tag.outputs.new_tag }}
 
   deploy:
     name: Deploy applications
