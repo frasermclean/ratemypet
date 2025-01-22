@@ -152,17 +152,9 @@ jobs:
       # Deploy migrations script
       - name: Deploy migrations script
         uses: azure/sql-action@v2.3
-        env:
-          CONNECTION_STRING: >-
-            Server=tcp:ratemypet-${{ matrix.environment }}-sql.database.windows.net,1433;
-            Initial Catalog=ratemypet-${{ matrix.environment }}-sqldb;
-            Encrypt=True;
-            TrustServerCertificate=False;
-            Connection Timeout=30;
-            Authentication=Active Directory Default;
         with:
           path: ${{ steps.download-artifact.outputs.download-path }}/migrations.sql
-          connection-string: ${{ env.CONNECTION_STRING }}
+          connection-string: ${{ secrets.DB_CONNECTION_STRING }}
 
   deploy_api:
     name: Deploy API application
