@@ -166,6 +166,7 @@ jobs:
 
   deploy_api:
     name: Deploy API application
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs:
       - build
@@ -228,6 +229,7 @@ jobs:
   # Deploy jobs application
   deploy_jobs:
     name: Deploy jobs application
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: deploy_migrations
     strategy:
