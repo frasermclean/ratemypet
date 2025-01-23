@@ -175,6 +175,7 @@ jobs:
       matrix:
         environment: [test, prod]
     environment: ${{ matrix.environment }}
+    concurrency: azure-infra
     steps:
       # Login to Azure
       - name: Login to Azure
