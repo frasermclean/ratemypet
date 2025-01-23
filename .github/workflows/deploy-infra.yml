@@ -7,27 +7,18 @@ on:
     paths:
       - .github/workflows/deploy-infra.yml
       - deploy/**
-  pull_request:
-    branches:
-      - main
-    paths:
-      - .github/workflows/deploy-infra.yml
-      - deploy/**
-    types:
-      - opened
-      - synchronize
-      - reopened
 
 jobs:
   deploy:
     name: Deploy infrastructure
     runs-on: ubuntu-latest
-    environment: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
+    strategy:
+      matrix:
+        environment: [test, prod]
+    environment: ${{ matrix.environment }}
     concurrency: azure-infra
     permissions:
       id-token: write
-    env:
-      ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'test' }}
     steps:
       # Checkout the repository
       - name: Checkout repository
@@ -61,10 +52,10 @@ jobs:
         id: deploy_app
         with:
           scope: resourcegroup
-          resourceGroupName: ratemypet-${{ env.ENVIRONMENT }}-rg
+          resourceGroupName: ratemypet-${{ matrix.environment }}-rg
           template: ${{ github.workspace }}/deploy/apps/main.bicep
           parameters: >-
-            ${{ github.workspace }}/deploy/apps/main.${{ env.ENVIRONMENT }}.bicepparam
+            ${{ github.workspace }}/deploy/apps/main.${{ matrix.environment }}.bicepparam
             sharedResourceGroup=${{ vars.SHARED_RESOURCE_GROUP }}
             keyVaultName=${{ steps.deploy_shared.outputs.keyVaultName }}
             appConfigurationName=${{ steps.deploy_shared.outputs.appConfigurationName }}
