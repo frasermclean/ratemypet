@@ -1,22 +1,18 @@
 name: Deploy infrastructure
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/deploy-infra.yml
-      - deploy/**
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: environment
+        description: Environment to deploy to
+        required: true
 
 jobs:
   deploy:
     name: Deploy infrastructure
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        environment: [test, prod]
-    environment: ${{ matrix.environment }}
-    concurrency: azure-infra
+    environment: ${{ inputs.environment }}
     permissions:
       id-token: write
     steps:
@@ -52,10 +48,10 @@ jobs:
         id: deploy_app
         with:
           scope: resourcegroup
-          resourceGroupName: ratemypet-${{ matrix.environment }}-rg
+          resourceGroupName: ratemypet-${{ inputs.environment }}-rg
           template: ${{ github.workspace }}/deploy/apps/main.bicep
           parameters: >-
-            ${{ github.workspace }}/deploy/apps/main.${{ matrix.environment }}.bicepparam
+            ${{ github.workspace }}/deploy/apps/main.${{ inputs.environment }}.bicepparam
             sharedResourceGroup=${{ vars.SHARED_RESOURCE_GROUP }}
             keyVaultName=${{ steps.deploy_shared.outputs.keyVaultName }}
             appConfigurationName=${{ steps.deploy_shared.outputs.appConfigurationName }}
