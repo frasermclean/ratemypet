@@ -27,14 +27,8 @@ param logAnalyticsWorkspaceId string
 @description('Application Insights connection string')
 param applicationInsightsConnectionString string
 
-@description('Database connection string')
-param databaseConnectionString string
-
-@description('Storage account blob endpoint to be stored in App Configuration.')
-param storageAccountBlobEndpoint string
-
-@description('Storage account queue endpoint to be stored in App Configuration.')
-param storageAccountQueueEndpoint string
+@description('Name of the Azure App Configuration instance')
+param appConfigurationName string
 
 @description('Name of the container registry')
 param containerRegistryName string
@@ -62,6 +56,11 @@ var apiContainerAppName = '${workload}-${appEnv}-api-ca'
 // shared managed identity
 resource sharedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
   name: '${workload}-shared-id'
+  scope: resourceGroup(sharedResourceGroup)
+}
+
+resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-05-01' existing = {
+  name: appConfigurationName
   scope: resourceGroup(sharedResourceGroup)
 }
 
@@ -185,24 +184,16 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
               value: appEnv
             }
             {
+              name: 'APP_CONFIG_ENDPOINT'
+              value: appConfiguration.properties.endpoint
+            }
+            {
               name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
               value: applicationInsightsConnectionString
             }
             {
               name: 'OTEL_SERVICE_NAME'
               value: apiContainerAppName
-            }
-            {
-              name: 'Storage__BlobEndpoint'
-              value: storageAccountBlobEndpoint
-            }
-            {
-              name: 'Storage__QueueEndpoint'
-              value: storageAccountQueueEndpoint
-            }
-            {
-              name: 'ConnectionStrings__Database'
-              value: databaseConnectionString
             }
           ]
         }

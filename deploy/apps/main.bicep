@@ -101,9 +101,7 @@ module containerAppsModule 'containerApps.bicep' = {
     sharedResourceGroup: sharedResourceGroup
     logAnalyticsWorkspaceId: appInsightsModule.outputs.logAnalyticsWorkspaceId
     applicationInsightsConnectionString: appInsightsModule.outputs.connectionString
-    databaseConnectionString: databaseModule.outputs.connectionString
-    storageAccountBlobEndpoint: storageModule.outputs.blobEndpoint
-    storageAccountQueueEndpoint: storageModule.outputs.queueEndpoint
+    appConfigurationName: appConfigurationName
     apiImageRepository: apiImageRepository
     apiImageTag: apiImageTag
     apiAllowedOrigins: appEnv == 'prod'
