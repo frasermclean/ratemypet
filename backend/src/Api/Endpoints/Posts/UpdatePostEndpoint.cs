@@ -31,7 +31,6 @@ public class UpdatePostEndpoint(ApplicationDbContext dbContext)
             return new ErrorResponse(ValidationFailures);
         }
 
-        post.Title = request.Title;
         post.Description = request.Description;
         post.Species = species;
         post.UpdatedAtUtc = DateTime.UtcNow;

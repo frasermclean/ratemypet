@@ -9,7 +9,7 @@ public class Post
 
     public Guid Id { get; init; } = Guid.NewGuid();
     public required string? Slug { get; init; }
-    public required string Title { get; set; }
+    public required string Title { get; init; }
     public string? Description { get; set; }
     public required User User { get; init; }
     public required Species Species { get; set; }
