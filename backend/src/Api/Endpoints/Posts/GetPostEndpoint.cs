@@ -22,7 +22,8 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
         var userId = User.GetUserId();
 
         var response = await dbContext.Posts.AsNoTracking()
-            .Where(post => post.Id == request.PostId || post.Slug == request.PostSlug)
+            .Where(post => request.PostId != null && post.Id == request.PostId ||
+                           request.PostSlug != null && post.Slug == request.PostSlug)
             .Select(post => new PostResponse
             {
                 Id = post.Id,
