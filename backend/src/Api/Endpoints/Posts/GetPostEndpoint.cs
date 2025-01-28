@@ -25,6 +25,7 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
             .Select(post => new PostResponse
             {
                 Id = post.Id,
+                Slug = post.Slug,
                 Title = post.Title,
                 Description = post.Description,
                 ImageUrl = post.GetImageUrl(HttpContext.Request),

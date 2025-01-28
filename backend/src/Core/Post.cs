@@ -5,6 +5,7 @@ public class Post
     public const int TitleMaxLength = 50;
     public const int SlugMaxLength = 60;
     public const int DescriptionMaxLength = 500;
+    public const string ValidTitlePattern = @"^[a-zA-Z0-9\s!?.-]+$";
 
     public Guid Id { get; init; } = Guid.NewGuid();
     public required string Slug { get; init; }
@@ -19,12 +20,21 @@ public class Post
     public DateTime? UpdatedAtUtc { get; set; }
     public ulong RowVersion { get; init; }
 
-    public static string CreateSlug(string title, bool appendRandomSuffix = false, DateOnly? date = null)
+    public static string CreateSlug(string title, TimeProvider? timeProvider = null)
     {
-        title = title.Trim().ToLowerInvariant().Replace(" ", "-");
-        date ??= DateOnly.FromDateTime(DateTime.UtcNow);
-        var suffix = appendRandomSuffix ? $"-{Guid.NewGuid():N4}" : "";
+        var words = title.Trim()
+            .ToLowerInvariant()
+            .Replace("!", "")
+            .Replace("?", "")
+            .Replace(".", "")
+            .Split(' ');
 
-        return $"{title}-{date:yyyy-MM-dd}{suffix}";
+        var sanitizedTitle = string.Join('-', words.Where(word => word.Length > 0));
+
+        // calculate timestamp from the time provider
+        timeProvider ??= TimeProvider.System;
+        var timeStamp = timeProvider.GetUtcNow().ToUnixTimeSeconds();
+
+        return $"{sanitizedTitle}-{timeStamp}";
     }
 }

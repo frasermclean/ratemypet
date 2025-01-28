@@ -9,6 +9,7 @@ public class PostResponseMapper(IHttpContextAccessor httpContextAccessor) : Resp
     public override PostResponse FromEntity(Post post) => new()
     {
         Id = post.Id,
+        Slug = post.Slug,
         Title = post.Title,
         Description = post.Description,
         ImageUrl = post.GetImageUrl(httpContextAccessor.HttpContext?.Request),
