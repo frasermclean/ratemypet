@@ -489,8 +489,8 @@ namespace RateMyPet.Persistence.Migrations
                                 .HasColumnName("ImageAssetId");
 
                             b1.Property<string>("PublicId")
-                                .HasMaxLength(32)
-                                .HasColumnType("nvarchar(32)")
+                                .HasMaxLength(255)
+                                .HasColumnType("nvarchar(255)")
                                 .HasColumnName("ImagePublicId");
 
                             b1.HasKey("PostId");

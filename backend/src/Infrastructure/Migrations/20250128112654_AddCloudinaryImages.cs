@@ -44,8 +44,8 @@ namespace RateMyPet.Infrastructure.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "ImagePublicId",
                 table: "Posts",
-                type: "nvarchar(32)",
-                maxLength: 32,
+                type: "nvarchar(255)",
+                maxLength: 255,
                 nullable: true);
         }
 
