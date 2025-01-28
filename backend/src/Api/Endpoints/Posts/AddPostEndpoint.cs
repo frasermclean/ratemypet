@@ -2,6 +2,7 @@
 using CloudinaryDotNet.Actions;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
 using RateMyPet.Infrastructure.Services;
@@ -30,16 +31,22 @@ public class AddPostEndpoint(ApplicationDbContext dbContext, ICloudinary cloudin
             return new ErrorResponse(ValidationFailures);
         }
 
+        var slug = Core.Post.CreateSlug(request.Title);
+
         // upload image to cloudinary
         var imageUploadResult = await cloudinary.UploadAsync(new ImageUploadParams
         {
-            File = new FileDescription(request.Image.FileName, request.Image.OpenReadStream())
+            File = new FileDescription(request.Image.FileName, request.Image.OpenReadStream()),
+            DisplayName = request.Title,
+            PublicId = slug,
+            AssetFolder = "posts",
+            UseAssetFolderAsPublicIdPrefix = true
         });
 
         // create new post
         var post = new Post
         {
-            Slug = Core.Post.CreateSlug(request.Title),
+            Slug = slug,
             Title = request.Title,
             Description = request.Description,
             User = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken),
