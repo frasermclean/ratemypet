@@ -43,8 +43,8 @@ export class PostsService {
     return this.httpClient.get<Paging<SearchPostsMatch>>(this.baseUrl, { params });
   }
 
-  getPost(postId: string): Observable<Post> {
-    return this.httpClient.get<Post>(`${this.baseUrl}/${postId}`);
+  getPost(postIdOrSlug: string): Observable<Post> {
+    return this.httpClient.get<Post>(`${this.baseUrl}/${postIdOrSlug}`);
   }
 
   /**

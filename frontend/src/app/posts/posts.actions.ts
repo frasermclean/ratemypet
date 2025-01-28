@@ -8,7 +8,7 @@ export namespace PostsActions {
 
   export class GetPost {
     static readonly type = '[Posts] Get Post';
-    constructor(public postId: string) {}
+    constructor(public postIdOrSlug: string) {}
   }
 
   export class AddPost {

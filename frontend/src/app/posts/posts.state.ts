@@ -47,12 +47,12 @@ export class PostsState {
   getPost(context: StateContext<PostsStateModel>, action: PostsActions.GetPost) {
     // prevent fetching the same post multiple times
     const currentPost = context.getState().currentPost;
-    if (currentPost?.id === action.postId) {
+    if (currentPost?.id === action.postIdOrSlug || currentPost?.slug === action.postIdOrSlug) {
       return;
     }
 
     context.patchState({ status: 'busy' });
-    return this.postsService.getPost(action.postId).pipe(
+    return this.postsService.getPost(action.postIdOrSlug).pipe(
       tap((post) => {
         context.patchState({ status: 'ready', currentPost: post });
       }),
@@ -61,7 +61,7 @@ export class PostsState {
           context.patchState({
             status: 'error',
             currentPost: null,
-            errorMessage: `Post with ID ${action.postId} could not be found`
+            errorMessage: `Post with ID ${action.postIdOrSlug} could not be found`
           });
           return of(null);
         }
