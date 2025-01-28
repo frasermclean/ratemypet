@@ -8,20 +8,21 @@ using RateMyPet.Infrastructure.Services;
 namespace RateMyPet.Api.Endpoints.Posts;
 
 public class GetPostEndpoint(ApplicationDbContext dbContext)
-    : EndpointWithoutRequest<Results<Ok<PostResponse>, NotFound>>
+    : Endpoint<GetPostRequest, Results<Ok<PostResponse>, NotFound>>
 {
     public override void Configure()
     {
-        Get("posts/{postId:guid}");
+        Get("posts/{postId:guid}", "posts/{postSlug}");
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok<PostResponse>, NotFound>> ExecuteAsync(CancellationToken cancellationToken)
+    public override async Task<Results<Ok<PostResponse>, NotFound>> ExecuteAsync(GetPostRequest request,
+        CancellationToken cancellationToken)
     {
-        var postId = Route<Guid>("postId");
         var userId = User.GetUserId();
 
-        var response = await dbContext.Posts.Where(post => post.Id == postId)
+        var response = await dbContext.Posts.AsNoTracking()
+            .Where(post => post.Id == request.PostId || post.Slug == request.PostSlug)
             .Select(post => new PostResponse
             {
                 Id = post.Id,
@@ -55,7 +56,6 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
                         ParentId = comment.Parent == null ? null : comment.Parent.Id,
                     }).ToCommentTree()
             })
-            .AsNoTracking()
             .FirstOrDefaultAsync(cancellationToken);
 
         return response is not null
