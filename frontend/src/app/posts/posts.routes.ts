@@ -21,7 +21,7 @@ const routes: Routes = [
       },
       { path: ':postIdOrSlug', component: PostViewComponent },
       {
-        path: ':postId/edit',
+        path: ':postIdOrSlug/edit',
         component: PostEditComponent,
         title: 'Edit Post',
         canActivate: [isAuthenticated, isRoleContributor]

@@ -33,7 +33,7 @@ import { PostsState } from '../posts.state';
 })
 export class PostEditComponent implements OnInit {
   private readonly formBuilder = inject(NonNullableFormBuilder);
-  postId = input('');
+  postIdOrSlug = input('');
   getPost = dispatch(PostsActions.GetPost);
   addPost = dispatch(PostsActions.AddPost);
   updatePost = dispatch(PostsActions.UpdatePost);
@@ -42,12 +42,13 @@ export class PostEditComponent implements OnInit {
   allSpecies = select(SpeciesState.allSpecies);
 
   isEditing = computed<boolean>(() => {
-    return !!this.postId();
+    return !!this.postIdOrSlug();
   });
 
   imageUpload = viewChild.required(ImageUploadComponent);
 
   formGroup = this.formBuilder.group({
+    id: [''],
     title: ['', [Validators.required, Validators.maxLength(50)]],
     description: ['', [Validators.required]],
     speciesId: [0, Validators.required],
@@ -57,10 +58,14 @@ export class PostEditComponent implements OnInit {
   constructor(actions$: Actions, notificationService: NotificationService, router: Router) {
     actions$.pipe(ofActionSuccessful(PostsActions.GetPost), takeUntilDestroyed()).subscribe(() => {
       this.formGroup.patchValue({
+        id: this.currentPost()!.id,
         title: this.currentPost()!.title,
         description: this.currentPost()!.description,
         speciesId: this.currentPost()!.speciesId
       });
+      if (this.isEditing()) {
+        this.formGroup.controls.title.disable();
+      }
     });
 
     actions$.pipe(ofActionSuccessful(PostsActions.AddPost), takeUntilDestroyed()).subscribe(() => {
@@ -70,7 +75,7 @@ export class PostEditComponent implements OnInit {
 
     actions$.pipe(ofActionSuccessful(PostsActions.UpdatePost), takeUntilDestroyed()).subscribe(() => {
       notificationService.showInformation('Post updated successfully');
-      router.navigate(['/posts', this.currentPost()!.id]);
+      router.navigate(['/posts', this.currentPost()!.slug]);
     });
   }
 
@@ -78,7 +83,7 @@ export class PostEditComponent implements OnInit {
     this.getAllSpecies();
 
     if (this.isEditing()) {
-      this.getPost(this.postId());
+      this.getPost(this.postIdOrSlug());
       this.formGroup.controls.image.clearValidators();
     }
   }
@@ -91,7 +96,7 @@ export class PostEditComponent implements OnInit {
   onSubmitForm() {
     const formValue = this.formGroup.getRawValue();
     if (this.isEditing()) {
-      this.updatePost({ id: this.postId(), ...formValue });
+      this.updatePost(formValue);
     } else {
       this.addPost({ ...formValue, image: formValue.image! });
     }
