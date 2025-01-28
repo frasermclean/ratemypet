@@ -8,7 +8,7 @@ public class Post
     public const string ValidTitlePattern = @"^[a-zA-Z0-9\s!?.-]+$";
 
     public Guid Id { get; init; } = Guid.NewGuid();
-    public required string Slug { get; init; }
+    public required string? Slug { get; init; }
     public required string Title { get; set; }
     public string? Description { get; set; }
     public required User User { get; init; }

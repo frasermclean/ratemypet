@@ -15,11 +15,10 @@ namespace RateMyPet.Infrastructure.Migrations
                 table: "Posts",
                 type: "nvarchar(60)",
                 maxLength: 60,
-                nullable: false,
-                defaultValueSql: "newid()");
+                nullable: true);
 
-            migrationBuilder.AddUniqueConstraint(
-                name: "AK_Posts_Slug",
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_Slug",
                 table: "Posts",
                 column: "Slug");
         }
@@ -27,8 +26,8 @@ namespace RateMyPet.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropUniqueConstraint(
-                name: "AK_Posts_Slug",
+            migrationBuilder.DropIndex(
+                name: "IX_Posts_Slug",
                 table: "Posts");
 
             migrationBuilder.DropColumn(

@@ -12,7 +12,7 @@ using RateMyPet.Infrastructure.Services;
 namespace RateMyPet.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250128030643_AddPostSlug")]
+    [Migration("20250128045605_AddPostSlug")]
     partial class AddPostSlug
     {
         /// <inheritdoc />
@@ -48,11 +48,8 @@ namespace RateMyPet.Infrastructure.Migrations
                         .HasColumnType("rowversion");
 
                     b.Property<string>("Slug")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
                         .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)")
-                        .HasDefaultValueSql("newid()");
+                        .HasColumnType("nvarchar(60)");
 
                     b.Property<int>("SpeciesId")
                         .HasColumnType("int");
@@ -71,7 +68,7 @@ namespace RateMyPet.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Slug");
+                    b.HasIndex("Slug");
 
                     b.HasIndex("SpeciesId");
 
