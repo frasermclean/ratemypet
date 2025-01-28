@@ -12,7 +12,7 @@ public class PostResponseMapper(IHttpContextAccessor httpContextAccessor) : Resp
         Slug = post.Slug,
         Title = post.Title,
         Description = post.Description,
-        ImageUrl = post.GetImageUrl(httpContextAccessor.HttpContext?.Request),
+        ImageId = post.Image.PublicId,
         AuthorUserName = post.User.UserName!,
         AuthorEmailHash = post.User.Email.ToSha256Hash(),
         SpeciesId = post.Species.Id,

@@ -97,10 +97,8 @@ public class PostImageProcessorTests
         },
         Image = new PostImage
         {
-            FileName = "image1.png",
-            MimeType = "image/png",
-            Width = 1024,
-            Height = 768
+            AssetId = "3515c6000a548515f1134043f9785c2f",
+            PublicId = "gotjephlnz2jgiu20zni"
         }
     };
 }

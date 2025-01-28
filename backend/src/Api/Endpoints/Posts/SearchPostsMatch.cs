@@ -9,7 +9,7 @@ public class SearchPostsMatch
     public required string? Slug { get; init; }
     public required string Title { get; init; }
     public required string? Description { get; init; }
-    public required Uri? ImageUrl { get; init; }
+    public string? ImageId { get; init; }
     public required string AuthorUserName { get; init; }
     public required string AuthorEmailHash { get; init; }
     public required string SpeciesName { get; init; }

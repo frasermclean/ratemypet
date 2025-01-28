@@ -1,18 +1,15 @@
-﻿using FastEndpoints;
+﻿using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
-using RateMyPet.Core.Abstractions;
-using RateMyPet.Infrastructure;
 using RateMyPet.Infrastructure.Services;
+using Role = RateMyPet.Core.Role;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class AddPostEndpoint(
-    ApplicationDbContext dbContext,
-    IPostImageProcessor imageProcessor,
-    [FromKeyedServices(BlobContainerNames.Images)]
-    IBlobContainerManager imagesManager)
+public class AddPostEndpoint(ApplicationDbContext dbContext, ICloudinary cloudinary)
     : Endpoint<AddPostRequest, Results<Created<PostResponse>, ErrorResponse>, PostResponseMapper>
 {
     public override void Configure()
@@ -33,27 +30,15 @@ public class AddPostEndpoint(
             return new ErrorResponse(ValidationFailures);
         }
 
-        // validate image
-        await using var imageStream = request.Image.OpenReadStream();
-        var imageValidationResult = await imageProcessor.ValidateImageAsync(imageStream, cancellationToken);
-        if (imageValidationResult.IsFailed)
+        // upload image to cloudinary
+        var imageUploadResult = await cloudinary.UploadAsync(new ImageUploadParams
         {
-            AddError(r => r.Image, imageValidationResult.Errors.First().Message);
-            return new ErrorResponse(ValidationFailures);
-        }
-
-        var postId = Guid.NewGuid();
-        var (width, height) = imageValidationResult.Value;
-
-        // upload image to blob storage
-        imageStream.Position = 0;
-        await imagesManager.CreateBlobAsync(postId.ToString(), imageStream, request.Image.ContentType,
-            cancellationToken);
+            File = new FileDescription(request.Image.FileName, request.Image.OpenReadStream())
+        });
 
         // create new post
         var post = new Post
         {
-            Id = postId,
             Slug = Core.Post.CreateSlug(request.Title),
             Title = request.Title,
             Description = request.Description,
@@ -61,11 +46,8 @@ public class AddPostEndpoint(
             Species = species,
             Image = new PostImage
             {
-                FileName = request.Image.FileName,
-                MimeType = request.Image.ContentType,
-                Width = width,
-                Height = height,
-                Size = request.Image.Length
+                AssetId = imageUploadResult.AssetId,
+                PublicId = imageUploadResult.PublicId
             }
         };
 
