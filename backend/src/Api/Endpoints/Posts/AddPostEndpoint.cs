@@ -54,6 +54,7 @@ public class AddPostEndpoint(
         var post = new Post
         {
             Id = postId,
+            Slug = Core.Post.CreateSlug(request.Title),
             Title = request.Title,
             Description = request.Description,
             User = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken),

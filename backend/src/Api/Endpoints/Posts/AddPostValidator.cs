@@ -10,7 +10,9 @@ public class AddPostValidator : Validator<AddPostRequest>
     {
         RuleFor(request => request.Title)
             .NotEmpty()
-            .MaximumLength(Post.TitleMaxLength);
+            .MaximumLength(Post.TitleMaxLength)
+            .Matches(Post.ValidTitlePattern)
+            .WithMessage("Title can only contain letters and numbers");
 
         RuleFor(request => request.Description)
             .NotEmpty()

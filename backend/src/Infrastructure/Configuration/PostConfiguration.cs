@@ -8,6 +8,9 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
 {
     public void Configure(EntityTypeBuilder<Post> builder)
     {
+        builder.Property(post => post.Slug)
+            .HasMaxLength(Post.SlugMaxLength);
+
         builder.Property(post => post.Title)
             .HasMaxLength(Post.TitleMaxLength);
 
@@ -40,5 +43,7 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(post => post.RowVersion)
             .IsRowVersion()
             .HasConversion<byte[]>();
+
+        builder.HasIndex(post => post.Slug);
     }
 }

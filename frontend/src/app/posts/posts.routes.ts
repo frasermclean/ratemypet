@@ -19,9 +19,9 @@ const routes: Routes = [
         title: 'Add Post',
         canActivate: [isAuthenticated, isRoleContributor]
       },
-      { path: ':postId', component: PostViewComponent },
+      { path: ':postIdOrSlug', component: PostViewComponent },
       {
-        path: ':postId/edit',
+        path: ':postIdOrSlug/edit',
         component: PostEditComponent,
         title: 'Edit Post',
         canActivate: [isAuthenticated, isRoleContributor]

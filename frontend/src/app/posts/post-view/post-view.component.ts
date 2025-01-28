@@ -38,7 +38,7 @@ import { PostImageComponent } from './post-image/post-image.component';
   styleUrl: './post-view.component.scss'
 })
 export class PostViewComponent implements OnInit {
-  readonly postId = input.required<string>();
+  readonly postIdOrSlug = input.required<string>();
   readonly dialog = inject(MatDialog);
   readonly status = select(PostsState.status);
   readonly post = select(PostsState.currentPost);
@@ -67,12 +67,12 @@ export class PostViewComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getPost(this.postId());
+    this.getPost(this.postIdOrSlug());
   }
 
   showCommentDialog() {
     this.dialog.open<PostAddCommentComponent, PostAddCommentData>(PostAddCommentComponent, {
-      data: { postId: this.postId() }
+      data: { postId: this.post()!.id }
     });
   }
 }
