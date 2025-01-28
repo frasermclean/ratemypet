@@ -87,6 +87,7 @@ public class PostImageProcessorTests
 
     private static Post CreatePost() => new()
     {
+        Slug = Post.CreateSlug("My first post"),
         Title = "My first post",
         User = new User(),
         Species = new Species

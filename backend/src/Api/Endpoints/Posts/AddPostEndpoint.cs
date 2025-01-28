@@ -50,10 +50,13 @@ public class AddPostEndpoint(
         await imagesManager.CreateBlobAsync(postId.ToString(), imageStream, request.Image.ContentType,
             cancellationToken);
 
+
+
         // create new post
         var post = new Post
         {
             Id = postId,
+            Slug = await CreateUniqueSlugAsync(request.Title, cancellationToken),
             Title = request.Title,
             Description = request.Description,
             User = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken),
@@ -75,5 +78,20 @@ public class AddPostEndpoint(
 
         var response = Map.FromEntity(post);
         return TypedResults.Created($"/posts/{response.Id}", response);
+    }
+
+    private async Task<string> CreateUniqueSlugAsync(string title, CancellationToken cancellationToken)
+    {
+        var slug = Core.Post.CreateSlug(title);
+        var existingSlug = await dbContext.Posts
+            .Where(p => p.Slug == slug)
+            .Select(p => p.Slug)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (existingSlug is null)
+            return slug;
+
+        var suffix = $"{Guid.NewGuid().ToString("N")[..4]}";
+        return $"{slug}-{suffix}";
     }
 }
