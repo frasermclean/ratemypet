@@ -1,5 +1,6 @@
 export interface Post {
   id: string;
+  slug: string;
   title: string;
   description?: string;
   imageUrl: string | null;
@@ -56,6 +57,7 @@ export type SearchPostsOrderBy = 'createdAt' | 'reactionCount';
 
 export interface SearchPostsMatch {
   id: string;
+  slug: string;
   title: string;
   description?: string;
   imageUrl: string | null;

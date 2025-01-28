@@ -12,7 +12,7 @@
     <mat-card-subtitle class="description">{{ post.description }}</mat-card-subtitle>
     }
   </mat-card-header>
-  <a [routerLink]="post.id">
+  <a [routerLink]="post.slug">
     <img mat-card-image class="preview-image" [src]="imageUrl()" [alt]="post.title" />
   </a>
 
@@ -26,6 +26,8 @@
     />
     }
     <span class="spacer"></span>
-    <a mat-raised-button [matBadge]="post.commentCount || null" [routerLink]="post.id" fragment="comments">Comments</a>
+    <a mat-raised-button [matBadge]="post.commentCount || null" [routerLink]="post.slug" fragment="comments">
+      Comments
+    </a>
   </mat-card-actions>
 </mat-card>
