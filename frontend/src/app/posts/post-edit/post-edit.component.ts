@@ -65,7 +65,7 @@ export class PostEditComponent implements OnInit {
 
     actions$.pipe(ofActionSuccessful(PostsActions.AddPost), takeUntilDestroyed()).subscribe(() => {
       notificationService.showInformation('Post created successfully');
-      router.navigate(['/posts', this.currentPost()!.id]);
+      router.navigate(['/posts', this.currentPost()!.slug]);
     });
 
     actions$.pipe(ofActionSuccessful(PostsActions.UpdatePost), takeUntilDestroyed()).subscribe(() => {
