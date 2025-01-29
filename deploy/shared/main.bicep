@@ -291,6 +291,14 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
     }
     dependsOn: [roleAssignments]
   }
+
+  resource cloudinaryCloudNameKeyValue 'keyValues' = {
+    name: 'Cloudinary:CloudName'
+    properties: {
+      value: 'ratemypet'
+      contentType: 'text/plain'
+    }
+  }
 }
 
 // managed identity

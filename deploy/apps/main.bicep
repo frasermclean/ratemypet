@@ -42,6 +42,9 @@ param containerRegistryName string = 'ghcr.io'
 @description('Username to access the container registry')
 param containerRegistryUsername string = 'frasermclean'
 
+@description('Cloudinary API key')
+param cloudinaryApiKey string
+
 var tags = {
   workload: workload
   appEnv: appEnv
@@ -141,7 +144,9 @@ module appConfigModule 'appConfig.bicep' = {
   params: {
     appEnv: appEnv
     appConfigurationName: appConfigurationName
+    keyVaultName: keyVaultName
     domainName: domainName
+    cloudinaryApiKey: cloudinaryApiKey
     databaseConnectionString: databaseModule.outputs.connectionString
     storageAccountBlobEndpoint: storageModule.outputs.blobEndpoint
     storageAccountQueueEndpoint: storageModule.outputs.queueEndpoint
