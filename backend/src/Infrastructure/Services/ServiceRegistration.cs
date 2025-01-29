@@ -6,8 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure.Services.Email;
 using RateMyPet.Infrastructure.Services.ImageHosting;
-using RateMyPet.Infrastructure.Services.ImageProcessing;
-using SixLabors.ImageSharp.Web.DependencyInjection;
 
 namespace RateMyPet.Infrastructure.Services;
 
@@ -25,7 +23,7 @@ public static class ServiceRegistration
 
         services.AddAzureClients(configuration)
             .AddBlobContainerManagers()
-            .AddImageProcessing()
+            .AddImageHosting()
             .AddEmailSending()
             .AddSingleton<IMessagePublisher, MessagePublisher>();
 
@@ -72,27 +70,13 @@ public static class ServiceRegistration
         return services;
     }
 
-    /// <summary>
-    /// Add ImageSharp.Web image processing middleware services
-    /// </summary>
-    private static IServiceCollection AddImageProcessing(this IServiceCollection services)
+    private static IServiceCollection AddImageHosting(this IServiceCollection services)
     {
-        services.AddImageSharp(options => options.CacheHashLength = 16)
-            .ClearProviders()
-            .AddProvider<BlobStorageImageProvider>()
-            .SetCache<BlobStorageImageCache>();
-
         services.AddOptions<CloudinaryOptions>()
             .BindConfiguration(CloudinaryOptions.SectionName)
             .ValidateDataAnnotations();
 
         services.AddHttpClient<IImageHostingService, ImageHostingService>();
-
-        services.AddOptions<ImageProcessingOptions>()
-            .BindConfiguration(ImageProcessingOptions.SectionName)
-            .ValidateDataAnnotations();
-
-        services.AddTransient<IPostImageProcessor, PostImageProcessor>();
 
         return services;
     }
