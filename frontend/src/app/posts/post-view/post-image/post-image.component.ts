@@ -1,4 +1,5 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
+import { ImageUrlService } from '@shared/services/image-url.service';
 
 @Component({
   selector: 'app-post-image',
@@ -7,11 +8,12 @@ import { Component, input } from '@angular/core';
   styleUrl: './post-image.component.scss'
 })
 export class PostImageComponent {
-  baseUrl = input.required<string>();
+  imageId = input.required<string>();
   title = input<string>();
   defaultSize = input<number>(1024);
+  imageUrlService = inject(ImageUrlService);
 
   getImageUrl(mediaWidth: number = this.defaultSize()) {
-    return `${this.baseUrl()}?width=${mediaWidth}&height=${mediaWidth}&format=webp`;
+    return this.imageUrlService.getImageUrl(this.imageId(), mediaWidth, mediaWidth);
   }
 }

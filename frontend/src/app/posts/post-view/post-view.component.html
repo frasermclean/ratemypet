@@ -11,8 +11,8 @@
 } @case ('ready') { @if(post(); as post) {
 
 <h2 class="title">{{ post.title }}</h2>
-@if (post.imageUrl) {
-<app-post-image [baseUrl]="post.imageUrl" [title]="post.title" />
+@if (post.imageId) {
+<app-post-image [imageId]="post.imageId" [title]="post.title" />
 }
 <p class="description">{{ post.description }}</p>
 <p class="author-and-date">
