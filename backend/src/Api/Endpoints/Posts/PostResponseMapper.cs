@@ -4,7 +4,7 @@ using RateMyPet.Core;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class PostResponseMapper(IHttpContextAccessor httpContextAccessor) : ResponseMapper<PostResponse, Post>
+public class PostResponseMapper : ResponseMapper<PostResponse, Post>
 {
     public override PostResponse FromEntity(Post post) => new()
     {

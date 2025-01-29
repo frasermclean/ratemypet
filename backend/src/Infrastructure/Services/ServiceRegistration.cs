@@ -1,12 +1,11 @@
 using Azure.Storage.Blobs;
-using CloudinaryDotNet;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure.Services.Email;
+using RateMyPet.Infrastructure.Services.ImageHosting;
 using RateMyPet.Infrastructure.Services.ImageProcessing;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 
@@ -87,18 +86,7 @@ public static class ServiceRegistration
             .BindConfiguration(CloudinaryOptions.SectionName)
             .ValidateDataAnnotations();
 
-        // register cloudinary client
-        services.AddSingleton<ICloudinary>(provider =>
-        {
-            //var httpClientFactory = provider.GetRequiredService<IHttpClientFactory>();
-            var options = provider.GetRequiredService<IOptions<CloudinaryOptions>>().Value;
-            var account = new Account(options.CloudName, options.ApiKey, options.ApiSecret);
-
-            return new Cloudinary(account)
-            {
-                Api = { Secure = true }
-            };
-        });
+        services.AddHttpClient<IImageHostingService, ImageHostingService>();
 
         services.AddOptions<ImageProcessingOptions>()
             .BindConfiguration(ImageProcessingOptions.SectionName)

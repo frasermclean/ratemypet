@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RateMyPet.Infrastructure.Services;
+namespace RateMyPet.Infrastructure.Services.ImageHosting;
 
 public class CloudinaryOptions
 {
