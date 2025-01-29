@@ -1,6 +1,7 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 using RateMyPet.Infrastructure.Services;
 using RateMyPet.Infrastructure.Services.ImageHosting;
@@ -29,26 +30,27 @@ public class AddPostEndpoint(ApplicationDbContext dbContext, IImageHostingServic
             return new ErrorResponse(ValidationFailures);
         }
 
-        var slug = Core.Post.CreateSlug(request.Title);
-
-        // upload image to cloudinary
-        var imageUploadResult = await imageHostingService.UploadAsync(request.Image.FileName,
-            request.Image.OpenReadStream(), request.Title, slug, cancellationToken);
-
         // create new post
         var post = new Post
         {
-            Slug = slug,
+            Slug = Core.Post.CreateSlug(request.Title),
             Title = request.Title,
             Description = request.Description,
             User = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken),
-            Species = species,
-            Image = new PostImage
-            {
-                AssetId = imageUploadResult.AssetId,
-                PublicId = imageUploadResult.PublicId
-            }
+            Species = species
         };
+
+        // upload image to cloudinary
+        var imageUploadResult = await imageHostingService.UploadAsync(request.Image.FileName,
+            request.Image.OpenReadStream(), post, cancellationToken);
+
+        if (imageUploadResult.IsFailed)
+        {
+            return imageUploadResult.ToErrorResponse("image");
+        }
+
+        post.Image.AssetId = imageUploadResult.Value.AssetId;
+        post.Image.PublicId = imageUploadResult.Value.PublicId;
 
         // save the post entity
         dbContext.Posts.Add(post);
