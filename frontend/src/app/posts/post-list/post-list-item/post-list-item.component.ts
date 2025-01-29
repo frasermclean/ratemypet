@@ -34,5 +34,11 @@ export class PostItemComponent {
     return imageId ? this.imageUrlService.getImageUrl(imageId, this.width(), this.height()) : null;
   });
 
+  onImageError(event: Event) {
+    const imageElement = event.target as HTMLImageElement;
+    imageElement.src = `images/placeholders/${this.postMatch().speciesName.toLowerCase()}.png`;
+    imageElement.style.padding = '1rem';
+  }
+
   reactions = allReactions;
 }

@@ -13,7 +13,16 @@
     }
   </mat-card-header>
   <a [routerLink]="post.slug || post.id">
-    <img mat-card-image class="image" [src]="imageUrl()" [alt]="post.title" [width]="width()" [height]="height()" />
+    <img
+      #image
+      mat-card-image
+      class="image"
+      [src]="imageUrl()"
+      [alt]="post.title"
+      [width]="width()"
+      [height]="height()"
+      (error)="onImageError($event)"
+    />
   </a>
 
   <mat-card-actions>
