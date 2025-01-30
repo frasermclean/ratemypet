@@ -489,12 +489,6 @@ namespace RateMyPet.Persistence.Migrations
                                 .HasColumnType("nvarchar(64)")
                                 .HasColumnName("ImageAssetId");
 
-                            b1.Property<string>("FileName")
-                                .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)")
-                                .HasColumnName("ImageFileName");
-
                             b1.Property<int>("Height")
                                 .HasColumnType("int")
                                 .HasColumnName("ImageHeight");

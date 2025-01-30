@@ -19,10 +19,6 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
 
         builder.OwnsOne(post => post.Image, imageBuilder =>
         {
-            imageBuilder.Property(image => image.FileName)
-                .HasMaxLength(PostImage.FileNameMaxLength)
-                .HasColumnName("ImageFileName");
-
             imageBuilder.Property(image => image.AssetId)
                 .HasMaxLength(PostImage.AssetIdMaxLength)
                 .HasColumnName("ImageAssetId");

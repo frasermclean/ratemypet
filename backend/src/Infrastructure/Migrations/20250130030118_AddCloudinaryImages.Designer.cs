@@ -12,7 +12,7 @@ using RateMyPet.Infrastructure.Services;
 namespace RateMyPet.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250129081449_AddCloudinaryImages")]
+    [Migration("20250130030118_AddCloudinaryImages")]
     partial class AddCloudinaryImages
     {
         /// <inheritdoc />
@@ -491,12 +491,6 @@ namespace RateMyPet.Infrastructure.Migrations
                                 .HasMaxLength(64)
                                 .HasColumnType("nvarchar(64)")
                                 .HasColumnName("ImageAssetId");
-
-                            b1.Property<string>("FileName")
-                                .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)")
-                                .HasColumnName("ImageFileName");
 
                             b1.Property<int>("Height")
                                 .HasColumnType("int")

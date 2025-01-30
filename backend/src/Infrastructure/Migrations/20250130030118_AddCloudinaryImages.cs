@@ -11,6 +11,10 @@ namespace RateMyPet.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
+                name: "ImageFileName",
+                table: "Posts");
+
+            migrationBuilder.DropColumn(
                 name: "ImageIsProcessed",
                 table: "Posts");
 
@@ -41,16 +45,6 @@ namespace RateMyPet.Infrastructure.Migrations
                 nullable: true,
                 oldClrType: typeof(int),
                 oldType: "int");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "ImageFileName",
-                table: "Posts",
-                type: "nvarchar(256)",
-                maxLength: 256,
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(256)",
-                oldMaxLength: 256);
 
             migrationBuilder.AddColumn<string>(
                 name: "ImageAssetId",
@@ -108,17 +102,13 @@ namespace RateMyPet.Infrastructure.Migrations
                 oldType: "int",
                 oldNullable: true);
 
-            migrationBuilder.AlterColumn<string>(
+            migrationBuilder.AddColumn<string>(
                 name: "ImageFileName",
                 table: "Posts",
                 type: "nvarchar(256)",
                 maxLength: 256,
                 nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "nvarchar(256)",
-                oldMaxLength: 256,
-                oldNullable: true);
+                defaultValue: "");
 
             migrationBuilder.AddColumn<bool>(
                 name: "ImageIsProcessed",
