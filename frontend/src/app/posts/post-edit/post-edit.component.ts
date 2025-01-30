@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
 import { Actions, dispatch, ofActionSuccessful, select } from '@ngxs/store';
@@ -25,6 +26,7 @@ import { PostsState } from '../posts.state';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    MatProgressBarModule,
     MatSelectModule,
     ImageUploadComponent
   ],
@@ -40,6 +42,7 @@ export class PostEditComponent implements OnInit {
   getAllSpecies = dispatch(SpeciesActions.GetAllSpecies);
   currentPost = select(PostsState.currentPost);
   allSpecies = select(SpeciesState.allSpecies);
+  isBusy = select(PostsState.isBusy);
 
   isEditing = computed<boolean>(() => {
     return !!this.postIdOrSlug();
