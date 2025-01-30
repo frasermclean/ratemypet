@@ -484,14 +484,34 @@ namespace RateMyPet.Persistence.Migrations
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("AssetId")
+                                .IsRequired()
                                 .HasMaxLength(64)
                                 .HasColumnType("nvarchar(64)")
                                 .HasColumnName("ImageAssetId");
 
+                            b1.Property<string>("FileName")
+                                .IsRequired()
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)")
+                                .HasColumnName("ImageFileName");
+
+                            b1.Property<int>("Height")
+                                .HasColumnType("int")
+                                .HasColumnName("ImageHeight");
+
                             b1.Property<string>("PublicId")
-                                .HasMaxLength(255)
-                                .HasColumnType("nvarchar(255)")
+                                .IsRequired()
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)")
                                 .HasColumnName("ImagePublicId");
+
+                            b1.Property<long>("Size")
+                                .HasColumnType("bigint")
+                                .HasColumnName("ImageSize");
+
+                            b1.Property<int>("Width")
+                                .HasColumnType("int")
+                                .HasColumnName("ImageWidth");
 
                             b1.HasKey("PostId");
 
@@ -501,8 +521,7 @@ namespace RateMyPet.Persistence.Migrations
                                 .HasForeignKey("PostId");
                         });
 
-                    b.Navigation("Image")
-                        .IsRequired();
+                    b.Navigation("Image");
 
                     b.Navigation("Species");
 

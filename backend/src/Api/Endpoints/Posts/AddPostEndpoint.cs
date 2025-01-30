@@ -49,8 +49,7 @@ public class AddPostEndpoint(ApplicationDbContext dbContext, IImageHostingServic
             return imageUploadResult.ToErrorResponse("image");
         }
 
-        post.Image.AssetId = imageUploadResult.Value.AssetId;
-        post.Image.PublicId = imageUploadResult.Value.PublicId;
+        post.Image = imageUploadResult.Value;
 
         // save the post entity
         dbContext.Posts.Add(post);

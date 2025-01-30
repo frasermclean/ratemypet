@@ -12,7 +12,7 @@ public class PostResponseMapper : ResponseMapper<PostResponse, Post>
         Slug = post.Slug,
         Title = post.Title,
         Description = post.Description,
-        ImageId = post.Image.PublicId,
+        ImageId = post.Image?.PublicId,
         AuthorUserName = post.User.UserName!,
         AuthorEmailHash = post.User.Email.ToSha256Hash(),
         SpeciesId = post.Species.Id,

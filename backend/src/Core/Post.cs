@@ -13,7 +13,7 @@ public class Post
     public string? Description { get; set; }
     public required User User { get; init; }
     public required Species Species { get; set; }
-    public PostImage Image { get; init; } = new();
+    public PostImage? Image { get; set; }
     public ICollection<PostReaction> Reactions { get; } = [];
     public ICollection<PostComment> Comments { get; } = [];
     public DateTime CreatedAtUtc { get; init; }

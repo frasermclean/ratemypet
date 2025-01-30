@@ -10,7 +10,7 @@ namespace RateMyPet.Infrastructure.Services.ImageHosting;
 
 public interface IImageHostingService
 {
-    Task<Result<AssetData>> UploadAsync(string fileName, Stream stream, Post post,
+    Task<Result<PostImage>> UploadAsync(string fileName, Stream stream, Post post,
         CancellationToken cancellationToken = default);
 
     Task<Result> DeleteAsync(List<string> publicIds, CancellationToken cancellationToken = default);
@@ -39,7 +39,7 @@ public class ImageHostingService : IImageHostingService
         };
     }
 
-    public async Task<Result<AssetData>> UploadAsync(string fileName, Stream stream, Post post,
+    public async Task<Result<PostImage>> UploadAsync(string fileName, Stream stream, Post post,
         CancellationToken cancellationToken = default)
     {
         var parameters = new ImageUploadParams
@@ -67,10 +67,14 @@ public class ImageHostingService : IImageHostingService
 
         logger.LogInformation("Uploaded image with public ID: {PublicId}", result.PublicId);
 
-        return new AssetData
+        return new PostImage
         {
+            FileName = fileName,
             AssetId = result.AssetId,
-            PublicId = result.PublicId
+            PublicId = result.PublicId,
+            Width = result.Width,
+            Height = result.Height,
+            Size = result.Bytes
         };
     }
 

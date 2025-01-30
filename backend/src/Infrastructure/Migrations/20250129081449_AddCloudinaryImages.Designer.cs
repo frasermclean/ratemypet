@@ -12,7 +12,7 @@ using RateMyPet.Infrastructure.Services;
 namespace RateMyPet.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250128112654_AddCloudinaryImages")]
+    [Migration("20250129081449_AddCloudinaryImages")]
     partial class AddCloudinaryImages
     {
         /// <inheritdoc />
@@ -487,14 +487,34 @@ namespace RateMyPet.Infrastructure.Migrations
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("AssetId")
+                                .IsRequired()
                                 .HasMaxLength(64)
                                 .HasColumnType("nvarchar(64)")
                                 .HasColumnName("ImageAssetId");
 
+                            b1.Property<string>("FileName")
+                                .IsRequired()
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)")
+                                .HasColumnName("ImageFileName");
+
+                            b1.Property<int>("Height")
+                                .HasColumnType("int")
+                                .HasColumnName("ImageHeight");
+
                             b1.Property<string>("PublicId")
-                                .HasMaxLength(255)
-                                .HasColumnType("nvarchar(255)")
+                                .IsRequired()
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)")
                                 .HasColumnName("ImagePublicId");
+
+                            b1.Property<long>("Size")
+                                .HasColumnType("bigint")
+                                .HasColumnName("ImageSize");
+
+                            b1.Property<int>("Width")
+                                .HasColumnType("int")
+                                .HasColumnName("ImageWidth");
 
                             b1.HasKey("PostId");
 
@@ -504,8 +524,7 @@ namespace RateMyPet.Infrastructure.Migrations
                                 .HasForeignKey("PostId");
                         });
 
-                    b.Navigation("Image")
-                        .IsRequired();
+                    b.Navigation("Image");
 
                     b.Navigation("Species");
 

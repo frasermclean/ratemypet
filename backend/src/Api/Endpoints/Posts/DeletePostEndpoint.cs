@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
-using RateMyPet.Core.Abstractions;
-using RateMyPet.Infrastructure;
 using RateMyPet.Infrastructure.Services;
 using RateMyPet.Infrastructure.Services.ImageHosting;
 
@@ -29,7 +27,7 @@ public class DeletePostEndpoint(
         await dbContext.SaveChangesAsync(cancellationToken);
         Logger.LogInformation("Deleted post {PostId}", post.Id);
 
-        if (post.Image.PublicId is not null)
+        if (post.Image?.PublicId is not null)
         {
             await imageHostingService.DeleteAsync([post.Image.PublicId], cancellationToken);
         }

@@ -19,6 +19,10 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
 
         builder.OwnsOne(post => post.Image, imageBuilder =>
         {
+            imageBuilder.Property(image => image.FileName)
+                .HasMaxLength(PostImage.FileNameMaxLength)
+                .HasColumnName("ImageFileName");
+
             imageBuilder.Property(image => image.AssetId)
                 .HasMaxLength(PostImage.AssetIdMaxLength)
                 .HasColumnName("ImageAssetId");
@@ -26,6 +30,10 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
             imageBuilder.Property(image => image.PublicId)
                 .HasMaxLength(PostImage.PublicIdMaxLength)
                 .HasColumnName("ImagePublicId");
+
+            imageBuilder.Property(image => image.Width).HasColumnName("ImageWidth");
+            imageBuilder.Property(image => image.Height).HasColumnName("ImageHeight");
+            imageBuilder.Property(image => image.Size).HasColumnName("ImageSize");
         });
 
         builder.Property(post => post.CreatedAtUtc)
