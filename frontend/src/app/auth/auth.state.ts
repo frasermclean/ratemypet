@@ -195,4 +195,9 @@ export class AuthState implements NgxsOnInit {
   static roles(state: AuthStateModel) {
     return state.roles;
   }
+
+  @Selector([AUTH_STATE_TOKEN])
+  static isAdministrator(state: AuthStateModel) {
+    return state.roles.includes(Role.Administrator);
+  }
 }

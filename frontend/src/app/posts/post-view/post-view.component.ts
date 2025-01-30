@@ -44,6 +44,7 @@ export class PostViewComponent implements OnInit {
   readonly post = select(PostsState.currentPost);
   readonly userName = select(AuthState.userName);
   readonly errorMessage = select(PostsState.errorMessage);
+  readonly isAdministrator = select(AuthState.isAdministrator);
   readonly getPost = dispatch(PostsActions.GetPost);
   readonly addPostComment = dispatch(PostsActions.AddPostComment);
   readonly setPageTitle = dispatch(SharedActions.SetPageTitle);
@@ -57,6 +58,8 @@ export class PostViewComponent implements OnInit {
 
     return Object.values(reactions).reduce((acc, value) => acc + value, 0);
   });
+
+  isAuthor = computed<boolean>(() => this.post()?.authorUserName === this.userName());
 
   constructor(actions$: Actions, store: Store) {
     actions$.pipe(ofActionSuccessful(PostsActions.GetPost), takeUntilDestroyed()).subscribe(() => {

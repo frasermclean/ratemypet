@@ -65,7 +65,7 @@
 </mat-card>
 
 <!-- Controls -->
-@if (userName() === post.authorUserName) {
+@if (isAuthor() || isAdministrator()) {
 <mat-card class="mat-elevation-z8" id="controls">
   <mat-card-header>
     <mat-card-title class="title">Controls</mat-card-title>
