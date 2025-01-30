@@ -10,6 +10,8 @@ namespace RateMyPet.Infrastructure.Services.ImageHosting;
 
 public interface IImageHostingService
 {
+    Task<Result<PostImage>> GetAsync(string publicId, CancellationToken cancellationToken = default);
+
     Task<Result<PostImage>> UploadAsync(string fileName, Stream stream, Post post,
         CancellationToken cancellationToken = default);
 
@@ -36,6 +38,31 @@ public class ImageHostingService : IImageHostingService
                 Secure = true,
                 Client = httpClient
             }
+        };
+    }
+
+    public async Task<Result<PostImage>> GetAsync(string publicId, CancellationToken cancellationToken = default)
+    {
+        var parameters = new GetResourceParams(publicId)
+        {
+            ResourceType = ResourceType.Image
+        };
+
+        var result = await cloudinary.GetResourceAsync(parameters, cancellationToken);
+
+        if (result.Error is not null)
+        {
+            logger.LogError("Failed to get image: {Error}", result.Error.Message);
+            return Result.Fail(result.Error.Message);
+        }
+
+        return new PostImage
+        {
+            AssetId = result.AssetId,
+            PublicId = result.PublicId,
+            Width = result.Width,
+            Height = result.Height,
+            Size = result.Bytes
         };
     }
 
@@ -69,7 +96,6 @@ public class ImageHostingService : IImageHostingService
 
         return new PostImage
         {
-            FileName = fileName,
             AssetId = result.AssetId,
             PublicId = result.PublicId,
             Width = result.Width,
