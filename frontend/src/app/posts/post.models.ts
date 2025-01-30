@@ -3,7 +3,7 @@ export interface Post {
   slug: string | null;
   title: string;
   description?: string;
-  imageUrl: string | null;
+  imageId: string | null;
   authorUserName: string;
   authorEmailHash: string;
   speciesId: number;
@@ -60,7 +60,7 @@ export interface SearchPostsMatch {
   slug: string | null;
   title: string;
   description?: string;
-  imageUrl: string | null;
+  imageId: string | null;
   authorUserName: string;
   authorEmailHash: string;
   speciesName: string;

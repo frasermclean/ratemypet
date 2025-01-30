@@ -1,5 +1,4 @@
 ﻿using FastEndpoints;
-using SixLabors.ImageSharp.Web.DependencyInjection;
 
 namespace RateMyPet.Api.Startup;
 
@@ -11,8 +10,6 @@ public static class MiddlewareConfiguration
         {
             app.UseCors();
         }
-
-        app.UseImageSharp();
 
         app.UseAuthorization();
 

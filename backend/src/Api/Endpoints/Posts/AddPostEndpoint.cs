@@ -1,18 +1,15 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
-using RateMyPet.Core.Abstractions;
-using RateMyPet.Infrastructure;
 using RateMyPet.Infrastructure.Services;
+using RateMyPet.Infrastructure.Services.ImageHosting;
+using Role = RateMyPet.Core.Role;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class AddPostEndpoint(
-    ApplicationDbContext dbContext,
-    IPostImageProcessor imageProcessor,
-    [FromKeyedServices(BlobContainerNames.Images)]
-    IBlobContainerManager imagesManager)
+public class AddPostEndpoint(ApplicationDbContext dbContext, IImageHostingService imageHostingService)
     : Endpoint<AddPostRequest, Results<Created<PostResponse>, ErrorResponse>, PostResponseMapper>
 {
     public override void Configure()
@@ -33,41 +30,26 @@ public class AddPostEndpoint(
             return new ErrorResponse(ValidationFailures);
         }
 
-        // validate image
-        await using var imageStream = request.Image.OpenReadStream();
-        var imageValidationResult = await imageProcessor.ValidateImageAsync(imageStream, cancellationToken);
-        if (imageValidationResult.IsFailed)
-        {
-            AddError(r => r.Image, imageValidationResult.Errors.First().Message);
-            return new ErrorResponse(ValidationFailures);
-        }
-
-        var postId = Guid.NewGuid();
-        var (width, height) = imageValidationResult.Value;
-
-        // upload image to blob storage
-        imageStream.Position = 0;
-        await imagesManager.CreateBlobAsync(postId.ToString(), imageStream, request.Image.ContentType,
-            cancellationToken);
-
         // create new post
         var post = new Post
         {
-            Id = postId,
             Slug = Core.Post.CreateSlug(request.Title),
             Title = request.Title,
             Description = request.Description,
             User = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken),
-            Species = species,
-            Image = new PostImage
-            {
-                FileName = request.Image.FileName,
-                MimeType = request.Image.ContentType,
-                Width = width,
-                Height = height,
-                Size = request.Image.Length
-            }
+            Species = species
         };
+
+        // upload image to cloudinary
+        var imageUploadResult = await imageHostingService.UploadAsync(request.Image.FileName,
+            request.Image.OpenReadStream(), post, cancellationToken);
+
+        if (imageUploadResult.IsFailed)
+        {
+            return imageUploadResult.ToErrorResponse("image");
+        }
+
+        post.Image = imageUploadResult.Value;
 
         // save the post entity
         dbContext.Posts.Add(post);

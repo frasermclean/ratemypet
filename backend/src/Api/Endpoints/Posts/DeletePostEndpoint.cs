@@ -2,16 +2,14 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
-using RateMyPet.Core.Abstractions;
-using RateMyPet.Infrastructure;
 using RateMyPet.Infrastructure.Services;
+using RateMyPet.Infrastructure.Services.ImageHosting;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
 public class DeletePostEndpoint(
     ApplicationDbContext dbContext,
-    [FromKeyedServices(BlobContainerNames.Images)]
-    IBlobContainerManager imagesManager) : Endpoint<DeletePostRequest, NoContent>
+    IImageHostingService imageHostingService) : Endpoint<DeletePostRequest, NoContent>
 {
     public override void Configure()
     {
@@ -29,7 +27,10 @@ public class DeletePostEndpoint(
         await dbContext.SaveChangesAsync(cancellationToken);
         Logger.LogInformation("Deleted post {PostId}", post.Id);
 
-        await imagesManager.DeleteBlobAsync(post.Id.ToString(), cancellationToken);
+        if (post.Image?.PublicId is not null)
+        {
+            await imageHostingService.DeleteAsync([post.Image.PublicId], cancellationToken);
+        }
 
         return TypedResults.NoContent();
     }

@@ -8,3 +8,5 @@ param allowedExternalIpAddresses = [
     ipAddress: readEnvironmentVariable('HIVE_IP_ADDRESS', '')
   }
 ]
+
+param cloudinaryApiKey = '248796789595321'

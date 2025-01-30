@@ -2,7 +2,8 @@
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": [
-      "/icons/*"
+      "/icons/*",
+      "/images/*"
     ]
   }
 }

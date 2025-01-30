@@ -34,7 +34,7 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext)
                 Slug = post.Slug,
                 Title = post.Title,
                 Description = post.Description,
-                ImageUrl = post.GetImageUrl(HttpContext.Request),
+                ImageId = post.Image != null ? post.Image.PublicId : null,
                 AuthorUserName = post.User.UserName!,
                 AuthorEmailHash = post.User.Email.ToSha256Hash(),
                 SpeciesName = post.Species.Name,

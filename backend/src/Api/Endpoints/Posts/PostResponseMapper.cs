@@ -4,7 +4,7 @@ using RateMyPet.Core;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class PostResponseMapper(IHttpContextAccessor httpContextAccessor) : ResponseMapper<PostResponse, Post>
+public class PostResponseMapper : ResponseMapper<PostResponse, Post>
 {
     public override PostResponse FromEntity(Post post) => new()
     {
@@ -12,7 +12,7 @@ public class PostResponseMapper(IHttpContextAccessor httpContextAccessor) : Resp
         Slug = post.Slug,
         Title = post.Title,
         Description = post.Description,
-        ImageUrl = post.GetImageUrl(httpContextAccessor.HttpContext?.Request),
+        ImageId = post.Image?.PublicId,
         AuthorUserName = post.User.UserName!,
         AuthorEmailHash = post.User.Email.ToSha256Hash(),
         SpeciesId = post.Species.Id,
