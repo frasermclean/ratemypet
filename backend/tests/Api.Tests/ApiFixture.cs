@@ -8,12 +8,11 @@ namespace RateMyPet.Api;
 
 public class ApiFixture : AppFixture<Program>
 {
-    private readonly MsSqlContainer databaseContainer = new MsSqlBuilder()
-        .Build();
+    private readonly DatabaseProvider databaseProvider = new();
 
     protected override void ConfigureApp(IWebHostBuilder hostBuilder)
     {
-        hostBuilder.UseSetting("ConnectionStrings:Database", databaseContainer.GetConnectionString());
+        hostBuilder.UseSetting("ConnectionStrings:Database", databaseProvider.ConnectionString);
     }
 
     protected override void ConfigureServices(IServiceCollection services)
@@ -22,7 +21,7 @@ public class ApiFixture : AppFixture<Program>
 
     protected override async ValueTask PreSetupAsync()
     {
-        await databaseContainer.StartAsync();
+        await databaseProvider.InitializeAsync();
     }
 
     protected override async ValueTask SetupAsync()
@@ -30,5 +29,10 @@ public class ApiFixture : AppFixture<Program>
         await using var scope = Services.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
+    }
+
+    protected override ValueTask TearDownAsync()
+    {
+        return databaseProvider.DisposeAsync();
     }
 }
