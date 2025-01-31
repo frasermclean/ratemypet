@@ -4,6 +4,7 @@ export interface ProblemDetails {
   status: number;
   instance: string;
   traceId: string;
+  detail?: string;
   errors: ProblemDetailsError[];
 }
 

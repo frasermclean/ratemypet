@@ -34,7 +34,7 @@ public class RegisterEndpoint(
         var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
         {
-            return result.ToProblemDetails();
+            return result.ToProblemDetails("An error occurred during user registration.");
         }
 
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);

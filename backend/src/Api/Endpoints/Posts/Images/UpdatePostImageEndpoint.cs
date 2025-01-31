@@ -8,7 +8,7 @@ using RateMyPet.Infrastructure.Services.ImageHosting;
 namespace RateMyPet.Api.Endpoints.Posts.Images;
 
 public class UpdatePostImageEndpoint(ApplicationDbContext dbContext, IImageHostingService imageHostingService)
-    : Endpoint<UpdatePostImageRequest, Results<NoContent, NotFound, ErrorResponse>>
+    : Endpoint<UpdatePostImageRequest, Results<NoContent, NotFound, ProblemDetails>>
 {
     public override void Configure()
     {
@@ -16,7 +16,7 @@ public class UpdatePostImageEndpoint(ApplicationDbContext dbContext, IImageHosti
         Roles(Role.Administrator);
     }
 
-    public override async Task<Results<NoContent, NotFound, ErrorResponse>> ExecuteAsync(
+    public override async Task<Results<NoContent, NotFound, ProblemDetails>> ExecuteAsync(
         UpdatePostImageRequest request, CancellationToken cancellationToken)
     {
         var post = await dbContext.Posts.FirstOrDefaultAsync(post => post.Id == request.PostId, cancellationToken);
@@ -29,7 +29,7 @@ public class UpdatePostImageEndpoint(ApplicationDbContext dbContext, IImageHosti
         if (result.IsFailed)
         {
             AddError(r => r.ImageId, "Invalid image ID");
-            return new ErrorResponse(ValidationFailures);
+            return new ProblemDetails(ValidationFailures);
         }
 
         post.Image = result.Value;

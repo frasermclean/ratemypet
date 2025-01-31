@@ -10,7 +10,7 @@ using Role = RateMyPet.Core.Role;
 namespace RateMyPet.Api.Endpoints.Posts;
 
 public class AddPostEndpoint(ApplicationDbContext dbContext, IImageHostingService imageHostingService)
-    : Endpoint<AddPostRequest, Results<Created<PostResponse>, ErrorResponse>, PostResponseMapper>
+    : Endpoint<AddPostRequest, Results<Created<PostResponse>, ProblemDetails>, PostResponseMapper>
 {
     public override void Configure()
     {
@@ -20,14 +20,14 @@ public class AddPostEndpoint(ApplicationDbContext dbContext, IImageHostingServic
         AllowFileUploads();
     }
 
-    public override async Task<Results<Created<PostResponse>, ErrorResponse>> ExecuteAsync(AddPostRequest request,
+    public override async Task<Results<Created<PostResponse>, ProblemDetails>> ExecuteAsync(AddPostRequest request,
         CancellationToken cancellationToken)
     {
         var species = await dbContext.Species.FirstOrDefaultAsync(s => s.Id == request.SpeciesId, cancellationToken);
         if (species is null)
         {
             AddError(r => r.SpeciesId, "Invalid species ID");
-            return new ErrorResponse(ValidationFailures);
+            return new ProblemDetails(ValidationFailures);
         }
 
         // create new post
@@ -46,7 +46,7 @@ public class AddPostEndpoint(ApplicationDbContext dbContext, IImageHostingServic
 
         if (imageUploadResult.IsFailed)
         {
-            return imageUploadResult.ToErrorResponse("image");
+            return imageUploadResult.ToProblemDetails("image");
         }
 
         post.Image = imageUploadResult.Value;
