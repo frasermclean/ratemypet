@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
+using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure.Services;
 using RateMyPet.Infrastructure.Services.ImageHosting;
 
