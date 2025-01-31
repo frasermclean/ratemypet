@@ -1,7 +1,6 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 using RateMyPet.Infrastructure.Services;
 using RateMyPet.Infrastructure.Services.ImageHosting;
@@ -10,7 +9,7 @@ using Role = RateMyPet.Core.Role;
 namespace RateMyPet.Api.Endpoints.Posts;
 
 public class AddPostEndpoint(ApplicationDbContext dbContext, IImageHostingService imageHostingService)
-    : Endpoint<AddPostRequest, Results<Created<PostResponse>, ErrorResponse>, PostResponseMapper>
+    : Endpoint<AddPostRequest, Created<PostResponse>, PostResponseMapper>
 {
     public override void Configure()
     {
@@ -20,14 +19,13 @@ public class AddPostEndpoint(ApplicationDbContext dbContext, IImageHostingServic
         AllowFileUploads();
     }
 
-    public override async Task<Results<Created<PostResponse>, ErrorResponse>> ExecuteAsync(AddPostRequest request,
+    public override async Task<Created<PostResponse>> ExecuteAsync(AddPostRequest request,
         CancellationToken cancellationToken)
     {
         var species = await dbContext.Species.FirstOrDefaultAsync(s => s.Id == request.SpeciesId, cancellationToken);
         if (species is null)
         {
-            AddError(r => r.SpeciesId, "Invalid species ID");
-            return new ErrorResponse(ValidationFailures);
+            ThrowError(r => r.SpeciesId, "Invalid species ID");
         }
 
         // create new post
@@ -46,7 +44,7 @@ public class AddPostEndpoint(ApplicationDbContext dbContext, IImageHostingServic
 
         if (imageUploadResult.IsFailed)
         {
-            return imageUploadResult.ToErrorResponse("image");
+            ThrowError(r => r.Image, "Error processing image upload");
         }
 
         post.Image = imageUploadResult.Value;

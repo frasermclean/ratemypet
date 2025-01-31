@@ -34,6 +34,18 @@
         <mat-error>Email address is already in use</mat-error>
         }
       </mat-form-field>
+      <div class="password-requirements">
+        <h6>Password requirements</h6>
+        <ul>
+          <li [class.good]="formGroup.controls.password.value.match('.{8,}')">At least 8 characters long</li>
+          <li [class.good]="formGroup.controls.password.value.match('[A-Z]')">At least one uppercase letter</li>
+          <li [class.good]="formGroup.controls.password.value.match('[a-z]')">At least one lowercase letter</li>
+          <li [class.good]="formGroup.controls.password.value.match('\\d')">At least one numeric digit</li>
+          <li [class.good]="formGroup.controls.password.value.match('\\W')">
+            At least one special character (e.g. {{ "!@#" }})
+          </li>
+        </ul>
+      </div>
       <mat-form-field class="form-field">
         <mat-label>Password</mat-label>
         <input
@@ -48,20 +60,8 @@
         <mat-error>Password is required.</mat-error>
         } @else if (formGroup.controls.password.hasError('minlength')) {
         <mat-error>Password must be at least 8 characters long.</mat-error>
-        }
-      </mat-form-field>
-      <mat-form-field class="form-field">
-        <mat-label>Password (confirmation)</mat-label>
-        <input
-          matInput
-          placeholder="Re-enter your password"
-          formControlName="confirmPassword"
-          type="password"
-          autocomplete="new-password"
-        />
-        <mat-icon matSuffix>password</mat-icon>
-        @if (formGroup.controls.confirmPassword.hasError('mustMatch')) {
-        <mat-error>Entered password does not match</mat-error>
+        } @else if (formGroup.controls.password.hasError('pattern')) {
+        <mat-error>Password does not meet complexity requirements</mat-error>
         }
       </mat-form-field>
     </mat-card-content>

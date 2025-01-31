@@ -10,6 +10,19 @@
       margin-bottom: 2rem;
     }
 
+    mat-card-content {
+      .password-requirements {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        ul {
+          list-style-type: none;
+          li.good {
+            color: rgb(64, 204, 64);
+          }
+        }
+      }
+    }
+
     mat-card-actions {
       justify-content: space-between;
     }

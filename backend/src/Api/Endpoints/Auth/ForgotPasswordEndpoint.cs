@@ -9,10 +9,7 @@ using RateMyPet.Core.Messages;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
-public class ForgotPasswordEndpoint(
-    UserManager<User> userManager,
-    IMessagePublisher messagePublisher
-)
+public class ForgotPasswordEndpoint(UserManager<User> userManager, IMessagePublisher messagePublisher)
     : Endpoint<ForgotPasswordRequest>
 {
     public override void Configure()

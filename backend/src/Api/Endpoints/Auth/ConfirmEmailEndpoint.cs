@@ -1,15 +1,15 @@
 ﻿using System.Text;
 using FastEndpoints;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
 public class ConfirmEmailEndpoint(UserManager<User> userManager)
-    : Endpoint<ConfirmEmailRequest, Results<NoContent, NotFound, ValidationProblem>>
+    : Endpoint<ConfirmEmailRequest, Results<NoContent, NotFound>>
 {
     public override void Configure()
     {
@@ -17,7 +17,7 @@ public class ConfirmEmailEndpoint(UserManager<User> userManager)
         AllowAnonymous();
     }
 
-    public override async Task<Results<NoContent, NotFound, ValidationProblem>> ExecuteAsync(
+    public override async Task<Results<NoContent, NotFound>> ExecuteAsync(
         ConfirmEmailRequest request,
         CancellationToken cancellationToken)
     {
@@ -29,10 +29,13 @@ public class ConfirmEmailEndpoint(UserManager<User> userManager)
 
         var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Token));
         var result = await userManager.ConfirmEmailAsync(user, decodedToken);
-        if (!result.Succeeded)
+
+        foreach (var error in result.Errors)
         {
-            return TypedResults.ValidationProblem(result.Errors.ToDictionary());
+            AddError(new ValidationFailure(error.Code, error.Description));
         }
+
+        ThrowIfAnyErrors();
 
         // assign default roles
         await userManager.AddToRoleAsync(user, Role.Contributor);

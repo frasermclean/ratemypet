@@ -17,7 +17,6 @@ public static class MiddlewareConfiguration
         {
             config.Endpoints.RoutePrefix = "api";
             config.Errors.UseProblemDetails();
-            config.Errors.ProducesMetadataType = typeof(ProblemDetails);
         });
 
         return app;

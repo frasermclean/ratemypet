@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,33 +11,12 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RouterLink } from '@angular/router';
 import { Navigate } from '@ngxs/router-plugin';
 import { ActionCompletion, Actions, dispatch, ofActionErrored, ofActionSuccessful, select } from '@ngxs/store';
+import { ProblemDetailsError } from '@shared/error.models';
 import { NotificationService } from '@shared/services/notification.service';
 import { AuthActions } from '../auth.actions';
 import { AuthState } from '../auth.state';
 
-function mustMatch(controlName: string, matchingControlName: string) {
-  return (group: AbstractControl) => {
-    const control = group.get(controlName);
-    const matchingControl = group.get(matchingControlName);
-
-    if (!control || !matchingControl) {
-      return null;
-    }
-
-    // return if another validator has already found an error on the matchingControl
-    if (matchingControl.hasError('mustMatch')) {
-      return null;
-    }
-
-    // set error on matchingControl if validation fails
-    if (control.value !== matchingControl.value) {
-      matchingControl.setErrors({ mustMatch: true });
-    } else {
-      matchingControl.setErrors(null);
-    }
-    return null;
-  };
-}
+const strongPasswordPattern = /^(?=.*\d)(?=.*\W)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
 
 @Component({
   selector: 'app-register',
@@ -57,17 +36,11 @@ function mustMatch(controlName: string, matchingControlName: string) {
 export class RegisterComponent {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly notificationService = inject(NotificationService);
-  formGroup = this.formBuilder.group(
-    {
-      userName: ['', [Validators.required, Validators.minLength(3), Validators.minLength(3), Validators.maxLength(30)]],
-      emailAddress: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', Validators.required]
-    },
-    {
-      validators: mustMatch('password', 'confirmPassword')
-    }
-  );
+  formGroup = this.formBuilder.group({
+    userName: ['', [Validators.required, Validators.minLength(3), Validators.minLength(3), Validators.maxLength(30)]],
+    emailAddress: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(8), Validators.pattern(strongPasswordPattern)]]
+  });
 
   isBusy = select(AuthState.isBusy);
   register = dispatch(AuthActions.Register);
@@ -91,13 +64,13 @@ export class RegisterComponent {
 
   private handleRegisterError(completion: ActionCompletion<AuthActions.Register, Error>) {
     const response = completion.result.error as HttpErrorResponse;
-    const errors = response.error.errors;
+    const errors = response.error.errors as ProblemDetailsError[];
 
-    if (errors.duplicateUserName) {
+    if (errors.find((error) => error.name === 'duplicateUserName')) {
       this.formGroup.controls.userName.setErrors({ duplicateUserName: true });
     }
 
-    if (errors.duplicateEmail) {
+    if (errors.find((error) => error.name === 'duplicateEmail')) {
       this.formGroup.controls.emailAddress.setErrors({ duplicateEmail: true });
     }
 
