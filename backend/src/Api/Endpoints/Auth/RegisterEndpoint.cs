@@ -1,9 +1,9 @@
 ﻿using System.Text;
 using FastEndpoints;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Messages;
@@ -13,7 +13,7 @@ namespace RateMyPet.Api.Endpoints.Auth;
 public class RegisterEndpoint(
     UserManager<User> userManager,
     IMessagePublisher messagePublisher)
-    : Endpoint<RegisterRequest, Results<Ok, ProblemDetails>>
+    : Endpoint<RegisterRequest, NoContent>
 {
     public override void Configure()
     {
@@ -21,7 +21,7 @@ public class RegisterEndpoint(
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok, ProblemDetails>> ExecuteAsync(
+    public override async Task<NoContent> ExecuteAsync(
         RegisterRequest request,
         CancellationToken cancellationToken)
     {
@@ -32,10 +32,13 @@ public class RegisterEndpoint(
         };
 
         var result = await userManager.CreateAsync(user, request.Password);
-        if (!result.Succeeded)
+
+        foreach (var error in result.Errors)
         {
-            return result.ToProblemDetails("An error occurred during user registration.");
+            AddError(new ValidationFailure(error.Code, error.Description));
         }
+
+        ThrowIfAnyErrors();
 
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
         var confirmationToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
@@ -47,6 +50,6 @@ public class RegisterEndpoint(
             ConfirmationToken = confirmationToken
         }, cancellationToken);
 
-        return TypedResults.Ok();
+        return TypedResults.NoContent();
     }
 }

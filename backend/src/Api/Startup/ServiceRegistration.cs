@@ -24,16 +24,6 @@ public static class ServiceRegistration
         builder.Services.AddOpenTelemetry()
             .UseAzureMonitor(options => options.Credential = TokenCredentialFactory.Create());
 
-        // problem details service
-        builder.Services.AddProblemDetails(options =>
-        {
-            options.CustomizeProblemDetails = context =>
-            {
-                context.ProblemDetails.Instance = context.HttpContext.Request.Path;
-                context.ProblemDetails.Extensions.TryAdd("traceId", context.HttpContext.TraceIdentifier);
-            };
-        });
-
         // json serialization options
         builder.Services.Configure<JsonOptions>(options =>
         {
