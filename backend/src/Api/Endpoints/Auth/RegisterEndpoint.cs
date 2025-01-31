@@ -13,7 +13,7 @@ namespace RateMyPet.Api.Endpoints.Auth;
 public class RegisterEndpoint(
     UserManager<User> userManager,
     IMessagePublisher messagePublisher)
-    : Endpoint<RegisterRequest, Results<Ok, ValidationProblem>>
+    : Endpoint<RegisterRequest, Results<Ok, ProblemDetails>>
 {
     public override void Configure()
     {
@@ -21,7 +21,7 @@ public class RegisterEndpoint(
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok, ValidationProblem>> ExecuteAsync(
+    public override async Task<Results<Ok, ProblemDetails>> ExecuteAsync(
         RegisterRequest request,
         CancellationToken cancellationToken)
     {
@@ -34,7 +34,7 @@ public class RegisterEndpoint(
         var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
         {
-            return TypedResults.ValidationProblem(result.Errors.ToDictionary());
+            return result.ToProblemDetails();
         }
 
         var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
