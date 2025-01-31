@@ -4,6 +4,7 @@ using FastEndpoints.Testing;
 
 namespace RateMyPet.Api.Endpoints.Species;
 
+[Collection(nameof(ApiCollection))]
 [Trait("Category", "Integration")]
 public class GetAllSpeciesEndpointTests(ApiFixture fixture) : TestBase<ApiFixture>
 {

@@ -30,9 +30,4 @@ public class ApiFixture : AppFixture<Program>
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
     }
-
-    protected override ValueTask TearDownAsync()
-    {
-        return databaseProvider.DisposeAsync();
-    }
 }
