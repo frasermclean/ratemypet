@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
-using RateMyPet.Api.Extensions;
 
-namespace Api.Tests.Extensions;
+namespace RateMyPet.Api.Extensions;
 
 public class ClaimsPrincipalExtensionsTests
 {

@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
-using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 using RateMyPet.Infrastructure;
 
-namespace Api.Tests.Extensions;
+namespace RateMyPet.Api.Extensions;
 
 public class PostExtensionsTests
 {
