@@ -1,7 +1,6 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 using RateMyPet.Infrastructure.Services;
 using RateMyPet.Infrastructure.Services.ImageHosting;

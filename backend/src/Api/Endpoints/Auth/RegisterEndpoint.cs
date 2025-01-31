@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using FastEndpoints;
 using FluentValidation.Results;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using RateMyPet.Core;
@@ -10,10 +9,8 @@ using RateMyPet.Core.Messages;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
-public class RegisterEndpoint(
-    UserManager<User> userManager,
-    IMessagePublisher messagePublisher)
-    : Endpoint<RegisterRequest, NoContent>
+public class RegisterEndpoint(UserManager<User> userManager, IMessagePublisher messagePublisher)
+    : Endpoint<RegisterRequest>
 {
     public override void Configure()
     {
@@ -21,9 +18,7 @@ public class RegisterEndpoint(
         AllowAnonymous();
     }
 
-    public override async Task<NoContent> ExecuteAsync(
-        RegisterRequest request,
-        CancellationToken cancellationToken)
+    public override async Task HandleAsync(RegisterRequest request, CancellationToken cancellationToken)
     {
         var user = new User
         {
@@ -49,7 +44,5 @@ public class RegisterEndpoint(
             UserId = user.Id,
             ConfirmationToken = confirmationToken
         }, cancellationToken);
-
-        return TypedResults.NoContent();
     }
 }

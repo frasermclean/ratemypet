@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using FastEndpoints;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using RateMyPet.Core;
@@ -8,7 +7,7 @@ using RateMyPet.Core;
 namespace RateMyPet.Api.Endpoints.Auth;
 
 public class ResetPasswordEndpoint(UserManager<User> userManager)
-    : Endpoint<ResetPasswordRequest, NoContent>
+    : Endpoint<ResetPasswordRequest>
 {
     public override void Configure()
     {
@@ -16,8 +15,7 @@ public class ResetPasswordEndpoint(UserManager<User> userManager)
         AllowAnonymous();
     }
 
-    public override async Task<NoContent> ExecuteAsync(ResetPasswordRequest request,
-        CancellationToken cancellationToken)
+    public override async Task HandleAsync(ResetPasswordRequest request, CancellationToken cancellationToken)
     {
         var token = "";
         try
@@ -42,7 +40,5 @@ public class ResetPasswordEndpoint(UserManager<User> userManager)
         {
             ThrowError(r => r.ResetCode, "Invalid reset code");
         }
-
-        return TypedResults.NoContent();
     }
 }
