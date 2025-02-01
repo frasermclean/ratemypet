@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure.Services;
-using RateMyPet.Infrastructure.Services.ImageHosting;
 using Role = RateMyPet.Core.Role;
 
 namespace RateMyPet.Api.Endpoints.Posts;

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using RateMyPet.Infrastructure.Services;
-using Testcontainers.MsSql;
 
 namespace RateMyPet.Api;
 
