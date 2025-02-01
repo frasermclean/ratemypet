@@ -5,18 +5,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RateMyPet.Core;
+using RateMyPet.Core.Abstractions;
 
 namespace RateMyPet.Infrastructure.Services.ImageHosting;
-
-public interface IImageHostingService
-{
-    Task<Result<PostImage>> GetAsync(string publicId, CancellationToken cancellationToken = default);
-
-    Task<Result<PostImage>> UploadAsync(string fileName, Stream stream, Post post,
-        CancellationToken cancellationToken = default);
-
-    Task<Result> DeleteAsync(List<string> publicIds, CancellationToken cancellationToken = default);
-}
 
 public class ImageHostingService : IImageHostingService
 {

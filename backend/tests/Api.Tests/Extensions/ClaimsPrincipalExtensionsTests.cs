@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
-using RateMyPet.Api.Extensions;
 
-namespace Api.Tests.Extensions;
+namespace RateMyPet.Api.Extensions;
 
 public class ClaimsPrincipalExtensionsTests
 {
@@ -16,7 +15,7 @@ public class ClaimsPrincipalExtensionsTests
         var returnedUserId = principal.GetUserId();
 
         // assert
-        returnedUserId.Should().Be(expectedUserId);
+        returnedUserId.ShouldBe(expectedUserId);
     }
 
     [Fact]
@@ -29,7 +28,7 @@ public class ClaimsPrincipalExtensionsTests
         var returnedUserId = principal.GetUserId();
 
         // assert
-        returnedUserId.Should().BeNull();
+        returnedUserId.ShouldBeNull();
     }
 
     [Fact]
@@ -42,7 +41,7 @@ public class ClaimsPrincipalExtensionsTests
         var returnedUserId = principal.GetUserId();
 
         // assert
-        returnedUserId.Should().BeNull();
+        returnedUserId.ShouldBeNull();
     }
 
     private static ClaimsPrincipal CreateClaimsPrincipal(params Claim[] claims)

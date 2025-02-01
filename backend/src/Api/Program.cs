@@ -2,7 +2,7 @@ using RateMyPet.Api.Startup;
 
 namespace RateMyPet.Api;
 
-public static class Program
+public class Program
 {
     public static void Main(string[] args)
     {

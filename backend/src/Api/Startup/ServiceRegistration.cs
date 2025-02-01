@@ -21,8 +21,11 @@ public static class ServiceRegistration
             .AddDevelopmentCors(builder.Configuration, builder.Environment);
 
         // open telemetry
-        builder.Services.AddOpenTelemetry()
-            .UseAzureMonitor(options => options.Credential = TokenCredentialFactory.Create());
+        if (!builder.Environment.IsEnvironment("Testing"))
+        {
+            builder.Services.AddOpenTelemetry()
+                .UseAzureMonitor(options => options.Credential = TokenCredentialFactory.Create());
+        }
 
         // json serialization options
         builder.Services.Configure<JsonOptions>(options =>
