@@ -9,7 +9,7 @@ using RateMyPet.Infrastructure.Services;
 
 #nullable disable
 
-namespace RateMyPet.Persistence.Migrations
+namespace RateMyPet.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20241216130225_Initial")]
