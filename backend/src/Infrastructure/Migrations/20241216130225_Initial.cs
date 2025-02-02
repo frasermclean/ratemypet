@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace RateMyPet.Persistence.Migrations
+namespace RateMyPet.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

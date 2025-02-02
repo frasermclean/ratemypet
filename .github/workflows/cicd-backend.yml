@@ -75,6 +75,12 @@ jobs:
           check_name: Test results
           action_fail: true
 
+      # Upload coverage reports
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       # Install EF tool
       - name: Install EF tool
         if: github.event_name == 'push'

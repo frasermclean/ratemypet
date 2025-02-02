@@ -1,3 +1,3 @@
 ﻿global using AutoFixture;
-global using FluentAssertions;
+global using Shouldly;
 global using Moq;
