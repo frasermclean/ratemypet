@@ -23,7 +23,7 @@ public class ProcessAddedPost(
         var tags = await imageAnalysisService.AnalyzeTagsAsync(imageUri, cancellationToken);
 
         // update post entity
-        post.IsAnalyzed = true;
+        post.IsProcessed = true;
         post.Tags = post.Tags.Concat(tags).Distinct().Order().ToList();
 
         await dbContext.SaveChangesAsync(cancellationToken);

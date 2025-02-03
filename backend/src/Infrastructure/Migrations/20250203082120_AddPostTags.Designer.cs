@@ -12,7 +12,7 @@ using RateMyPet.Infrastructure.Services;
 namespace RateMyPet.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250203014533_AddPostTags")]
+    [Migration("20250203082120_AddPostTags")]
     partial class AddPostTags
     {
         /// <inheritdoc />
@@ -41,7 +41,7 @@ namespace RateMyPet.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<bool>("IsAnalyzed")
+                    b.Property<bool>("IsProcessed")
                         .HasColumnType("bit");
 
                     b.Property<byte[]>("RowVersion")
@@ -75,7 +75,7 @@ namespace RateMyPet.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsAnalyzed");
+                    b.HasIndex("IsProcessed");
 
                     b.HasIndex("Slug");
 

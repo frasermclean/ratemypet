@@ -19,7 +19,7 @@ public class Post
     public ICollection<PostReaction> Reactions { get; } = [];
     public ICollection<PostComment> Comments { get; } = [];
     public ICollection<string> Tags { get; set; } = [];
-    public bool IsAnalyzed { get; set; }
+    public bool IsProcessed { get; set; }
     public DateTime CreatedAtUtc { get; init; }
     public DateTime? UpdatedAtUtc { get; set; }
     public ulong RowVersion { get; init; }
