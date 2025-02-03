@@ -25,5 +25,12 @@ public class AddPostValidator : Validator<AddPostRequest>
             .NotNull()
             .Must(image => image.ContentType.StartsWith("image/"))
             .WithMessage("Must be an image file");
+
+        RuleFor(request => request.Tags)
+            .ForEach(tag =>
+            {
+                tag.MinimumLength(Post.TagMinLength);
+                tag.MaximumLength(Post.TagMaxLength);
+            });
     }
 }

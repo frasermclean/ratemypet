@@ -35,7 +35,8 @@ public class AddPostEndpoint(ApplicationDbContext dbContext, IImageHostingServic
             Title = request.Title,
             Description = request.Description,
             User = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken),
-            Species = species
+            Species = species,
+            Tags = request.Tags.Distinct().ToList(),
         };
 
         // upload image to cloudinary

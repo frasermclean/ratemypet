@@ -9,5 +9,6 @@ public class AddPostRequest
     public required string Description { get; init; }
     public required IFormFile Image { get; init; }
     public int SpeciesId { get; init; }
+    public required IEnumerable<string> Tags { get; init; }
     [FromClaim(ClaimTypes.NameIdentifier)] public Guid UserId { get; init; }
 }
