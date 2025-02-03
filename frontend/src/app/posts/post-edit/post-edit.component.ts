@@ -55,7 +55,8 @@ export class PostEditComponent implements OnInit {
     title: ['', [Validators.required, Validators.maxLength(50)]],
     description: ['', [Validators.required]],
     speciesId: [0, Validators.required],
-    image: [null as File | null, Validators.required]
+    image: [null as File | null, Validators.required],
+    tags: [[] as string[]]
   });
 
   constructor(actions$: Actions, notificationService: NotificationService, router: Router) {
@@ -64,7 +65,8 @@ export class PostEditComponent implements OnInit {
         id: this.currentPost()!.id,
         title: this.currentPost()!.title,
         description: this.currentPost()!.description,
-        speciesId: this.currentPost()!.speciesId
+        speciesId: this.currentPost()!.speciesId,
+        tags: this.currentPost()!.tags
       });
       if (this.isEditing()) {
         this.formGroup.controls.title.disable();
