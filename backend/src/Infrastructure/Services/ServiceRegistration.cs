@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure.Services.Email;
+using RateMyPet.Infrastructure.Services.ImageAnalysis;
 using RateMyPet.Infrastructure.Services.ImageHosting;
 
 namespace RateMyPet.Infrastructure.Services;
@@ -25,7 +26,8 @@ public static class ServiceRegistration
             .AddBlobContainerManagers()
             .AddImageHosting()
             .AddEmailSending()
-            .AddSingleton<IMessagePublisher, MessagePublisher>();
+            .AddSingleton<IMessagePublisher, MessagePublisher>()
+            .AddSingleton<IImageAnalysisService, ImageAnalysisService>();
 
         return services;
     }
@@ -49,6 +51,7 @@ public static class ServiceRegistration
                 factoryBuilder.AddQueueServiceClient(new Uri(queueEndpoint));
             }
 
+            factoryBuilder.AddImageAnalysisClient(new Uri(configuration["CognitiveServices:Endpoint"]!));
             factoryBuilder.AddEmailClient(new Uri(configuration["Email:AcsEndpoint"]!));
             factoryBuilder.UseCredential(TokenCredentialFactory.Create());
             factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
