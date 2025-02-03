@@ -183,5 +183,8 @@ module sharedRoleAssignmentsModule '../shared/roleAssignments.bicep' = {
     communicationAndEmailServiceOwners: [
       jobsAppModule.outputs.principalId
     ]
+    cognitiveServicesUsers: [
+      jobsAppModule.outputs.principalId
+    ]
   }
 }

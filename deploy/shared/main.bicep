@@ -162,6 +162,22 @@ resource staticWebApp 'Microsoft.Web/staticSites@2024-04-01' = {
   }
 }
 
+// cognitive services account
+resource cognitiveServices 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
+  name: '${workload}-${category}-ais'
+  location: location
+  tags: tags
+  kind: 'CognitiveServices'
+  sku: {
+    name: 'S0'
+  }
+  properties: {
+    customSubDomainName: workload
+    disableLocalAuth: true
+    publicNetworkAccess: 'Enabled'
+  }
+}
+
 // email communication services
 resource emailCommunicationServices 'Microsoft.Communication/emailServices@2023-04-01' = {
   name: '${workload}-${category}-ecs'
@@ -247,6 +263,14 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
     }
   }
 
+  resource cognitiveServicesEndpointKeyValue 'keyValues' = {
+    name: 'CognitiveServices:Endpoint'
+    properties: {
+      value: cognitiveServices.properties.endpoint
+      contentType: 'text/plain'
+    }
+  }
+
   resource emailAcsEndpointKeyValue 'keyValues' = {
     name: 'Email:AcsEndpoint'
     properties: {
@@ -316,6 +340,7 @@ module roleAssignments './roleAssignments.bicep' = {
     keyVaultSecretsUsers: [managedIdentity.properties.principalId]
     configurationDataOwners: [adminGroupObjectId, deploymentAppPrincipalId]
     communicationAndEmailServiceOwners: [adminGroupObjectId]
+    cognitiveServicesUsers: [adminGroupObjectId]
   }
 }
 
