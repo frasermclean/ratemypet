@@ -21,23 +21,25 @@ param domainName string
 @description('Name of the shared resource group')
 param sharedResourceGroup string
 
+param keyVaultName string = 'ratemypet-shared-kv'
+
 @description('Name of the Communication Service to use for the function app')
 param communicationServiceName string = 'ratemypet-shared-acs'
 
 @description('Name of the Azure Storage Account to use for the function app')
 param storageAccountName string
 
-@description('Name of the images blob storage container')
-param imagesContainerName string
-
-@description('Name of the images cache blob storage container')
-param imagesCacheContainerName string
-
 @description('Database connection string')
 param databaseConnectionString string
 
 @description('Application Insights connection string')
 param applicationInsightsConnectionString string
+
+@description('Cognitive Services endpoint')
+param cognitiveServicesEndpoint string = 'https://ratemypet.cognitiveservices.azure.com/'
+
+@description('Cloudinary API key')
+param cloudinaryApiKey string
 
 var tags = {
   workload: workload
@@ -118,24 +120,20 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
           value: 'no-reply@notify.ratemy.pet'
         }
         {
-          name: 'ImageProcessing__ContentType'
-          value: 'image/webp'
+          name: 'CognitiveServices__Endpoint'
+          value: cognitiveServicesEndpoint
         }
         {
-          name: 'ImageProcessing__ImageWidth'
-          value: '1024'
+          name: 'Cloudinary__CloudName'
+          value: 'ratemypet'
         }
         {
-          name: 'ImageProcessing__ImageHeight'
-          value: '1024'
+          name: 'Cloudinary__ApiKey'
+          value: cloudinaryApiKey
         }
         {
-          name: 'ImageProcessing__ImagesContainerName'
-          value: imagesContainerName
-        }
-        {
-          name: 'ImageProcessing__CacheContainerName'
-          value: imagesCacheContainerName
+          name: 'Cloudinary__ApiSecret'
+          value: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=cloudinary-api-secret-${appEnv})'
         }
       ]
       connectionStrings: [

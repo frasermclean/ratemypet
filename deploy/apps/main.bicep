@@ -130,10 +130,10 @@ module jobsAppModule './functionApp.bicep' = {
     domainName: domainName
     sharedResourceGroup: sharedResourceGroup
     storageAccountName: storageModule.outputs.accountName
-    imagesContainerName: storageModule.outputs.imagesContainerName
-    imagesCacheContainerName: storageModule.outputs.imagesCacheContainerName
+    keyVaultName: keyVaultName
     databaseConnectionString: databaseModule.outputs.connectionString
     applicationInsightsConnectionString: appInsightsModule.outputs.connectionString
+    cloudinaryApiKey: cloudinaryApiKey
   }
 }
 
