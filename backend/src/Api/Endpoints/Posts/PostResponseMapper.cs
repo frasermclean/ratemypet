@@ -16,6 +16,8 @@ public class PostResponseMapper : ResponseMapper<PostResponse, Post>
         AuthorUserName = post.User.UserName!,
         AuthorEmailHash = post.User.Email.ToSha256Hash(),
         SpeciesId = post.Species.Id,
+        Tags = post.Tags,
+        IsAnalyzed = post.IsAnalyzed,
         CreatedAt = post.CreatedAtUtc,
         UpdatedAt = post.UpdatedAtUtc,
     };
