@@ -38,6 +38,7 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext)
                 AuthorUserName = post.User.UserName!,
                 AuthorEmailHash = post.User.Email.ToSha256Hash(),
                 SpeciesName = post.Species.Name,
+                Tags = post.Tags,
                 CreatedAt = post.CreatedAtUtc,
                 UpdatedAt = post.UpdatedAtUtc,
                 Reactions = new PostReactionsResponse
