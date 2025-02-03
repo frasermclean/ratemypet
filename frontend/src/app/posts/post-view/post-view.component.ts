@@ -19,6 +19,7 @@ import { PostAddCommentComponent, PostAddCommentData } from './post-add-comment/
 import { PostCommentsComponent } from './post-comments/post-comments.component';
 import { PostDeleteButtonComponent } from './post-delete-button/post-delete-button.component';
 import { PostImageComponent } from './post-image/post-image.component';
+import { PostTagsListComponent } from './post-tag/post-tags-list.component';
 
 @Component({
   selector: 'app-post-view',
@@ -32,6 +33,7 @@ import { PostImageComponent } from './post-image/post-image.component';
     PostDeleteButtonComponent,
     PostImageComponent,
     PostReactionComponent,
+    PostTagsListComponent,
     RouterLink
   ],
   templateUrl: './post-view.component.html',
