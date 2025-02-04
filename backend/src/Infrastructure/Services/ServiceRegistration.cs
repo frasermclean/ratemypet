@@ -1,3 +1,4 @@
+using Azure.Communication.Email;
 using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
@@ -25,16 +26,16 @@ public static class ServiceRegistration
         services.AddAzureClients(configuration)
             .AddBlobContainerManagers()
             .AddImageHosting()
+            .AddImageAnalysis()
             .AddEmailSending()
-            .AddSingleton<IMessagePublisher, MessagePublisher>()
-            .AddSingleton<IImageAnalysisService, ImageAnalysisService>();
+            .AddSingleton<IMessagePublisher, MessagePublisher>();
 
         return services;
     }
 
     private static IServiceCollection AddAzureClients(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddAzureClients(factoryBuilder =>
+        services.AddAzureClients(builder =>
         {
             // use connection string if endpoints are not provided
             var blobEndpoint = configuration["Storage:BlobEndpoint"];
@@ -42,19 +43,19 @@ public static class ServiceRegistration
             if (string.IsNullOrEmpty(blobEndpoint) || string.IsNullOrEmpty(queueEndpoint))
             {
                 var connectionString = configuration.GetConnectionString("Storage");
-                factoryBuilder.AddBlobServiceClient(connectionString);
-                factoryBuilder.AddQueueServiceClient(connectionString);
+                builder.AddBlobServiceClient(connectionString);
+                builder.AddQueueServiceClient(connectionString);
             }
             else
             {
-                factoryBuilder.AddBlobServiceClient(new Uri(blobEndpoint));
-                factoryBuilder.AddQueueServiceClient(new Uri(queueEndpoint));
+                builder.AddBlobServiceClient(new Uri(blobEndpoint));
+                builder.AddQueueServiceClient(new Uri(queueEndpoint));
             }
 
-            factoryBuilder.AddImageAnalysisClient(new Uri(configuration["CognitiveServices:Endpoint"]!));
-            factoryBuilder.AddEmailClient(new Uri(configuration["Email:AcsEndpoint"]!));
-            factoryBuilder.UseCredential(TokenCredentialFactory.Create());
-            factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
+            builder.AddImageAnalysisClient(configuration.GetValue<Uri>("CognitiveServices:Endpoint"));
+            builder.AddEmailClient(configuration.GetValue<Uri>("Email:AcsEndpoint"));
+            builder.UseCredential(TokenCredentialFactory.Create());
+            builder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
         });
 
         return services;
@@ -80,6 +81,16 @@ public static class ServiceRegistration
             .ValidateDataAnnotations();
 
         services.AddHttpClient<IImageHostingService, ImageHostingService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddImageAnalysis(this IServiceCollection services)
+    {
+        services.AddOptions<CognitiveServicesOptions>()
+            .BindConfiguration(CognitiveServicesOptions.SectionName);
+
+        services.AddSingleton<IImageAnalysisService, ImageAnalysisService>();
 
         return services;
     }
