@@ -46,7 +46,7 @@ resource staticWebApp 'Microsoft.Web/staticSites@2024-04-01' = {
     name: 'Free'
   }
   properties: {
-    stagingEnvironmentPolicy: 'Disabled'
+    stagingEnvironmentPolicy: appEnv == 'prod' ? 'Disabled' : 'Enabled'
     allowConfigFileUpdates: true
     buildProperties: {
       skipGithubActionWorkflowGeneration: true
