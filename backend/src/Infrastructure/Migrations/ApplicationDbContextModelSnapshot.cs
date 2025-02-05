@@ -38,9 +38,6 @@ namespace RateMyPet.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<bool>("IsProcessed")
-                        .HasColumnType("bit");
-
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .IsRequired()
@@ -53,6 +50,9 @@ namespace RateMyPet.Infrastructure.Migrations
 
                     b.Property<int>("SpeciesId")
                         .HasColumnType("int");
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("tinyint");
 
                     b.PrimitiveCollection<string>("Tags")
                         .IsRequired()
@@ -72,11 +72,11 @@ namespace RateMyPet.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsProcessed");
-
                     b.HasIndex("Slug");
 
                     b.HasIndex("SpeciesId");
+
+                    b.HasIndex("Status");
 
                     b.HasIndex("UserId");
 

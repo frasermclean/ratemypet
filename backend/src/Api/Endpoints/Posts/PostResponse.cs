@@ -14,7 +14,7 @@ public class PostResponse
     public required string AuthorEmailHash { get; init; }
     public required int SpeciesId { get; init; }
     public required IEnumerable<string> Tags { get; init; }
-    public required bool IsProcessed { get; init; }
+    public required PostStatus Status { get; init; }
     public DateTime CreatedAt { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

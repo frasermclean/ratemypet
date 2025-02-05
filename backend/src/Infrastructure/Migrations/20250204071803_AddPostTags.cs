@@ -10,12 +10,12 @@ namespace RateMyPet.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "IsProcessed",
+            migrationBuilder.AddColumn<byte>(
+                name: "Status",
                 table: "Posts",
-                type: "bit",
+                type: "tinyint",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: (byte)0);
 
             migrationBuilder.AddColumn<string>(
                 name: "Tags",
@@ -25,20 +25,20 @@ namespace RateMyPet.Infrastructure.Migrations
                 defaultValue: "[]");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Posts_IsProcessed",
+                name: "IX_Posts_Status",
                 table: "Posts",
-                column: "IsProcessed");
+                column: "Status");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "IX_Posts_IsProcessed",
+                name: "IX_Posts_Status",
                 table: "Posts");
 
             migrationBuilder.DropColumn(
-                name: "IsProcessed",
+                name: "Status",
                 table: "Posts");
 
             migrationBuilder.DropColumn(

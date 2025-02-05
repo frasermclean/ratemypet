@@ -44,6 +44,6 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
             .HasConversion<byte[]>();
 
         builder.HasIndex(post => post.Slug);
-        builder.HasIndex(post => post.IsProcessed);
+        builder.HasIndex(post => post.Status);
     }
 }
