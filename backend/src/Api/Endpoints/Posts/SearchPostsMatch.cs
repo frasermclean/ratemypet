@@ -13,6 +13,7 @@ public class SearchPostsMatch
     public required string AuthorUserName { get; init; }
     public required string AuthorEmailHash { get; init; }
     public required string SpeciesName { get; init; }
+    public required ICollection<string> Tags { get; init; }
     public required DateTime CreatedAt { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

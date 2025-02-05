@@ -17,8 +17,7 @@ public static class ServiceRegistration
         builder.Services
             .AddIdentity()
             .AddFastEndpoints()
-            .AddInfrastructureServices(builder.Configuration)
-            .AddDevelopmentCors(builder.Configuration, builder.Environment);
+            .AddInfrastructureServices(builder.Configuration);
 
         // open telemetry
         if (!builder.Environment.IsEnvironment("Testing"))
@@ -34,6 +33,20 @@ public static class ServiceRegistration
             options.SerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
             options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
         });
+
+        // development services
+        if (builder.Environment.IsDevelopment())
+        {
+            // add CORS policy
+            builder.Services.AddCors(options => options.AddDefaultPolicy(policyBuilder => policyBuilder
+                .WithOrigins("http://localhost:4200")
+                .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .AllowAnyHeader()
+                .AllowCredentials()
+                .WithExposedHeaders("Location")
+                .SetPreflightMaxAge(TimeSpan.FromMinutes(10)))
+            );
+        }
 
         return builder;
     }
@@ -70,27 +83,5 @@ public static class ServiceRegistration
         });
 
         return services;
-    }
-
-    /// <summary>
-    /// Add CORS policy for local development environment
-    /// </summary>
-    private static void AddDevelopmentCors(this IServiceCollection services,
-        ConfigurationManager configuration, IWebHostEnvironment environment)
-    {
-        // only add CORS policy in development environment
-        if (!environment.IsDevelopment())
-        {
-            return;
-        }
-
-        var frontEndBaseUrl = configuration["Frontend:BaseUrl"];
-        services.AddCors(options => options.AddDefaultPolicy(policyBuilder => policyBuilder
-            .WithOrigins(frontEndBaseUrl!)
-            .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            .AllowAnyHeader()
-            .AllowCredentials()
-            .WithExposedHeaders("Location")
-            .SetPreflightMaxAge(TimeSpan.FromMinutes(10))));
     }
 }

@@ -7,6 +7,7 @@ export interface Post {
   authorUserName: string;
   authorEmailHash: string;
   speciesId: number;
+  tags: string[];
   createdAt: string;
   updatedAt?: string;
   userReaction?: Reaction;
@@ -36,6 +37,7 @@ export interface AddPostRequest {
   description: string;
   image: File;
   speciesId: number;
+  tags: string[];
 }
 
 export interface UpdatePostRequest {
@@ -43,6 +45,7 @@ export interface UpdatePostRequest {
   title: string;
   description: string;
   speciesId: number;
+  tags: string[];
 }
 
 export interface SearchPostsRequest {

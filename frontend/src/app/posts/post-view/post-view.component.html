@@ -19,6 +19,8 @@
   Posted by: <strong>{{ post.authorUserName }}</strong> on {{ post.createdAt | date }}
 </p>
 
+<app-post-tags-list [tags]="post.tags" />
+
 <!-- Reactions -->
 <mat-card class="mat-elevation-z8" id="comments">
   <mat-card-header>

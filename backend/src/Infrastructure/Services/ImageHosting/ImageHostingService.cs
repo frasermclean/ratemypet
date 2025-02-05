@@ -57,6 +57,18 @@ public class ImageHostingService : IImageHostingService
         };
     }
 
+    public async Task<Uri> GetPublicUrl(string publicId, CancellationToken cancellationToken)
+    {
+        var parameters = new GetResourceParams(publicId)
+        {
+            ResourceType = ResourceType.Image
+        };
+
+        var result = await cloudinary.GetResourceAsync(parameters, cancellationToken);
+
+        return new Uri(result.Url);
+    }
+
     public async Task<Result<PostImage>> UploadAsync(string fileName, Stream stream, Post post,
         CancellationToken cancellationToken = default)
     {

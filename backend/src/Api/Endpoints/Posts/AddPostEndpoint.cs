@@ -3,12 +3,15 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
+using RateMyPet.Core.Messages;
 using RateMyPet.Infrastructure.Services;
-using Role = RateMyPet.Core.Role;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class AddPostEndpoint(ApplicationDbContext dbContext, IImageHostingService imageHostingService)
+public class AddPostEndpoint(
+    ApplicationDbContext dbContext,
+    IImageHostingService imageHostingService,
+    IMessagePublisher messagePublisher)
     : Endpoint<AddPostRequest, Created<PostResponse>, PostResponseMapper>
 {
     public override void Configure()
@@ -35,7 +38,8 @@ public class AddPostEndpoint(ApplicationDbContext dbContext, IImageHostingServic
             Title = request.Title,
             Description = request.Description,
             User = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken),
-            Species = species
+            Species = species,
+            Tags = request.Tags.Distinct().ToList(),
         };
 
         // upload image to cloudinary
@@ -53,6 +57,9 @@ public class AddPostEndpoint(ApplicationDbContext dbContext, IImageHostingServic
         dbContext.Posts.Add(post);
         await dbContext.SaveChangesAsync(cancellationToken);
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
+
+        // publish message
+        await messagePublisher.PublishAsync(new PostAddedMessage(post.Id), cancellationToken);
 
         var response = Map.FromEntity(post);
         return TypedResults.Created($"/posts/{response.Id}", response);

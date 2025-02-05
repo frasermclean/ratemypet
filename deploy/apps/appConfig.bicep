@@ -25,8 +25,30 @@ param storageAccountQueueEndpoint string
 @description('Database connection string to be stored in App Configuration.')
 param databaseConnectionString string
 
+@description('Computer Vision endpoint')
+param computerVisionEndpoint string
+
+@description('Content Safety endpoint')
+param contentSafetyEndpoint string
+
 resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2023-03-01' existing = {
   name: appConfigurationName
+
+  resource aiServicesComputerVisionEndpointKeyValue 'keyValues' = {
+    name: 'AiServices:ComputerVisionEndpoint$${appEnv}'
+    properties: {
+      value: computerVisionEndpoint
+      contentType: 'text/plain'
+    }
+  }
+
+  resource aiServicesContentSafetyEndpointKeyValue 'keyValues' = {
+    name: 'AiServices:ContentSafetyEndpoint$${appEnv}'
+    properties: {
+      value: contentSafetyEndpoint
+      contentType: 'text/plain'
+    }
+  }
 
   resource cloudinaryApiKeyKeyValue 'keyValues' = {
     name: 'Cloudinary:ApiKey$${appEnv}'

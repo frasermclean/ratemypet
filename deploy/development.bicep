@@ -27,4 +27,13 @@ module appInsightsModule './apps/appInsights.bicep' = {
   }
 }
 
+module aiServicesModule './apps/aiServices.bicep' = {
+  name: 'aiServices'
+  params: {
+    workload: workload
+    appEnv: appEnv
+    location: location
+  }
+}
+
 output applicationInsightsConnectionString string = appInsightsModule.outputs.connectionString

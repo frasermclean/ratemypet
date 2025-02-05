@@ -7,7 +7,7 @@ export const environment: Environment = {
   apiBaseUrl: 'https://localhost:5443',
   applicationInsights: {
     connectionString:
-      'InstrumentationKey=113d2d85-aeb9-4e81-b6fa-62db294bbaa0;IngestionEndpoint=https://southeastasia-1.in.applicationinsights.azure.com/;LiveEndpoint=https://southeastasia.livediagnostics.monitor.azure.com/;ApplicationId=421044f1-5680-4fa5-8f34-72bbc3353ff3'
+      'InstrumentationKey=16c59f48-bd40-4cbf-9100-5cfaf090a83b;IngestionEndpoint=https://australiaeast-1.in.applicationinsights.azure.com/;LiveEndpoint=https://australiaeast.livediagnostics.monitor.azure.com/;ApplicationId=1f0a8655-ba17-4e40-8f15-9355627cfc15'
   },
   ngxsPlugins: [
     withNgxsDevelopmentOptions({

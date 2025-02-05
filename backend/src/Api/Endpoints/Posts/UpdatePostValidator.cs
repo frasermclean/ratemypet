@@ -14,5 +14,12 @@ public class UpdatePostValidator : Validator<UpdatePostRequest>
 
         RuleFor(request => request.SpeciesId)
             .NotEmpty();
+
+        RuleFor(request => request.Tags)
+            .ForEach(tag =>
+            {
+                tag.MinimumLength(Post.TagMinLength);
+                tag.MaximumLength(Post.TagMaxLength);
+            });
     }
 }
