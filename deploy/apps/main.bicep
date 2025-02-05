@@ -116,7 +116,9 @@ module containerAppsModule 'containerApps.bicep' = {
     appConfigurationName: appConfigurationName
     apiImageRepository: apiImageRepository
     apiImageTag: apiImageTag
-    apiAllowedOrigins: map(staticWebAppModule.outputs.hostnames, (hostname) => 'https://${hostname}')
+    apiAllowedOrigins: appEnv == 'prod'
+      ? map(staticWebAppModule.outputs.hostnames, (hostname) => 'https://${hostname}')
+      : ['*']
     containerRegistryName: containerRegistryName
     containerRegistryUsername: containerRegistryUsername
     keyVaultName: keyVaultName
