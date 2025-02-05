@@ -61,7 +61,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        environment: ${{ github.event_name == 'push' && fromJson('["prod", "test"]' || fromJson('["test"]')) }}
+        environment: ${{ github.event_name == 'push' && fromJson('["prod", "test"]') || fromJson('["test"]') }}
     environment: ${{ matrix.environment }}
     steps:
       # Download artifact
