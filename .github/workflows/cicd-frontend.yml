@@ -18,13 +18,13 @@ on:
       - synchronize
       - reopened
 
-env:
-  APP_ARTIFACT_NAME: app
-
 jobs:
   build:
     name: Build application
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [prod, test]
     defaults:
       run:
         working-directory: ${{ github.workspace }}/frontend
@@ -46,29 +46,30 @@ jobs:
 
       # Build application
       - name: Build application
-        env:
-          BUILD_CONFIGURATION: ${{ github.event_name == 'pull_request' && 'testing' || 'production' }}
-        run: npx ng build --configuration ${{ env.BUILD_CONFIGURATION }}
+        run: npx ng build --configuration ${{ matrix.environment == 'prod' && 'production' || 'testing' }}
 
       # Upload artifact
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.APP_ARTIFACT_NAME }}
+          name: app-${{ matrix.environment }}
           path: ${{ github.workspace }}/frontend/dist/browser
 
   deploy:
     name: Deploy application
     runs-on: ubuntu-latest
     needs: build
-    environment: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'prod' || 'test' }}
+    strategy:
+      matrix:
+        environment: [prod, test]
+    environment: ${{ matrix.environment }}
     steps:
       # Download artifact
       - name: Download artifact
         id: download-artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ env.APP_ARTIFACT_NAME }}
+          name: app-${{ matrix.environment }}
 
       # Deploy to Azure Static Web App
       - name: Deploy to Azure Static Web App
