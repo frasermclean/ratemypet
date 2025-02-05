@@ -1,5 +1,7 @@
 ﻿using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Messages;
 using RateMyPet.Infrastructure;
@@ -8,24 +10,47 @@ using RateMyPet.Infrastructure.Services;
 namespace RateMyPet.Jobs.Functions;
 
 public class ProcessAddedPost(
+    ILogger<ProcessAddedPost> logger,
     ApplicationDbContext dbContext,
-    IImageHostingService imageHostingService,
-    IImageAnalysisService imageAnalysisService)
+    IImageHostingService hostingService,
+    IImageAnalysisService analysisService)
 {
     [Function(nameof(ProcessAddedPost))]
     public async Task ExecuteAsync([QueueTrigger(QueueNames.PostAdded)] PostAddedMessage message,
         CancellationToken cancellationToken)
     {
         // look up post by id
-        var post = await dbContext.Posts.FirstAsync(post => post.Id == message.PostId, cancellationToken);
+        var post = await dbContext.Posts.FirstOrDefaultAsync(post => post.Id == message.PostId, cancellationToken);
+        if (post is null)
+        {
+            logger.LogError("Post {PostId} was not found", message.PostId);
+            return;
+        }
 
-        var imageUri = await imageHostingService.GetPublicUrl(message.ImagePublicId, cancellationToken);
-        var tags = await imageAnalysisService.AnalyzeTagsAsync(imageUri, cancellationToken);
+        var imagePublicId = post.Image?.PublicId;
+        if (imagePublicId is null)
+        {
+            logger.LogError("Post {PostId} has no image", post.Id);
+            return;
+        }
+
+        var imageUri = await hostingService.GetPublicUrl(imagePublicId, cancellationToken);
+        var safetyResult = await analysisService.AnalyzeSafetyAsync(imageUri, cancellationToken);
+
+        if (safetyResult.IsSafe)
+        {
+            var tags = await analysisService.AnalyzeTagsAsync(imageUri, cancellationToken);
+
+            post.Status = PostStatus.Approved;
+            post.Tags = [.. post.Tags.Concat(tags).Distinct().Order()];
+        }
+        else
+        {
+            logger.LogWarning("Post {PostId} image detected as not safe", post.Id);
+            post.Status = PostStatus.Rejected;
+        }
 
         // update post entity
-        post.IsProcessed = true;
-        post.Tags = post.Tags.Concat(tags).Distinct().Order().ToList();
-
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

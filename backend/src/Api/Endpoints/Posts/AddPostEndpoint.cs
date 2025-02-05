@@ -5,7 +5,6 @@ using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Messages;
 using RateMyPet.Infrastructure.Services;
-using Role = RateMyPet.Core.Role;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
@@ -60,7 +59,7 @@ public class AddPostEndpoint(
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
 
         // publish message
-        await messagePublisher.PublishAsync(new PostAddedMessage(post.Id, post.Image.PublicId), cancellationToken);
+        await messagePublisher.PublishAsync(new PostAddedMessage(post.Id), cancellationToken);
 
         var response = Map.FromEntity(post);
         return TypedResults.Created($"/posts/{response.Id}", response);
