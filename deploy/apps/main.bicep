@@ -137,6 +137,17 @@ module jobsAppModule './functionApp.bicep' = {
   }
 }
 
+// ai services
+module aiServicesModule './aiServices.bicep' = {
+  name: 'aiServices'
+  params: {
+    workload: workload
+    appEnv: appEnv
+    location: location
+    tags: tags
+  }
+}
+
 // app configuration
 module appConfigModule 'appConfig.bicep' = {
   name: 'appConfig-${appEnv}'
@@ -150,6 +161,8 @@ module appConfigModule 'appConfig.bicep' = {
     databaseConnectionString: databaseModule.outputs.connectionString
     storageAccountBlobEndpoint: storageModule.outputs.blobEndpoint
     storageAccountQueueEndpoint: storageModule.outputs.queueEndpoint
+    computerVisionEndpoint: aiServicesModule.outputs.computerVisionEndpoint
+    contentSafetyEndpoint: aiServicesModule.outputs.contentSafetyEndpoint
   }
 }
 
@@ -162,6 +175,7 @@ module roleAssignmentsModule 'roleAssignments.bicep' = {
     jobsAppPrincipalId: jobsAppModule.outputs.principalId
     storageAccountName: storageModule.outputs.accountName
     applicationInsightsName: appInsightsModule.outputs.applicationInsightsName
+    aiServicesName: aiServicesModule.outputs.aiServicesName
   }
 }
 
@@ -181,9 +195,6 @@ module sharedRoleAssignmentsModule '../shared/roleAssignments.bicep' = {
       jobsAppModule.outputs.principalId
     ]
     communicationAndEmailServiceOwners: [
-      jobsAppModule.outputs.principalId
-    ]
-    cognitiveServicesUsers: [
       jobsAppModule.outputs.principalId
     ]
   }

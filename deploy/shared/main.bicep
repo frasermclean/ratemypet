@@ -162,22 +162,6 @@ resource staticWebApp 'Microsoft.Web/staticSites@2024-04-01' = {
   }
 }
 
-// cognitive services account
-resource cognitiveServices 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
-  name: '${workload}-${category}-ais'
-  location: location
-  tags: tags
-  kind: 'CognitiveServices'
-  sku: {
-    name: 'S0'
-  }
-  properties: {
-    customSubDomainName: workload
-    disableLocalAuth: true
-    publicNetworkAccess: 'Enabled'
-  }
-}
-
 // email communication services
 resource emailCommunicationServices 'Microsoft.Communication/emailServices@2023-04-01' = {
   name: '${workload}-${category}-ecs'
@@ -263,21 +247,12 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
     }
   }
 
-  resource cognitiveServicesEndpointKeyValue 'keyValues' = {
-    name: 'CognitiveServices:Endpoint'
-    properties: {
-      value: cognitiveServices.properties.endpoint
-      contentType: 'text/plain'
-    }
-  }
-
   resource emailAcsEndpointKeyValue 'keyValues' = {
     name: 'Email:AcsEndpoint'
     properties: {
       value: 'https://${communicationServices.properties.hostName}'
       contentType: 'text/plain'
     }
-    dependsOn: [roleAssignments]
   }
 
   resource emailSenderAddressKeyValue 'keyValues' = {
@@ -286,34 +261,6 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
       value: 'no-reply@notify.${dnsZoneName}'
       contentType: 'text/plain'
     }
-    dependsOn: [roleAssignments]
-  }
-
-  resource emailFrontendBaseUrlKeyValue 'keyValues' = {
-    name: 'Email:FrontendBaseUrl$dev'
-    properties: {
-      value: 'http://localhost:4200'
-      contentType: 'text/plain'
-    }
-    dependsOn: [roleAssignments]
-  }
-
-  resource storageBlobEndpointKeyValue 'keyValues' = {
-    name: 'Storage:BlobEndpoint$dev'
-    properties: {
-      value: 'https://localhost:10000/devstoreaccount1'
-      contentType: 'text/plain'
-    }
-    dependsOn: [roleAssignments]
-  }
-
-  resource storageQueueEndpointKeyValue 'keyValues' = {
-    name: 'Storage:QueueEndpoint$dev'
-    properties: {
-      value: 'https://localhost:10001/devstoreaccount1'
-      contentType: 'text/plain'
-    }
-    dependsOn: [roleAssignments]
   }
 
   resource cloudinaryCloudNameKeyValue 'keyValues' = {

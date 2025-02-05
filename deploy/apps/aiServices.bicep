@@ -34,6 +34,9 @@ resource aiServices 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
   }
 }
 
+@description('The name of the AI Services account')
+output aiServicesName string = aiServices.name
+
 @description('The endpoint for the Computer Vision service')
 output computerVisionEndpoint string = aiServices.properties.endpoints['Computer Vision']
 

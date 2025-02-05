@@ -24,12 +24,6 @@ param communicationServicesName string = 'ratemypet-shared-acs'
 @description('Array of prinicpal IDs that have access to the communication and email service')
 param communicationAndEmailServiceOwners array = []
 
-@description('Name of the cognitive services')
-param cognitiveServicesName string = 'ratemypet-shared-ais'
-
-@description('Array of prinicpal IDs that have access to the cognitive services')
-param cognitiveServicesUsers array = []
-
 @description('Mapping of role names to role definition IDs')
 var roleDefinitionIds = {
   KeyVaultAdministrator: '00482a5a-887f-4fb3-b363-3b7fe8e74483'
@@ -37,7 +31,6 @@ var roleDefinitionIds = {
   AppConfigurationDataOwner: '5ae67dd6-50cb-40e7-96ff-dc2bfa4b606b'
   AppConfiguratonDataReader: '516239f1-63e1-4d78-a4de-a74fb236a071'
   CommunicationAndEmailServiceOwner: '09976791-48a7-449e-bb21-39d1a415f350'
-  CognitiveServicesUser: 'a97b65f3-24c7-4388-baec-2e87135dc908'
 }
 
 // existing key vault to assign roles to
@@ -124,25 +117,6 @@ resource communicationAndEmailServiceOwnerRoleAssigment 'Microsoft.Authorization
       roleDefinitionId: resourceId(
         'Microsoft.Authorization/roleDefinitions@2022-04-01',
         roleDefinitionIds.CommunicationAndEmailServiceOwner
-      )
-    }
-  }
-]
-
-resource cognitiveServices 'Microsoft.CognitiveServices/accounts@2024-10-01' existing = {
-  name: cognitiveServicesName
-}
-
-// cognitive services user role assignments
-resource cognitiveServicesUserRoleAssigment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
-  for principalId in cognitiveServicesUsers: {
-    name: guid(cognitiveServices.id, roleDefinitionIds.CognitiveServicesUser, principalId)
-    scope: cognitiveServices
-    properties: {
-      principalId: principalId
-      roleDefinitionId: resourceId(
-        'Microsoft.Authorization/roleDefinitions@2022-04-01',
-        roleDefinitionIds.CognitiveServicesUser
       )
     }
   }
