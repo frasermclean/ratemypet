@@ -87,9 +87,18 @@ module appInsightsModule 'appInsights.bicep' = {
   }
 }
 
-resource staticWebApp 'Microsoft.Web/staticSites@2024-04-01' existing = {
-  name: 'ratemypet-shared-swa'
-  scope: resourceGroup(sharedResourceGroup)
+// static web app
+module staticWebAppModule 'staticWebApp.bicep' = {
+  name: 'staticWebApp'
+  params: {
+    workload: workload
+    appEnv: appEnv
+    appName: 'frontend'
+    location: 'eastasia'
+    domainName: domainName
+    sharedResourceGroup: sharedResourceGroup
+    tags: tags
+  }
 }
 
 // container apps
@@ -107,12 +116,7 @@ module containerAppsModule 'containerApps.bicep' = {
     appConfigurationName: appConfigurationName
     apiImageRepository: apiImageRepository
     apiImageTag: apiImageTag
-    apiAllowedOrigins: appEnv == 'prod'
-      ? map(
-          concat(staticWebApp.properties.customDomains, [staticWebApp.properties.defaultHostname]),
-          (hostname) => 'https://${hostname}'
-        )
-      : []
+    apiAllowedOrigins: map(staticWebAppModule.outputs.hostnames, (hostname) => 'https://${hostname}')
     containerRegistryName: containerRegistryName
     containerRegistryUsername: containerRegistryUsername
     keyVaultName: keyVaultName

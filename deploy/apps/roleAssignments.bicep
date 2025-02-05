@@ -18,9 +18,6 @@ param applicationInsightsName string
 @description('Name of the cognitive services')
 param aiServicesName string
 
-@description('Array of prinicpal IDs that have access to the cognitive services')
-param cognitiveServicesUsers array = []
-
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
   name: storageAccountName
 }
