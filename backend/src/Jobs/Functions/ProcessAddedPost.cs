@@ -34,7 +34,7 @@ public class ProcessAddedPost(
             return;
         }
 
-        var imageUri = await hostingService.GetPublicUrl(imagePublicId, cancellationToken);
+        var imageUri = hostingService.GetPublicUri(imagePublicId);
         var safetyResult = await analysisService.AnalyzeSafetyAsync(imageUri, cancellationToken);
 
         if (safetyResult.IsSafe)

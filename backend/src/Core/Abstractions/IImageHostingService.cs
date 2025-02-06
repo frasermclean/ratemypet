@@ -6,7 +6,7 @@ public interface IImageHostingService
 {
     Task<Result<PostImage>> GetAsync(string publicId, CancellationToken cancellationToken = default);
 
-    Task<Uri> GetPublicUrl(string publicId, CancellationToken cancellationToken = default);
+    Uri GetPublicUri(string publicId, int width = 1024, int height = 1024, string crop = "fill");
 
     Task<Result<PostImage>> UploadAsync(string fileName, Stream stream, Post post,
         CancellationToken cancellationToken = default);
