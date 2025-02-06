@@ -39,17 +39,17 @@ public class ImageAnalysisService(
 
         var response = await safetyClient.AnalyzeImageAsync(binaryData, cancellationToken);
 
-        var severities = response.Value.CategoriesAnalysis
+        var categories = response.Value.CategoriesAnalysis
             .ToDictionary(analysis => analysis.Category, analysis => analysis.Severity);
 
-        logger.LogInformation("Image {ImageUri} analyzed. Severities: {Severities}", imageUri, severities);
+        logger.LogInformation("Image {ImageUri} analyzed. Severities: {Severities}", imageUri, categories);
 
         return new ImageSafetyResult
         {
-            IsHate = severities[ImageCategory.Hate] > safetyCategoryThreshold,
-            IsSelfHarm = severities[ImageCategory.SelfHarm] > safetyCategoryThreshold,
-            IsSexual = severities[ImageCategory.Sexual] > safetyCategoryThreshold,
-            IsViolence = severities[ImageCategory.Violence] > safetyCategoryThreshold
+            IsHate = categories[ImageCategory.Hate] > safetyCategoryThreshold,
+            IsSelfHarm = categories[ImageCategory.SelfHarm] > safetyCategoryThreshold,
+            IsSexual = categories[ImageCategory.Sexual] > safetyCategoryThreshold,
+            IsViolence = categories[ImageCategory.Violence] > safetyCategoryThreshold
         };
     }
 }
