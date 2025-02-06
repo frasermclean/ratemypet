@@ -28,6 +28,7 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext)
 
         var userId = User.GetUserId();
         var paging = await dbContext.Posts
+            .Where(post => post.Status == PostStatus.Approved)
             .Select(post => new SearchPostsMatch
             {
                 Id = post.Id,
