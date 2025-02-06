@@ -6,6 +6,5 @@ public class ImageAnalysisOptions
 {
     public const string SectionName = "ImageAnalysis";
 
-    [Required] public float TagConfidenceThreshold { get; init; }
-    [Required] public int SafetyCategoryThreshold { get; init; }
+    [Range(0.1, 0.9)] public float TagConfidenceThreshold { get; init; } = 0.8f;
 }

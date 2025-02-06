@@ -7,6 +7,7 @@ using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure.Services.Email;
 using RateMyPet.Infrastructure.Services.ImageAnalysis;
 using RateMyPet.Infrastructure.Services.ImageHosting;
+using RateMyPet.Infrastructure.Services.Moderation;
 
 namespace RateMyPet.Infrastructure.Services;
 
@@ -26,6 +27,7 @@ public static class ServiceRegistration
             .AddBlobContainerManagers()
             .AddImageHosting()
             .AddImageAnalysis()
+            .AddModeration()
             .AddEmailSending()
             .AddSingleton<IMessagePublisher, MessagePublisher>();
 
@@ -92,6 +94,17 @@ public static class ServiceRegistration
             .ValidateDataAnnotations();
 
         services.AddSingleton<IImageAnalysisService, ImageAnalysisService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddModeration(this IServiceCollection services)
+    {
+        services.AddOptions<ModerationOptions>()
+            .BindConfiguration(ModerationOptions.SectionName)
+            .ValidateDataAnnotations();
+
+        services.AddSingleton<IModerationService, ModerationService>();
 
         return services;
     }

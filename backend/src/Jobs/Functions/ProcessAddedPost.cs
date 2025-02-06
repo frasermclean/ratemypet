@@ -13,7 +13,8 @@ public class ProcessAddedPost(
     ILogger<ProcessAddedPost> logger,
     ApplicationDbContext dbContext,
     IImageHostingService hostingService,
-    IImageAnalysisService analysisService)
+    IImageAnalysisService analysisService,
+    IModerationService moderationService)
 {
     [Function(nameof(ProcessAddedPost))]
     public async Task ExecuteAsync([QueueTrigger(QueueNames.PostAdded)] PostAddedMessage message,
@@ -35,11 +36,18 @@ public class ProcessAddedPost(
         }
 
         var imageUri = hostingService.GetPublicUri(imagePublicId);
-        var safetyResult = await analysisService.AnalyzeSafetyAsync(imageUri, cancellationToken);
 
-        if (safetyResult.IsSafe)
+        var moderationResults = await Task.WhenAll(
+            moderationService.AnalyzeTextAsync(post.Title, cancellationToken),
+            moderationService.AnalyzeTextAsync(post.Description, cancellationToken),
+            moderationService.AnalyzeImageAsync(imageUri, cancellationToken)
+        );
+
+        if (moderationResults.All(result => result.IsSafe))
         {
-            var tags = await analysisService.AnalyzeTagsAsync(imageUri, cancellationToken);
+            logger.LogInformation("Post {PostId} passed all moderation checks", post.Id);
+
+            var tags = await analysisService.GetTagsAsync(imageUri, cancellationToken);
 
             post.Status = PostStatus.Approved;
             post.Tags = [.. post.Tags.Concat(tags).Distinct().Order()];

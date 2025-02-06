@@ -1,23 +1,18 @@
-﻿using Azure.AI.ContentSafety;
-using Azure.AI.Vision.ImageAnalysis;
+﻿using Azure.AI.Vision.ImageAnalysis;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RateMyPet.Core.Abstractions;
-using RateMyPet.Core.Results;
 
 namespace RateMyPet.Infrastructure.Services.ImageAnalysis;
 
 public class ImageAnalysisService(
     IOptions<ImageAnalysisOptions> options,
     ILogger<ImageAnalysisService> logger,
-    ImageAnalysisClient analysisClient,
-    ContentSafetyClient safetyClient,
-    HttpClient httpClient) : IImageAnalysisService
+    ImageAnalysisClient analysisClient) : IImageAnalysisService
 {
     private readonly float tagConfidenceThreshold = options.Value.TagConfidenceThreshold;
-    private readonly int safetyCategoryThreshold = options.Value.SafetyCategoryThreshold;
 
-    public async Task<IEnumerable<string>> AnalyzeTagsAsync(Uri imageUri, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<string>> GetTagsAsync(Uri imageUri, CancellationToken cancellationToken = default)
     {
         var response =
             await analysisClient.AnalyzeAsync(imageUri, VisualFeatures.Tags, cancellationToken: cancellationToken);
@@ -30,26 +25,5 @@ public class ImageAnalysisService(
         logger.LogInformation("Image {ImageUri} analyzed. Tags: {Tags}", imageUri, tags);
 
         return tags;
-    }
-
-    public async Task<ImageSafetyResult> AnalyzeSafetyAsync(Uri imageUri, CancellationToken cancellationToken)
-    {
-        var imageBytes = await httpClient.GetByteArrayAsync(imageUri, cancellationToken);
-        var binaryData = new BinaryData(imageBytes);
-
-        var response = await safetyClient.AnalyzeImageAsync(binaryData, cancellationToken);
-
-        var categories = response.Value.CategoriesAnalysis
-            .ToDictionary(analysis => analysis.Category, analysis => analysis.Severity);
-
-        logger.LogInformation("Image {ImageUri} analyzed. Severities: {Severities}", imageUri, categories);
-
-        return new ImageSafetyResult
-        {
-            IsHate = categories[ImageCategory.Hate] > safetyCategoryThreshold,
-            IsSelfHarm = categories[ImageCategory.SelfHarm] > safetyCategoryThreshold,
-            IsSexual = categories[ImageCategory.Sexual] > safetyCategoryThreshold,
-            IsViolence = categories[ImageCategory.Violence] > safetyCategoryThreshold
-        };
     }
 }

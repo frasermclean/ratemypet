@@ -1,6 +1,6 @@
 ﻿namespace RateMyPet.Core.Results;
 
-public class ImageSafetyResult
+public class ModerationResult
 {
     public bool IsSafe => !IsHate && !IsSelfHarm && !IsSexual && !IsViolence;
     public bool IsHate { get; init; }
