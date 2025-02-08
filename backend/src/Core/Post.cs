@@ -7,6 +7,7 @@ public class Post
     public const int DescriptionMaxLength = 500;
     public const int TagMinLength = 3;
     public const int TagMaxLength = 20;
+    public const int TagsMaxCount = 5;
     public const string ValidTitlePattern = @"^[a-zA-Z0-9\s!?.-]+$";
 
     public Guid Id { get; init; } = Guid.NewGuid();

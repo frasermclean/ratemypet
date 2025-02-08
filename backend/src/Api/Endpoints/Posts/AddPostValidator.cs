@@ -27,6 +27,8 @@ public class AddPostValidator : Validator<AddPostRequest>
             .WithMessage("Must be an image file");
 
         RuleFor(request => request.Tags)
+            .Must(tags => tags.Count <= Post.TagsMaxCount)
+            .WithMessage($"Maximum of {Post.TagsMaxCount} tags allowed")
             .ForEach(tag =>
             {
                 tag.MinimumLength(Post.TagMinLength);
