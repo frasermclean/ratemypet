@@ -23,7 +23,7 @@ jobs:
     name: Build and test
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       checks: write
       pull-requests: write
       packages: write
@@ -39,8 +39,6 @@ jobs:
       # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
 
       # Setup .NET
       - name: Setup .NET
@@ -106,15 +104,14 @@ jobs:
           name: migrations
           path: ${{ env.MIGRATIONS_SCRIPT }}
 
-      # Calculate next version
-      - name: Calculate next version
+      # Bump version and push tag
+      - name: Bump version and push tag
         if: github.event_name == 'push'
         uses: anothrNick/github-tag-action@v1
-        id: calc_tag
+        id: push_tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
-          DRY_RUN: true
           PRERELEASE: ${{ github.ref != 'refs/heads/main' }}
 
       # Set up QEMU
@@ -148,7 +145,7 @@ jobs:
           push: true
           tags: |
             ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:latest
-            ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ steps.calc_tag.outputs.new_tag }}
+            ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ steps.push_tag.outputs.tag }}
 
       # Publish jobs project
       - name: Publish jobs project
@@ -157,7 +154,7 @@ jobs:
           dotnet publish src/Jobs/Jobs.csproj
           --configuration ${{ env.BUILD_CONFIGURATION }}
           --output ${{ github.workspace }}/jobs
-          -p:Version=${{ steps.calc_tag.outputs.new_tag }}
+          -p:Version=${{ steps.push_tag.outputs.tag }}
 
       # Upload jobs artifact
       - name: Upload jobs artifact
@@ -168,7 +165,7 @@ jobs:
           path: ${{ github.workspace }}/jobs
           include-hidden-files: true
     outputs:
-      apiImage: ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ steps.calc_tag.outputs.new_tag }}
+      apiImage: ${{ env.CONTAINER_REGISTRY }}/${{ env.API_IMAGE_REPOSITORY }}:${{ steps.push_tag.outputs.tag }}
 
   deploy:
     name: Deploy applications

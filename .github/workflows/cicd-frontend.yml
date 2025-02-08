@@ -17,10 +17,12 @@ on:
       - opened
       - synchronize
       - reopened
+      - closed
 
 jobs:
   build:
     name: Build application
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -80,3 +82,17 @@ jobs:
           app_location: ${{ steps.download-artifact.outputs.download-path }}
           skip_app_build: true
           skip_api_build: true
+
+  close_pr:
+    name: Close pull request
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      # Remove preview environment
+      - name: Remove preview environment
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          action: close
+          azure_static_web_apps_api_token: ${{ secrets.SWA_DEPLOYMENT_TOKEN }}
+          app_location: null
