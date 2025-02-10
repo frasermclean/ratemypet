@@ -139,6 +139,8 @@ module jobsAppModule './functionApp.bicep' = {
     keyVaultName: keyVaultName
     databaseConnectionString: databaseModule.outputs.connectionString
     applicationInsightsConnectionString: appInsightsModule.outputs.connectionString
+    computerVisionEndpoint: aiServicesModule.outputs.computerVisionEndpoint
+    contentSafetyEndpoint: aiServicesModule.outputs.contentSafetyEndpoint
     cloudinaryApiKey: cloudinaryApiKey
   }
 }
