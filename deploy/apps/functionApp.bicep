@@ -35,8 +35,11 @@ param databaseConnectionString string
 @description('Application Insights connection string')
 param applicationInsightsConnectionString string
 
-@description('Cognitive Services endpoint')
-param cognitiveServicesEndpoint string = 'https://ratemypet.cognitiveservices.azure.com/'
+@description('Computer Vision endpoint')
+param computerVisionEndpoint string
+
+@description('Content Safety endpoint')
+param contentSafetyEndpoint string
 
 @description('Cloudinary API key')
 param cloudinaryApiKey string
@@ -120,8 +123,12 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
           value: 'no-reply@notify.ratemy.pet'
         }
         {
-          name: 'CognitiveServices__Endpoint'
-          value: cognitiveServicesEndpoint
+          name: 'AiServices__ComputerVisionEndpoint'
+          value: computerVisionEndpoint
+        }
+        {
+          name: 'AiServices__ContentSafetyEndpoint'
+          value: contentSafetyEndpoint
         }
         {
           name: 'Cloudinary__CloudName'
