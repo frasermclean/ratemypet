@@ -15,6 +15,9 @@ param storageAccountName string
 @description('The name of the application insights instance to grant access to')
 param applicationInsightsName string
 
+@description('Name of the cognitive services')
+param aiServicesName string
+
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
   name: storageAccountName
 }
@@ -23,12 +26,17 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
   name: applicationInsightsName
 }
 
+resource aiServices 'Microsoft.CognitiveServices/accounts@2024-10-01' existing = {
+  name: aiServicesName
+}
+
 var roleIds = {
   storageAccountContributor: '17d1049b-9a84-46fb-8f53-869881c3d3ab'
   storageBlobDataOwner: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b'
   storageBlobDataContributor: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
   storageQueueDataContributor: '974c5e8b-45b9-4653-ba55-5f855dd0fb88'
   monitoringMetricsPublisher: '3913510d-42f4-4e42-8a64-420c390055eb'
+  cognitiveServicesUser: 'a97b65f3-24c7-4388-baec-2e87135dc908'
 }
 
 var storageAccountRoleAssignmentData = [
@@ -86,6 +94,25 @@ resource applicationInsightsRoleAssignment 'Microsoft.Authorization/roleAssignme
   for item in applicationInsightsRoleData: {
     name: guid(applicationInsightsName, item.principalId, item.roleId)
     scope: applicationInsights
+    properties: {
+      roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions@2022-04-01', item.roleId)
+      principalId: item.principalId
+    }
+  }
+]
+
+var aiServicesRoleData = [
+  {
+    roleId: roleIds.cognitiveServicesUser
+    principalId: jobsAppPrincipalId
+  }
+]
+
+// cognitive services user role assignments
+resource cognitiveServicesUserRoleAssigment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
+  for item in aiServicesRoleData: {
+    name: guid(aiServicesName, item.principalId, item.roleId)
+    scope: aiServices
     properties: {
       roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions@2022-04-01', item.roleId)
       principalId: item.principalId

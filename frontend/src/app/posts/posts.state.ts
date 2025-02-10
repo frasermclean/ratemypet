@@ -75,8 +75,11 @@ export class PostsState {
   addPost(context: StateContext<PostsStateModel>, action: PostsActions.AddPost) {
     context.patchState({ status: 'busy' });
     return this.postsService.addPost(action.request).pipe(
-      tap((post) => {
-        context.patchState({ status: 'ready', currentPost: post });
+      tap((currentPost) => {
+        context.patchState({ currentPost });
+      }),
+      finalize(() => {
+        context.patchState({ status: 'ready' });
       })
     );
   }
@@ -85,8 +88,11 @@ export class PostsState {
   updatePost(context: StateContext<PostsStateModel>, action: PostsActions.UpdatePost) {
     context.patchState({ status: 'busy' });
     return this.postsService.updatePost(action.request).pipe(
-      tap((post) => {
-        context.patchState({ status: 'ready', currentPost: post });
+      tap((currentPost) => {
+        context.patchState({ currentPost });
+      }),
+      finalize(() => {
+        context.patchState({ status: 'ready' });
       })
     );
   }
@@ -96,6 +102,11 @@ export class PostsState {
     context.patchState({ status: 'busy' });
     return this.postsService.deletePost(action.postId).pipe(
       tap(() => {
+        if (context.getState().currentPost?.id === action.postId) {
+          context.patchState({ currentPost: null });
+        }
+      }),
+      finalize(() => {
         context.patchState({ status: 'ready' });
       })
     );
@@ -112,7 +123,7 @@ export class PostsState {
         if (state.currentPost?.id === action.postId) {
           context.patchState({ currentPost: { ...state.currentPost, reactions, userReaction: action.reaction } });
         }
-        context.patchState({ status: 'ready', matches });
+        context.patchState({ matches });
       })
     );
   }
@@ -128,7 +139,7 @@ export class PostsState {
         if (state.currentPost?.id === action.postId) {
           context.patchState({ currentPost: { ...state.currentPost, reactions, userReaction: undefined } });
         }
-        context.patchState({ status: 'ready', matches });
+        context.patchState({ matches });
       })
     );
   }

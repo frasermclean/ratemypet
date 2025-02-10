@@ -58,6 +58,7 @@ export class PostsService {
     formData.append('description', request.description);
     formData.append('image', request.image);
     formData.append('speciesId', request.speciesId.toString());
+    formData.append('tags', JSON.stringify(request.tags));
 
     return this.httpClient.post<Post>(this.baseUrl, formData);
   }

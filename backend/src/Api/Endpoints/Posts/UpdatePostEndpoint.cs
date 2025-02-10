@@ -33,6 +33,7 @@ public class UpdatePostEndpoint(ApplicationDbContext dbContext)
         post.Description = request.Description;
         post.Species = species;
         post.UpdatedAtUtc = DateTime.UtcNow;
+        post.Tags = request.Tags.Distinct().ToList();
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

@@ -5,7 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure.Services.Email;
+using RateMyPet.Infrastructure.Services.ImageAnalysis;
 using RateMyPet.Infrastructure.Services.ImageHosting;
+using RateMyPet.Infrastructure.Services.Moderation;
 
 namespace RateMyPet.Infrastructure.Services;
 
@@ -24,6 +26,8 @@ public static class ServiceRegistration
         services.AddAzureClients(configuration)
             .AddBlobContainerManagers()
             .AddImageHosting()
+            .AddImageAnalysis()
+            .AddModeration()
             .AddEmailSending()
             .AddSingleton<IMessagePublisher, MessagePublisher>();
 
@@ -32,26 +36,32 @@ public static class ServiceRegistration
 
     private static IServiceCollection AddAzureClients(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddAzureClients(factoryBuilder =>
+        services.AddAzureClients(builder =>
         {
-            // use connection string if endpoints are not provided
+            // azure storage services
             var blobEndpoint = configuration["Storage:BlobEndpoint"];
             var queueEndpoint = configuration["Storage:QueueEndpoint"];
             if (string.IsNullOrEmpty(blobEndpoint) || string.IsNullOrEmpty(queueEndpoint))
             {
+                // use connection string if endpoints are not provided
                 var connectionString = configuration.GetConnectionString("Storage");
-                factoryBuilder.AddBlobServiceClient(connectionString);
-                factoryBuilder.AddQueueServiceClient(connectionString);
+                builder.AddBlobServiceClient(connectionString);
+                builder.AddQueueServiceClient(connectionString);
             }
             else
             {
-                factoryBuilder.AddBlobServiceClient(new Uri(blobEndpoint));
-                factoryBuilder.AddQueueServiceClient(new Uri(queueEndpoint));
+                builder.AddBlobServiceClient(new Uri(blobEndpoint));
+                builder.AddQueueServiceClient(new Uri(queueEndpoint));
             }
 
-            factoryBuilder.AddEmailClient(new Uri(configuration["Email:AcsEndpoint"]!));
-            factoryBuilder.UseCredential(TokenCredentialFactory.Create());
-            factoryBuilder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
+            // ai services
+            builder.AddImageAnalysisClient(configuration.GetValue<Uri>("AiServices:ComputerVisionEndpoint"));
+            builder.AddContentSafetyClient(configuration.GetValue<Uri>("AiServices:ContentSafetyEndpoint"));
+
+            builder.AddEmailClient(configuration.GetValue<Uri>("Email:AcsEndpoint"));
+
+            builder.UseCredential(TokenCredentialFactory.Create());
+            builder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
         });
 
         return services;
@@ -59,13 +69,9 @@ public static class ServiceRegistration
 
     private static IServiceCollection AddBlobContainerManagers(this IServiceCollection services)
     {
-        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.Images, (provider, _) =>
+        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.PostImages, (provider, _) =>
             new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
-                .GetBlobContainerClient(BlobContainerNames.Images)));
-
-        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.ImagesCache, (provider, _) =>
-            new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
-                .GetBlobContainerClient(BlobContainerNames.ImagesCache)));
+                .GetBlobContainerClient(BlobContainerNames.PostImages)));
 
         return services;
     }
@@ -77,6 +83,28 @@ public static class ServiceRegistration
             .ValidateDataAnnotations();
 
         services.AddHttpClient<IImageHostingService, ImageHostingService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddImageAnalysis(this IServiceCollection services)
+    {
+        services.AddOptions<ImageAnalysisOptions>()
+            .BindConfiguration(ImageAnalysisOptions.SectionName)
+            .ValidateDataAnnotations();
+
+        services.AddSingleton<IImageAnalysisService, ImageAnalysisService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddModeration(this IServiceCollection services)
+    {
+        services.AddOptions<ModerationOptions>()
+            .BindConfiguration(ModerationOptions.SectionName)
+            .ValidateDataAnnotations();
+
+        services.AddSingleton<IModerationService, ModerationService>();
 
         return services;
     }

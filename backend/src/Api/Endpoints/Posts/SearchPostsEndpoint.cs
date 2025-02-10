@@ -28,6 +28,7 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext)
 
         var userId = User.GetUserId();
         var paging = await dbContext.Posts
+            .Where(post => post.Status == PostStatus.Approved)
             .Select(post => new SearchPostsMatch
             {
                 Id = post.Id,
@@ -38,6 +39,7 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext)
                 AuthorUserName = post.User.UserName!,
                 AuthorEmailHash = post.User.Email.ToSha256Hash(),
                 SpeciesName = post.Species.Name,
+                Tags = post.Tags,
                 CreatedAt = post.CreatedAtUtc,
                 UpdatedAt = post.UpdatedAtUtc,
                 Reactions = new PostReactionsResponse

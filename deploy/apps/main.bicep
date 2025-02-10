@@ -87,9 +87,18 @@ module appInsightsModule 'appInsights.bicep' = {
   }
 }
 
-resource staticWebApp 'Microsoft.Web/staticSites@2024-04-01' existing = {
-  name: 'ratemypet-shared-swa'
-  scope: resourceGroup(sharedResourceGroup)
+// static web app
+module staticWebAppModule 'staticWebApp.bicep' = {
+  name: 'staticWebApp'
+  params: {
+    workload: workload
+    appEnv: appEnv
+    appName: 'frontend'
+    location: 'eastasia'
+    domainName: domainName
+    sharedResourceGroup: sharedResourceGroup
+    tags: tags
+  }
 }
 
 // container apps
@@ -108,11 +117,8 @@ module containerAppsModule 'containerApps.bicep' = {
     apiImageRepository: apiImageRepository
     apiImageTag: apiImageTag
     apiAllowedOrigins: appEnv == 'prod'
-      ? map(
-          concat(staticWebApp.properties.customDomains, [staticWebApp.properties.defaultHostname]),
-          (hostname) => 'https://${hostname}'
-        )
-      : []
+      ? map(staticWebAppModule.outputs.hostnames, (hostname) => 'https://${hostname}')
+      : ['*']
     containerRegistryName: containerRegistryName
     containerRegistryUsername: containerRegistryUsername
     keyVaultName: keyVaultName
@@ -130,10 +136,21 @@ module jobsAppModule './functionApp.bicep' = {
     domainName: domainName
     sharedResourceGroup: sharedResourceGroup
     storageAccountName: storageModule.outputs.accountName
-    imagesContainerName: storageModule.outputs.imagesContainerName
-    imagesCacheContainerName: storageModule.outputs.imagesCacheContainerName
+    keyVaultName: keyVaultName
     databaseConnectionString: databaseModule.outputs.connectionString
     applicationInsightsConnectionString: appInsightsModule.outputs.connectionString
+    cloudinaryApiKey: cloudinaryApiKey
+  }
+}
+
+// ai services
+module aiServicesModule './aiServices.bicep' = {
+  name: 'aiServices'
+  params: {
+    workload: workload
+    appEnv: appEnv
+    location: location
+    tags: tags
   }
 }
 
@@ -150,6 +167,8 @@ module appConfigModule 'appConfig.bicep' = {
     databaseConnectionString: databaseModule.outputs.connectionString
     storageAccountBlobEndpoint: storageModule.outputs.blobEndpoint
     storageAccountQueueEndpoint: storageModule.outputs.queueEndpoint
+    computerVisionEndpoint: aiServicesModule.outputs.computerVisionEndpoint
+    contentSafetyEndpoint: aiServicesModule.outputs.contentSafetyEndpoint
   }
 }
 
@@ -162,6 +181,7 @@ module roleAssignmentsModule 'roleAssignments.bicep' = {
     jobsAppPrincipalId: jobsAppModule.outputs.principalId
     storageAccountName: storageModule.outputs.accountName
     applicationInsightsName: appInsightsModule.outputs.applicationInsightsName
+    aiServicesName: aiServicesModule.outputs.aiServicesName
   }
 }
 
