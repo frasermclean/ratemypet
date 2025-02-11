@@ -201,7 +201,7 @@ jobs:
 
       # Deploy API application
       - name: Deploy API application
-        uses: azure/container-apps-deploy-action@v1
+        uses: azure/container-apps-deploy-action@v2
         with:
           imageToDeploy: ${{ needs.build.outputs.apiImage }}
           containerAppName: ratemypet-${{ matrix.environment }}-api-ca
