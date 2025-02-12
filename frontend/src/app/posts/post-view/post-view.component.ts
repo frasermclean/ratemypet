@@ -50,6 +50,7 @@ export class PostViewComponent implements OnInit {
   readonly getPost = dispatch(PostsActions.GetPost);
   readonly addPostComment = dispatch(PostsActions.AddPostComment);
   readonly setPageTitle = dispatch(SharedActions.SetPageTitle);
+  readonly pollPostStatus = dispatch(PostsActions.PollPostStatus);
   readonly allReactions = allReactions;
 
   reactionCount = computed<number>(() => {
@@ -65,9 +66,14 @@ export class PostViewComponent implements OnInit {
 
   constructor(actions$: Actions, store: Store) {
     actions$.pipe(ofActionSuccessful(PostsActions.GetPost), takeUntilDestroyed()).subscribe(() => {
-      const title = this.post()!.title;
+      const post = this.post()!;
+      const title = post.title;
       const url = store.selectSnapshot(RouterState.url)!;
       this.setPageTitle(title, url);
+
+      if (post.status === 'initial') {
+        this.pollPostStatus(this.postIdOrSlug());
+      }
     });
   }
 

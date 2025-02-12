@@ -9,9 +9,13 @@
   <p>{{ errorMessage() }}</p>
 </div>
 } @case ('ready') { @if(post(); as post) {
-
 <h2 class="title">{{ post.title }}</h2>
-@if (post.imageId) {
+@if (post.status === 'initial') {
+<div class="centered-container">
+  <p>Your post is currently being processed</p>
+  <mat-spinner />
+</div>
+} @else { @if (post.imageId) {
 <app-post-image [imageId]="post.imageId" [title]="post.title" />
 }
 <p class="description">{{ post.description }}</p>
@@ -80,4 +84,4 @@
     <app-post-delete-button [postId]="post.id" />
   </mat-card-actions>
 </mat-card>
-} } } }
+} } } } }
