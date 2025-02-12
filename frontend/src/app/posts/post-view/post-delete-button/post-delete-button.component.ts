@@ -3,10 +3,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Navigate } from '@ngxs/router-plugin';
-import { Actions, dispatch, ofActionSuccessful } from '@ngxs/store';
+import { dispatch } from '@ngxs/store';
 import { ConfirmationComponent, ConfirmationData } from '@shared/components/confirmation/confirmation.component';
 import { NotificationService } from '@shared/services/notification.service';
-import { filter, Subject, takeUntil } from 'rxjs';
+import { filter, Subject, takeUntil, tap } from 'rxjs';
 import { PostsActions } from '../../posts.actions';
 
 @Component({
@@ -20,22 +20,21 @@ import { PostsActions } from '../../posts.actions';
   `
 })
 export class PostDeleteButtonComponent implements OnDestroy {
-  postId = input.required<string>();
+  public readonly postId = input.required<string>();
   private readonly dialog = inject(MatDialog);
+  private readonly notificationService = inject(NotificationService);
   private readonly deletePost = dispatch(PostsActions.DeletePost);
   private readonly navigate = dispatch(Navigate);
   private readonly destroy$ = new Subject<void>();
-
-  constructor(actions$: Actions, notificationService: NotificationService) {
-    actions$.pipe(ofActionSuccessful(PostsActions.DeletePost), takeUntil(this.destroy$)).subscribe(() => {
-      notificationService.showInformation('Post deleted successfully');
-      this.navigate(['/posts']);
-    });
-  }
+  private isDeleteRequested = false;
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.isDeleteRequested) {
+      this.notificationService.showInformation('Post deleted successfully');
+      this.navigate(['/posts']);
+    }
   }
 
   onDelete() {
@@ -46,6 +45,7 @@ export class PostDeleteButtonComponent implements OnDestroy {
       .afterClosed()
       .pipe(
         filter((isConfirmed) => !!isConfirmed),
+        tap(() => (this.isDeleteRequested = true)),
         takeUntil(this.destroy$)
       )
       .subscribe(() => this.deletePost(this.postId()));

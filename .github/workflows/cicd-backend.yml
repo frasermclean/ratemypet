@@ -45,10 +45,12 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9
+          cache: true
+          cache-dependency-path: backend/**/packages.lock.json
 
       # Restore packages
       - name: Restore packages
-        run: dotnet restore
+        run: dotnet restore --locked-mode
 
       # Build solution
       - name: Build solution

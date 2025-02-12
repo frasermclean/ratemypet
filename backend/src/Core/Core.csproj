@@ -6,11 +6,12 @@
     <AssemblyName>RateMyPet.Core</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentResults" Version="3.16.0" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="9.0.1" />
+    <PackageReference Include="FluentResults" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" />
   </ItemGroup>
 
 </Project>

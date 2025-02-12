@@ -8,12 +8,15 @@ export interface Post {
   authorEmailHash: string;
   speciesId: number;
   tags: string[];
+  status: PostStatus;
   createdAt: string;
   updatedAt?: string;
   userReaction?: Reaction;
   reactions: PostReactions;
   comments: PostComment[];
 }
+
+export type PostStatus = 'initial' | 'approved' | 'rejected';
 
 export interface PostReactions {
   like: number;
