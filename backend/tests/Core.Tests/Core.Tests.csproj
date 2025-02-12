@@ -25,6 +25,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="Shouldly" />
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Core\Core.csproj" />
   </ItemGroup>
 
