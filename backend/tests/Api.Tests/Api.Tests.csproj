@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,7 +29,7 @@
 
   <ItemGroup>
     <Using Include="Shouldly" />
-    <Using Include="Xunit" />    
+    <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup>
