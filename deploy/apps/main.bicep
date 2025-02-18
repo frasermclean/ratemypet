@@ -207,3 +207,9 @@ module sharedRoleAssignmentsModule '../shared/roleAssignments.bicep' = {
     ]
   }
 }
+
+@description('Name of the API container app')
+output apiAppName string = containerAppsModule.outputs.apiAppName
+
+@description('Name of the jobs function app')
+output jobsAppName string = jobsAppModule.outputs.appName
