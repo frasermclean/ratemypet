@@ -55,3 +55,19 @@ jobs:
             sharedResourceGroup=${{ vars.SHARED_RESOURCE_GROUP }}
             keyVaultName=${{ steps.deploy_shared.outputs.keyVaultName }}
             appConfigurationName=${{ steps.deploy_shared.outputs.appConfigurationName }}
+
+      # Grant API app database access
+      - name: Grant API app database access
+        shell: pwsh
+        run: >-
+          ${{ github.workspace }}/deploy/scripts/Grant-DbAccess.ps1
+          -PrincipalName ${{ steps.deploy_app.outputs.apiAppName }}
+          -ConnectionString ${{ secrets.DB_CONNECTION_STRING }}
+
+      # Grant jobs app database access
+      - name: Grant jobs app database access
+        shell: pwsh
+        run: >-
+          ${{ github.workspace }}/deploy/scripts/Grant-DbAccess.ps1
+          -PrincipalName ${{ steps.deploy_app.outputs.jobsAppName }}
+          -ConnectionString ${{ secrets.DB_CONNECTION_STRING }}
