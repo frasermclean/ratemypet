@@ -58,16 +58,18 @@ jobs:
 
       # Grant API app database access
       - name: Grant API app database access
-        shell: pwsh
-        run: >-
-          ${{ github.workspace }}/deploy/scripts/Grant-DbAccess.ps1
-          -PrincipalName ${{ steps.deploy_app.outputs.apiAppName }}
-          -ConnectionString ${{ secrets.DB_CONNECTION_STRING }}
+        uses: azure/sql-action@v2.3
+        with:
+          path: ${{ github.workspace }}/deploy/scripts/grant-access.sql
+          connection-string: ${{ secrets.DB_CONNECTION_STRING }}
+        env:
+          APP_PRINCIPAL_NAME: ${{ steps.deploy_app.outputs.apiAppName }}
 
       # Grant jobs app database access
       - name: Grant jobs app database access
-        shell: pwsh
-        run: >-
-          ${{ github.workspace }}/deploy/scripts/Grant-DbAccess.ps1
-          -PrincipalName ${{ steps.deploy_app.outputs.jobsAppName }}
-          -ConnectionString ${{ secrets.DB_CONNECTION_STRING }}
+        uses: azure/sql-action@v2.3
+        with:
+          path: ${{ github.workspace }}/deploy/scripts/grant-access.sql
+          connection-string: ${{ secrets.DB_CONNECTION_STRING }}
+        env:
+          APP_PRINCIPAL_NAME: ${{ steps.deploy_app.outputs.jobsAppName }}
