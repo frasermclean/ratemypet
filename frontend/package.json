@@ -19,7 +19,7 @@
     "@angular/material": "^19.0.5",
     "@angular/platform-browser": "^19.0.6",
     "@angular/platform-browser-dynamic": "^19.0.6",
-    "@angular/router": "^19.0.6",
+    "@angular/router": "^19.2.6",
     "@cloudinary/url-gen": "^1.21.0",
     "@microsoft/applicationinsights-angularplugin-js": "^15.3.4",
     "@microsoft/applicationinsights-web": "^3.3.4",
