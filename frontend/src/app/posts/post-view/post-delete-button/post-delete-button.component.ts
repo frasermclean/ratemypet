@@ -6,7 +6,7 @@ import { Navigate } from '@ngxs/router-plugin';
 import { dispatch } from '@ngxs/store';
 import { ConfirmationComponent, ConfirmationData } from '@shared/components/confirmation/confirmation.component';
 import { NotificationService } from '@shared/services/notification.service';
-import { filter, Subject, takeUntil, tap } from 'rxjs';
+import { filter, Subject, takeUntil } from 'rxjs';
 import { PostsActions } from '../../posts.actions';
 
 @Component({
@@ -26,16 +26,6 @@ export class PostDeleteButtonComponent implements OnDestroy {
   private readonly deletePost = dispatch(PostsActions.DeletePost);
   private readonly navigate = dispatch(Navigate);
   private readonly destroy$ = new Subject<void>();
-  private isDeleteRequested = false;
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-    if (this.isDeleteRequested) {
-      this.notificationService.showInformation('Post deleted successfully');
-      this.navigate(['/posts']);
-    }
-  }
 
   onDelete() {
     this.dialog
@@ -45,10 +35,18 @@ export class PostDeleteButtonComponent implements OnDestroy {
       .afterClosed()
       .pipe(
         filter((isConfirmed) => !!isConfirmed),
-        tap(() => (this.isDeleteRequested = true)),
         takeUntil(this.destroy$)
       )
-      .subscribe(() => this.deletePost(this.postId()));
+      .subscribe(() => {
+        this.notificationService.showInformation('Request to delete post sent.');
+        this.deletePost(this.postId());
+        this.navigate(['/posts']);
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
 
