@@ -55,3 +55,21 @@ jobs:
             sharedResourceGroup=${{ vars.SHARED_RESOURCE_GROUP }}
             keyVaultName=${{ steps.deploy_shared.outputs.keyVaultName }}
             appConfigurationName=${{ steps.deploy_shared.outputs.appConfigurationName }}
+
+      # Grant API app database access
+      - name: Grant API app database access
+        uses: azure/sql-action@v2.3
+        with:
+          path: ${{ github.workspace }}/deploy/scripts/grant-access.sql
+          connection-string: ${{ secrets.DB_CONNECTION_STRING }}
+        env:
+          APP_PRINCIPAL_NAME: ${{ steps.deploy_app.outputs.apiAppName }}
+
+      # Grant jobs app database access
+      - name: Grant jobs app database access
+        uses: azure/sql-action@v2.3
+        with:
+          path: ${{ github.workspace }}/deploy/scripts/grant-access.sql
+          connection-string: ${{ secrets.DB_CONNECTION_STRING }}
+        env:
+          APP_PRINCIPAL_NAME: ${{ steps.deploy_app.outputs.jobsAppName }}

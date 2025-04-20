@@ -216,5 +216,8 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
   }
 }
 
+@description('Name of the API container app')
+output apiAppName string = apiContainerApp.name
+
 @description('The principal ID of the API container app managed identity')
 output apiAppPrincipalId string = apiContainerApp.identity.principalId

@@ -236,7 +236,7 @@ module siteSniEnable './siteSniEnable.bicep' = {
 }
 
 @description('The name of the function app')
-output functionAppName string = functionApp.name
+output appName string = functionApp.name
 
 @description('The principal ID of the function app managed identity')
 output principalId string = functionApp.identity.principalId
