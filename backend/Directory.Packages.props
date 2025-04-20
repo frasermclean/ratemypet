@@ -28,11 +28,9 @@
     <PackageVersion Include="Microsoft.Extensions.Identity.Stores" Version="9.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="9.0.1" />
-    <PackageVersion Include="AutoFixture" Version="4.18.1" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="FastEndpoints.Testing" Version="5.33.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-    <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="Testcontainers.Azurite" Version="4.1.0" />
     <PackageVersion Include="Testcontainers.MsSql" Version="4.1.0" />
