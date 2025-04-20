@@ -24,8 +24,6 @@
     <PackageReference Include="xunit.v3" />
   </ItemGroup>
 
-
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\Core\Core.csproj" />
   </ItemGroup>
