@@ -19,7 +19,7 @@ import { PostCommentsComponent } from './post-comments/post-comments.component';
 import { PostDeleteButtonComponent } from './post-delete-button/post-delete-button.component';
 import { PostImageComponent } from './post-image/post-image.component';
 import { PostReactionsCardComponent } from './post-reactions-card/post-reactions-card.component';
-import { PostTagsListComponent } from './post-tag/post-tags-list.component';
+import { PostTagsListComponent } from './post-tags-list/post-tags-list.component';
 
 @Component({
   selector: 'app-post-view',

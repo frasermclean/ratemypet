@@ -23,7 +23,7 @@
   Posted by: <strong>{{ post.authorUserName }}</strong> on {{ post.createdAt | date }}
 </p>
 
-<app-post-tags-list [tags]="post.tags" />
+<post-tags-list [tags]="post.tags" />
 <post-reactions-card [postId]="post.id" [reactions]="post.reactions" [userReaction]="post.userReaction" />
 
 <!-- Comments -->
