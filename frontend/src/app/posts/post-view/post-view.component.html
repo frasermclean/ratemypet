@@ -24,31 +24,7 @@
 </p>
 
 <app-post-tags-list [tags]="post.tags" />
-
-<!-- Reactions -->
-<mat-card class="mat-elevation-z8" id="comments">
-  <mat-card-header>
-    <mat-card-title class="title">
-      Reactions @if (reactionCount()) {
-      <span class="count">({{ reactionCount() }})</span>
-      }
-    </mat-card-title>
-    <mat-card-subtitle class="subtitle">
-      {{ userName() ? "What is your reaction?" : "Log in leave your reaction" }}
-    </mat-card-subtitle>
-  </mat-card-header>
-  <mat-card-content class="reactions">
-    @for (reaction of allReactions; track $index) {
-    <app-post-reaction
-      [postId]="post.id"
-      [reaction]="reaction"
-      [count]="post.reactions[reaction]"
-      [userReaction]="post.userReaction"
-      size="large"
-    />
-    }
-  </mat-card-content>
-</mat-card>
+<post-reactions-card [postId]="post.id" [reactions]="post.reactions" [userReaction]="post.userReaction" />
 
 <!-- Comments -->
 <mat-card class="mat-elevation-z8" id="comments">

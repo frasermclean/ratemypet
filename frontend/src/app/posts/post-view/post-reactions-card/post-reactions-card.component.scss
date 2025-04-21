@@ -1,0 +1,20 @@
+:host {
+  width: 100%;
+}
+
+mat-card {
+  mat-card-header {
+    .title {
+      font-size: 28px;
+    }
+  }
+
+  mat-card-content {
+    margin-top: 1rem;
+
+    &.reactions {
+      display: flex;
+      gap: 8px;
+    }
+  }
+}

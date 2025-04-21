@@ -27,7 +27,7 @@
 
   <mat-card-actions>
     @for (reaction of reactions; track $index) {
-    <app-post-reaction
+    <post-reaction-button
       [postId]="post.id"
       [reaction]="reaction"
       [count]="post.reactions[reaction]"

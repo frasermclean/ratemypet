@@ -11,12 +11,12 @@ import { Reaction } from '../post.models';
 import { PostsActions } from '../posts.actions';
 
 @Component({
-  selector: 'app-post-reaction',
+  selector: 'post-reaction-button',
   imports: [TitleCasePipe, MatButtonModule, MatBadgeModule, MatIconModule, MatTooltipModule],
-  templateUrl: './post-reaction.component.html',
-  styleUrl: './post-reaction.component.scss'
+  templateUrl: './post-reaction-button.component.html',
+  styleUrl: './post-reaction-button.component.scss'
 })
-export class PostReactionComponent {
+export class PostReactionButtonComponent {
   postId = input.required<string>();
   reaction = input.required<Reaction>();
   count = input.required<number>();
