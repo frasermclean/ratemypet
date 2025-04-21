@@ -18,7 +18,6 @@ import { PostsActions } from '../posts.actions';
 import { PostsState } from '../posts.state';
 
 @Component({
-  selector: 'app-post-edit',
   imports: [
     ReactiveFormsModule,
     MatButtonModule,
@@ -35,7 +34,7 @@ import { PostsState } from '../posts.state';
 })
 export class PostEditComponent implements OnInit {
   private readonly formBuilder = inject(NonNullableFormBuilder);
-  postIdOrSlug = input('');
+  postIdOrSlug = input<string>();
   getPost = dispatch(PostsActions.GetPost);
   addPost = dispatch(PostsActions.AddPost);
   updatePost = dispatch(PostsActions.UpdatePost);
@@ -44,9 +43,7 @@ export class PostEditComponent implements OnInit {
   allSpecies = select(SpeciesState.allSpecies);
   isBusy = select(PostsState.isBusy);
 
-  isEditing = computed<boolean>(() => {
-    return !!this.postIdOrSlug();
-  });
+  protected isEditing = computed(() => !!this.postIdOrSlug());
 
   imageUpload = viewChild.required(ImageUploadComponent);
 
@@ -61,16 +58,10 @@ export class PostEditComponent implements OnInit {
 
   constructor(actions$: Actions, notificationService: NotificationService, router: Router) {
     actions$.pipe(ofActionSuccessful(PostsActions.GetPost), takeUntilDestroyed()).subscribe(() => {
-      this.formGroup.patchValue({
-        id: this.currentPost()!.id,
-        title: this.currentPost()!.title,
-        description: this.currentPost()!.description,
-        speciesId: this.currentPost()!.speciesId,
-        tags: this.currentPost()!.tags
-      });
-      if (this.isEditing()) {
-        this.formGroup.controls.title.disable();
-      }
+      const currentPost = this.currentPost();
+      if (!currentPost) return;
+      this.formGroup.patchValue(currentPost);
+      this.formGroup.controls.title.disable();
     });
 
     actions$.pipe(ofActionSuccessful(PostsActions.AddPost), takeUntilDestroyed()).subscribe(() => {
@@ -87,8 +78,9 @@ export class PostEditComponent implements OnInit {
   ngOnInit(): void {
     this.getAllSpecies();
 
-    if (this.isEditing()) {
-      this.getPost(this.postIdOrSlug());
+    const postIdOrSlug = this.postIdOrSlug();
+    if (postIdOrSlug) {
+      this.getPost(postIdOrSlug);
       this.formGroup.controls.image.clearValidators();
     }
   }
