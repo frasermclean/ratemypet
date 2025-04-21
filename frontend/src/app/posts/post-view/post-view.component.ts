@@ -11,7 +11,6 @@ import { RouterState } from '@ngxs/router-plugin';
 import { Actions, dispatch, ofActionSuccessful, select, Store } from '@ngxs/store';
 import { SharedActions } from '@shared/shared.actions';
 import { AuthState } from '../../auth/auth.state';
-import { allReactions } from '../post.models';
 import { PostsActions } from '../posts.actions';
 import { PostsState } from '../posts.state';
 import { PostAddCommentComponent, PostAddCommentData } from './post-add-comment/post-add-comment.component';
@@ -51,7 +50,6 @@ export class PostViewComponent implements OnInit {
   readonly addPostComment = dispatch(PostsActions.AddPostComment);
   readonly setPageTitle = dispatch(SharedActions.SetPageTitle);
   readonly pollPostStatus = dispatch(PostsActions.PollPostStatus);
-  readonly allReactions = allReactions;
 
   isAuthor = computed<boolean>(() => this.post()?.authorUserName === this.userName());
 
