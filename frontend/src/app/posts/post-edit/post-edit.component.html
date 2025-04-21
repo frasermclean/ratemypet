@@ -8,6 +8,7 @@
       </div>
       }
 
+      <!-- title -->
       <mat-form-field class="full-width">
         <mat-label>Title</mat-label>
         <input matInput formControlName="title" placeholder="Title of your post" required />
@@ -15,6 +16,8 @@
           Title is <strong>required</strong> and has a maximum length of <strong>50</strong> characters.
         </mat-error>
       </mat-form-field>
+
+      <!-- description -->
       <mat-form-field class="full-width">
         <mat-label>Description</mat-label>
         <textarea
@@ -24,6 +27,8 @@
           required
         ></textarea>
       </mat-form-field>
+
+      <!-- species -->
       <mat-form-field class="full-width">
         <mat-label>Species</mat-label>
         <mat-select formControlName="speciesId" placeholder="Select a species" required>
@@ -31,6 +36,23 @@
           <mat-option [value]="species.id">{{ species.name }}</mat-option>
           }
         </mat-select>
+      </mat-form-field>
+
+      <!-- tags -->
+      <mat-form-field class="full-width">
+        <mat-label>Tags</mat-label>
+        <mat-chip-grid #tagGrid formControlName="tags">
+          @for(tag of formGroup.controls.tags.value; track $index) {
+          <mat-chip-row (removed)="removeTag(tag)">
+            {{ tag }}
+            <button matChipRemove>
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+          }
+        </mat-chip-grid>
+        <input placeholder="Add a tag" [matChipInputFor]="tagGrid" (matChipInputTokenEnd)="addTag($event)" />
+        <mat-error> A maximum of 5 tags are allowed. </mat-error>
       </mat-form-field>
     </mat-card-content>
     <mat-card-actions>

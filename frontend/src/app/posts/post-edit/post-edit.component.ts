@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -22,6 +23,7 @@ import { PostsState } from '../posts.state';
     ReactiveFormsModule,
     MatButtonModule,
     MatCardModule,
+    MatChipsModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -88,6 +90,21 @@ export class PostEditComponent implements OnInit {
   onImageFileChange(file: File | null) {
     this.formGroup.controls.image.setValue(file);
     this.formGroup.controls.image.markAsDirty();
+  }
+
+  protected addTag(event: MatChipInputEvent): void {
+    const value = event.value.trim();
+
+    if (value && this.formGroup.controls.tags.value.findIndex((tag) => tag === value) === -1) {
+      this.formGroup.controls.tags.setValue([...this.formGroup.controls.tags.value, value]);
+    }
+
+    event.chipInput.clear();
+  }
+
+  protected removeTag(tag: string): void {
+    const tags = this.formGroup.controls.tags.value.filter((t) => t !== tag);
+    this.formGroup.controls.tags.setValue(tags);
   }
 
   onSubmitForm() {
