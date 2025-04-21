@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext, StateToken } from '@ngxs/store';
-import { catchError, finalize, of, tap } from 'rxjs';
+import { catchError, filter, finalize, interval, of, switchMap, take, tap } from 'rxjs';
 import { Post, SearchPostsMatch } from './post.models';
 import { PostsActions } from './posts.actions';
 import { PostsService } from './posts.service';
@@ -109,6 +109,25 @@ export class PostsState {
       finalize(() => {
         context.patchState({ status: 'ready' });
       })
+    );
+  }
+
+  @Action(PostsActions.PollPostStatus)
+  pollPostStatus(context: StateContext<PostsStateModel>, action: PostsActions.PollPostStatus) {
+    const currentPost = context.getState().currentPost;
+
+    // post status is already known - no need to poll
+    if (currentPost?.status !== 'initial') {
+      return;
+    }
+
+    return interval(1000).pipe(
+      switchMap(() => this.postsService.getPostStatus(action.postIdOrSlug)),
+      filter((status) => status !== 'initial'),
+      tap((status) => {
+        context.patchState({ currentPost: { ...currentPost, status } });
+      }),
+      take(1)
     );
   }
 

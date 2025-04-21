@@ -26,6 +26,11 @@ export namespace PostsActions {
     constructor(public postId: string) {}
   }
 
+  export class PollPostStatus {
+    static readonly type = '[Posts] Poll Post Status';
+    constructor(public postIdOrSlug: string) {}
+  }
+
   export class GetPostReactions {
     static readonly type = '[Posts] Get Post Reactions';
     constructor(public postId: string) {}

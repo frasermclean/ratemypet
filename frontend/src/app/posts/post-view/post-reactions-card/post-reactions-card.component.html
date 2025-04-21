@@ -1,0 +1,24 @@
+<mat-card class="mat-elevation-z8" id="comments">
+  <mat-card-header>
+    <mat-card-title class="title">
+      Reactions @if (reactionCount()) {
+      <span class="count">({{ reactionCount() }})</span>
+      }
+    </mat-card-title>
+    <mat-card-subtitle class="subtitle">
+      @if (isLoggedIn()) { {{ userReaction() ? `Your reaction: ${userReaction()}` : "What is your reaction?" }} } @else
+      { Log in leave your reaction }
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content class="reactions">
+    @for (reaction of allReactions; track $index) {
+    <post-reaction-button
+      [postId]="postId()"
+      [reaction]="reaction"
+      [count]="reactions()[reaction]"
+      [userReaction]="userReaction()"
+      size="large"
+    />
+    }
+  </mat-card-content>
+</mat-card>

@@ -6,7 +6,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { GravatarComponent } from '@shared/components/gravatar/gravatar.component';
 import { ImageUrlService } from '@shared/services/image-url.service';
-import { PostReactionComponent } from '../../post-reaction/post-reaction.component';
+import { PostReactionButtonComponent } from '../../post-reaction-button/post-reaction-button.component';
 import { allReactions, SearchPostsMatch } from '../../post.models';
 
 @Component({
@@ -18,7 +18,7 @@ import { allReactions, SearchPostsMatch } from '../../post.models';
     MatTooltipModule,
     RouterLink,
     GravatarComponent,
-    PostReactionComponent
+    PostReactionButtonComponent
   ],
   templateUrl: './post-list-item.component.html',
   styleUrl: './post-list-item.component.scss'

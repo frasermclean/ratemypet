@@ -5,13 +5,12 @@
     <app-nav-menu (itemClicked)="sidenav.close()" />
   </mat-sidenav>
   <mat-sidenav-content>
-    <div id="app-content">
+    <main>
       <router-outlet />
-      <div class="spacer"></div>
-      <p class="footer">
-        {{ title() }} is a just-for-fun, non-profit,
-        <a href="https://github.com/frasermclean/ratemypet" target="_blank">open-source project</a>
-      </p>
-    </div>
+    </main>
+    <footer>
+      {{ title() }} is a just-for-fun, non-profit,
+      <a href="https://github.com/frasermclean/ratemypet" target="_blank">open-source project</a>
+    </footer>
   </mat-sidenav-content>
 </mat-sidenav-container>

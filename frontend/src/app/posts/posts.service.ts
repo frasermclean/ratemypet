@@ -8,6 +8,7 @@ import {
   Post,
   PostComment,
   PostReactions,
+  PostStatus,
   Reaction,
   SearchPostsMatch,
   SearchPostsRequest,
@@ -85,5 +86,9 @@ export class PostsService {
 
   deletePostComment(postId: string, commentId: string) {
     return this.httpClient.delete(`${this.baseUrl}/${postId}/comments/${commentId}`);
+  }
+
+  getPostStatus(postIdOrSlug: string): Observable<PostStatus> {
+    return this.httpClient.get<PostStatus>(`${this.baseUrl}/${postIdOrSlug}/status`);
   }
 }

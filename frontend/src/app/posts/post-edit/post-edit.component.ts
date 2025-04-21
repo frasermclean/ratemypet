@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -18,11 +19,11 @@ import { PostsActions } from '../posts.actions';
 import { PostsState } from '../posts.state';
 
 @Component({
-  selector: 'app-post-edit',
   imports: [
     ReactiveFormsModule,
     MatButtonModule,
     MatCardModule,
+    MatChipsModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -35,7 +36,7 @@ import { PostsState } from '../posts.state';
 })
 export class PostEditComponent implements OnInit {
   private readonly formBuilder = inject(NonNullableFormBuilder);
-  postIdOrSlug = input('');
+  postIdOrSlug = input<string>();
   getPost = dispatch(PostsActions.GetPost);
   addPost = dispatch(PostsActions.AddPost);
   updatePost = dispatch(PostsActions.UpdatePost);
@@ -44,9 +45,7 @@ export class PostEditComponent implements OnInit {
   allSpecies = select(SpeciesState.allSpecies);
   isBusy = select(PostsState.isBusy);
 
-  isEditing = computed<boolean>(() => {
-    return !!this.postIdOrSlug();
-  });
+  protected isEditing = computed(() => !!this.postIdOrSlug());
 
   imageUpload = viewChild.required(ImageUploadComponent);
 
@@ -61,16 +60,10 @@ export class PostEditComponent implements OnInit {
 
   constructor(actions$: Actions, notificationService: NotificationService, router: Router) {
     actions$.pipe(ofActionSuccessful(PostsActions.GetPost), takeUntilDestroyed()).subscribe(() => {
-      this.formGroup.patchValue({
-        id: this.currentPost()!.id,
-        title: this.currentPost()!.title,
-        description: this.currentPost()!.description,
-        speciesId: this.currentPost()!.speciesId,
-        tags: this.currentPost()!.tags
-      });
-      if (this.isEditing()) {
-        this.formGroup.controls.title.disable();
-      }
+      const currentPost = this.currentPost();
+      if (!currentPost) return;
+      this.formGroup.patchValue(currentPost);
+      this.formGroup.controls.title.disable();
     });
 
     actions$.pipe(ofActionSuccessful(PostsActions.AddPost), takeUntilDestroyed()).subscribe(() => {
@@ -87,8 +80,9 @@ export class PostEditComponent implements OnInit {
   ngOnInit(): void {
     this.getAllSpecies();
 
-    if (this.isEditing()) {
-      this.getPost(this.postIdOrSlug());
+    const postIdOrSlug = this.postIdOrSlug();
+    if (postIdOrSlug) {
+      this.getPost(postIdOrSlug);
       this.formGroup.controls.image.clearValidators();
     }
   }
@@ -96,6 +90,21 @@ export class PostEditComponent implements OnInit {
   onImageFileChange(file: File | null) {
     this.formGroup.controls.image.setValue(file);
     this.formGroup.controls.image.markAsDirty();
+  }
+
+  protected addTag(event: MatChipInputEvent): void {
+    const value = event.value.trim();
+
+    if (value && this.formGroup.controls.tags.value.findIndex((tag) => tag === value) === -1) {
+      this.formGroup.controls.tags.setValue([...this.formGroup.controls.tags.value, value]);
+    }
+
+    event.chipInput.clear();
+  }
+
+  protected removeTag(tag: string): void {
+    const tags = this.formGroup.controls.tags.value.filter((t) => t !== tag);
+    this.formGroup.controls.tags.setValue(tags);
   }
 
   onSubmitForm() {

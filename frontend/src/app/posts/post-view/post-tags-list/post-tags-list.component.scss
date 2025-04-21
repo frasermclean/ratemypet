@@ -2,6 +2,8 @@ ul {
   display: flex;
   gap: 4px;
   list-style: none;
+  flex-wrap: wrap;
+  justify-content: center;
 
   li {
     border-radius: 16px;

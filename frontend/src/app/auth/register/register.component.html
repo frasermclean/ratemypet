@@ -10,7 +10,7 @@
         <mat-label>Username</mat-label>
         <input matInput placeholder="Your username" formControlName="userName" autocomplete="username" />
         <mat-icon matSuffix>person</mat-icon>
-        <mat-hint>Your name on the site, cannot be changed later</mat-hint>
+        <mat-hint>Publicly viewable name on the site</mat-hint>
         @if (formGroup.controls.userName.hasError('required')) {
         <mat-error>Username is required</mat-error>
         } @else if (formGroup.controls.userName.hasError('minlength')) {
@@ -25,7 +25,7 @@
         <mat-label>Email Address</mat-label>
         <input matInput placeholder="name@example.com" formControlName="emailAddress" autocomplete="email" />
         <mat-icon matSuffix>mail</mat-icon>
-        <mat-hint>Email address to receive confirmation</mat-hint>
+        <mat-hint>Valid email address to receive confirmation</mat-hint>
         @if (formGroup.controls.emailAddress.hasError('required')) {
         <mat-error>Email address is required</mat-error>
         } @else if (formGroup.controls.emailAddress.hasError('email')) {
