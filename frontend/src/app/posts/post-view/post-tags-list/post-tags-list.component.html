@@ -1,5 +1,9 @@
 <ul>
   @for (tag of tags(); track $index) {
-  <li>{{ tag }}</li>
+  <li>
+    <a [routerLink]="['/posts']" [queryParams]="{ tag: tag }">
+      {{ tag }}
+    </a>
+  </li>
   }
 </ul>
