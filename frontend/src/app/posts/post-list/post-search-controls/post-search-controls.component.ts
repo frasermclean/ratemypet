@@ -47,13 +47,13 @@ export class PostSearchControlsComponent implements OnInit {
   private readonly activatedRoute = inject(ActivatedRoute);
   expanded = input(false);
   speciesName = signal('');
+  tag = signal<string>('');
   orderBy = signal<SearchPostsOrderBy>('createdAt');
   descending = signal(true);
   allSpecies = select(SpeciesState.allSpecies);
   routerState = select(RouterState.state);
-  getAllSpecies = dispatch(SpeciesActions.GetAllSpecies);
-
   isBusy = select(PostsState.isBusy);
+  getAllSpecies = dispatch(SpeciesActions.GetAllSpecies);
   searchPosts = dispatch(PostsActions.SearchPosts);
 
   constructor() {
@@ -61,7 +61,8 @@ export class PostSearchControlsComponent implements OnInit {
       this.searchPosts({
         speciesName: this.speciesName(),
         orderBy: this.orderBy(),
-        descending: this.descending()
+        descending: this.descending(),
+        tag: this.tag()
       });
     });
 
@@ -71,11 +72,15 @@ export class PostSearchControlsComponent implements OnInit {
         this.speciesName.set(queryParams['speciesName']);
       }
 
+      if (queryParams['tag']) {
+        this.tag.set(queryParams['tag']);
+      }
+
       if (queryParams['orderBy']) {
         this.orderBy.set(queryParams['orderBy']);
       }
 
-      if (queryParams['descending'] !== undefined) {
+      if (queryParams['descending']) {
         this.descending.set(queryParams['descending'] === 'true');
       }
     });
@@ -96,11 +101,17 @@ export class PostSearchControlsComponent implements OnInit {
     this.updateQueryParams();
   }
 
+  onTagChange(value: string) {
+    this.tag.set(value);
+    this.updateQueryParams();
+  }
+
   private updateQueryParams() {
     const queryParams = {
       speciesName: this.speciesName() || undefined,
       orderBy: this.orderBy() || undefined,
-      descending: this.descending() || undefined
+      descending: this.descending() || undefined,
+      tag: this.tag() || undefined
     };
 
     this.router.navigate([], { queryParams });

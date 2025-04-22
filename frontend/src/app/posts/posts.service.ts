@@ -31,11 +31,12 @@ export class PostsService {
       .setPageSize(request.pageSize ?? DEFAULT_PAGE_SIZE)
       .addOrderBy(request.orderBy ?? DEFAULT_ORDER_BY, request.descending ?? DEFAULT_DESCENDING);
 
-    let hasCondition = false;
-
     if (request.speciesName) {
       queryBuilder.addCondition('speciesName', op.Equal, request.speciesName);
-      hasCondition = true;
+    }
+
+    if (request.tag) {
+      queryBuilder.addCondition('tags', op.Contains, request.tag);
     }
 
     const query = queryBuilder.build();
