@@ -33,12 +33,12 @@ export interface SearchControlsChangeEvent {
 }
 
 @Component({
-  selector: 'app-search-controls',
+  selector: 'post-search-controls',
   imports: [MatButtonToggleModule, MatExpansionModule, MatIconModule],
-  templateUrl: './search-controls.component.html',
-  styleUrl: './search-controls.component.scss'
+  templateUrl: './post-search-controls.component.html',
+  styleUrl: './post-search-controls.component.scss'
 })
-export class SearchControlsComponent implements OnInit {
+export class PostSearchControlsComponent implements OnInit {
   readonly orderByOptions = ORDER_BY_OPTIONS;
   expanded = input(false);
   speciesName = model('');
