@@ -9,7 +9,7 @@
     <div class="controls-container">
       <div class="control-group">
         <h4>Species</h4>
-        <mat-button-toggle-group (change)="speciesName.set($event.value)" [disabled]="isBusy()">
+        <mat-button-toggle-group (valueChange)="onSpeciesChange($event)" [disabled]="isBusy()">
           @for (species of allSpecies(); track species.id) {
           <mat-button-toggle [value]="species.name" [checked]="speciesName() === species.name">
             {{ species.pluralName }}
@@ -20,7 +20,7 @@
 
       <div class="control-group">
         <h4>Order</h4>
-        <mat-button-toggle-group (change)="onOrderChange($event.value)" [disabled]="isBusy()">
+        <mat-button-toggle-group (valueChange)="onOrderChange($event)" [disabled]="isBusy()">
           @for (option of orderByOptions; track $index) {
           <mat-button-toggle [value]="option.value">{{ option.label }}</mat-button-toggle>
           }

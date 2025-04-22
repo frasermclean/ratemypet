@@ -1,7 +1,10 @@
-import { Component, effect, input, model, OnInit } from '@angular/core';
+import { Component, effect, inject, input, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
+import { ActivatedRoute, Router } from '@angular/router';
+import { RouterState } from '@ngxs/router-plugin';
 import { dispatch, select } from '@ngxs/store';
 import { SpeciesActions } from '../../../species/species.actions';
 import { SpeciesState } from '../../../species/species.state';
@@ -40,11 +43,14 @@ export interface SearchControlsChangeEvent {
 })
 export class PostSearchControlsComponent implements OnInit {
   readonly orderByOptions = ORDER_BY_OPTIONS;
+  private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute);
   expanded = input(false);
-  speciesName = model('');
-  orderBy = model<SearchPostsOrderBy>('createdAt');
-  descending = model(true);
+  speciesName = signal('');
+  orderBy = signal<SearchPostsOrderBy>('createdAt');
+  descending = signal(true);
   allSpecies = select(SpeciesState.allSpecies);
+  routerState = select(RouterState.state);
   getAllSpecies = dispatch(SpeciesActions.GetAllSpecies);
 
   isBusy = select(PostsState.isBusy);
@@ -52,12 +58,26 @@ export class PostSearchControlsComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const request = {
+      this.searchPosts({
         speciesName: this.speciesName(),
         orderBy: this.orderBy(),
         descending: this.descending()
-      };
-      this.searchPosts(request);
+      });
+    });
+
+    // map query params to signals
+    this.activatedRoute.queryParams.pipe(takeUntilDestroyed()).subscribe((queryParams) => {
+      if (queryParams['speciesName']) {
+        this.speciesName.set(queryParams['speciesName']);
+      }
+
+      if (queryParams['orderBy']) {
+        this.orderBy.set(queryParams['orderBy']);
+      }
+
+      if (queryParams['descending'] !== undefined) {
+        this.descending.set(queryParams['descending'] === 'true');
+      }
     });
   }
 
@@ -65,8 +85,24 @@ export class PostSearchControlsComponent implements OnInit {
     this.getAllSpecies();
   }
 
+  onSpeciesChange(value: string) {
+    this.speciesName.set(value);
+    this.updateQueryParams();
+  }
+
   onOrderChange(value: { orderBy: SearchPostsOrderBy; descending: boolean }) {
     this.orderBy.set(value.orderBy);
     this.descending.set(value.descending);
+    this.updateQueryParams();
+  }
+
+  private updateQueryParams() {
+    const queryParams = {
+      speciesName: this.speciesName() || undefined,
+      orderBy: this.orderBy() || undefined,
+      descending: this.descending() || undefined
+    };
+
+    this.router.navigate([], { queryParams });
   }
 }
