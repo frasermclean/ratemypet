@@ -9,10 +9,9 @@ import { Role } from '../../auth/auth.models';
 import { AuthState } from '../../auth/auth.state';
 import { PostsState } from '../posts.state';
 import { PostItemComponent } from './post-list-item/post-list-item.component';
-import { SearchControlsComponent } from './search-controls/search-controls.component';
+import { PostSearchControlsComponent } from './post-search-controls/post-search-controls.component';
 
 @Component({
-  selector: 'app-post-list',
   imports: [
     RouterLink,
     MatButtonModule,
@@ -20,7 +19,7 @@ import { SearchControlsComponent } from './search-controls/search-controls.compo
     MatProgressSpinnerModule,
     MatTooltipModule,
     PostItemComponent,
-    SearchControlsComponent
+    PostSearchControlsComponent
   ],
   templateUrl: './post-list.component.html',
   styleUrl: './post-list.component.scss'

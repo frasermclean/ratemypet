@@ -55,6 +55,7 @@ export interface SearchPostsRequest {
   page: number;
   pageSize: number;
   speciesName: string;
+  tag: string;
   orderBy: SearchPostsOrderBy;
   descending: boolean;
 }
