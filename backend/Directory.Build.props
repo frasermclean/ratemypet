@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <RootNamespace>RateMyPet.$(MSBuildProjectName)</RootNamespace>
+    <AssemblyName>RateMyPet.$(MSBuildProjectName)</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+</Project>
