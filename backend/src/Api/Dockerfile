@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY Directory.Packages.props .
+COPY *.props .
 COPY ["src/Api/Api.csproj", "Api/"]
 COPY ["src/Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["src/Core/Core.csproj", "Core/"]
