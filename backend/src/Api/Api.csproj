@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <UserSecretsId>e5a738df-5b24-4d63-a1f0-6d0d6f425dec</UserSecretsId>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <PropertyGroup>
