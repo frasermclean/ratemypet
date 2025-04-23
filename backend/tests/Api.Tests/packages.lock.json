@@ -362,8 +362,8 @@
       },
       "Microsoft.Extensions.Configuration.AzureAppConfiguration": {
         "type": "Transitive",
-        "resolved": "8.1.1",
-        "contentHash": "WEfYB6jwnEFeFRYybau7cL7fdZxI+8apPfvXmzO39iqZyyvBreFk4z6wUY+VooL6cxQn+TBWgprTs/osE0VKpg==",
+        "resolved": "8.1.2",
+        "contentHash": "KMRpJaOvHc57HLcw7i/yx87jQZznP1EAnX/rk7Ada7nYx4HYT+FYC8wsa2eE+4zz6ohwvtauv42Tt+v0IQCLSg==",
         "dependencies": {
           "Azure.Data.AppConfiguration": "1.4.1",
           "Azure.Messaging.EventGrid": "4.7.0",
@@ -1608,7 +1608,7 @@
           "Azure.Monitor.OpenTelemetry.AspNetCore": "[1.2.0, )",
           "FastEndpoints": "[6.0.0, )",
           "Gridify.EntityFramework": "[2.16.3, )",
-          "Microsoft.Azure.AppConfiguration.AspNetCore": "[8.1.1, )",
+          "Microsoft.Azure.AppConfiguration.AspNetCore": "[8.1.2, )",
           "RateMyPet.Infrastructure": "[1.0.0, )"
         }
       },
@@ -1754,11 +1754,11 @@
       },
       "Microsoft.Azure.AppConfiguration.AspNetCore": {
         "type": "CentralTransitive",
-        "requested": "[8.1.1, )",
-        "resolved": "8.1.1",
-        "contentHash": "NMhJG1JQkDxXN7/tb8Yk2Wt+HeDUe4t2VNi32lZFVFtRvougmoymJnF2PYEdHzZvpCOAZsfgpe56rAIXIiPoIQ==",
+        "requested": "[8.1.2, )",
+        "resolved": "8.1.2",
+        "contentHash": "ncoWUfEht+lGy7UiEPZmeaWF+1dp22qun58imNs82ZzYOcbGKdn9PoUmB4VqCla5/bNtWIFCm4DeXxYrGi4/Zw==",
         "dependencies": {
-          "Microsoft.Extensions.Configuration.AzureAppConfiguration": "8.1.1"
+          "Microsoft.Extensions.Configuration.AzureAppConfiguration": "8.1.2"
         }
       },
       "Microsoft.EntityFrameworkCore.SqlServer": {
