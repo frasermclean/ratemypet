@@ -1,13 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <RootNamespace>RateMyPet.Core</RootNamespace>
-    <AssemblyName>RateMyPet.Core</AssemblyName>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="FluentResults" />
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" />

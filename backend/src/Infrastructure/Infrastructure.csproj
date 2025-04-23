@@ -1,13 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <RootNamespace>RateMyPet.Infrastructure</RootNamespace>
-    <AssemblyName>RateMyPet.Infrastructure</AssemblyName>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Azure.AI.ContentSafety" />
     <PackageReference Include="Azure.AI.Vision.ImageAnalysis" />
