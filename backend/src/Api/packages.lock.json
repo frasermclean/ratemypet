@@ -15,6 +15,16 @@
           "OpenTelemetry.Instrumentation.Http": "1.8.1"
         }
       },
+      "Delta.EF": {
+        "type": "Direct",
+        "requested": "[6.4.0, )",
+        "resolved": "6.4.0",
+        "contentHash": "sqCg0m7G2oCpK60EC4RLTWj24WYZbbDKPBzNH4Emw/rYxaLIrhtPqMKjaEwwLWx9L/2hr673+IyaPlXcDhNPRQ==",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "9.0.3",
+          "Microsoft.EntityFrameworkCore.Relational": "9.0.3"
+        }
+      },
       "FastEndpoints": {
         "type": "Direct",
         "requested": "[6.0.0, )",

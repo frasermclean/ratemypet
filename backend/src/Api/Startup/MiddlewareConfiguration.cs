@@ -1,4 +1,6 @@
-﻿using FastEndpoints;
+﻿using Delta;
+using FastEndpoints;
+using RateMyPet.Infrastructure.Services;
 
 namespace RateMyPet.Api.Startup;
 
@@ -12,6 +14,7 @@ public static class MiddlewareConfiguration
         }
 
         app.UseAuthorization();
+        app.UseDelta<ApplicationDbContext>();
 
         app.UseFastEndpoints(config =>
         {

@@ -10,6 +10,7 @@
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.24.0" />
     <PackageVersion Include="Azure.Storage.Queues" Version="12.22.0" />
     <PackageVersion Include="CloudinaryDotNet" Version="1.27.5" />
+    <PackageVersion Include="Delta.EF" Version="6.4.0" />
     <PackageVersion Include="FastEndpoints" Version="6.0.0" />
     <PackageVersion Include="FluentResults" Version="3.16.0" />
     <PackageVersion Include="Gridify.EntityFramework" Version="2.16.3" />
