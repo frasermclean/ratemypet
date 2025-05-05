@@ -14,7 +14,6 @@ public static class MiddlewareConfiguration
         }
 
         app.UseAuthorization();
-        app.UseDelta<ApplicationDbContext>();
 
         app.UseFastEndpoints(config =>
         {
