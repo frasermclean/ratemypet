@@ -1,4 +1,6 @@
-﻿using FastEndpoints;
+﻿using Delta;
+using FastEndpoints;
+using RateMyPet.Infrastructure.Services;
 
 namespace RateMyPet.Api.Startup;
 

@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" />
+    <PackageReference Include="Delta.EF" />
     <PackageReference Include="FastEndpoints" />
     <PackageReference Include="Gridify.EntityFramework" />
     <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" />

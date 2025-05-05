@@ -1606,6 +1606,7 @@
         "type": "Project",
         "dependencies": {
           "Azure.Monitor.OpenTelemetry.AspNetCore": "[1.2.0, )",
+          "Delta.EF": "[6.4.0, )",
           "FastEndpoints": "[6.0.0, )",
           "Gridify.EntityFramework": "[2.16.3, )",
           "Microsoft.Azure.AppConfiguration.AspNetCore": "[8.1.2, )",
@@ -1709,6 +1710,16 @@
           "Newtonsoft.Json": "13.0.3",
           "System.Net.Http": "4.3.4",
           "System.Text.RegularExpressions": "4.3.1"
+        }
+      },
+      "Delta.EF": {
+        "type": "CentralTransitive",
+        "requested": "[6.4.0, )",
+        "resolved": "6.4.0",
+        "contentHash": "sqCg0m7G2oCpK60EC4RLTWj24WYZbbDKPBzNH4Emw/rYxaLIrhtPqMKjaEwwLWx9L/2hr673+IyaPlXcDhNPRQ==",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "9.0.3",
+          "Microsoft.EntityFrameworkCore.Relational": "9.0.3"
         }
       },
       "FastEndpoints": {
