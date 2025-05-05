@@ -20,6 +20,7 @@ public class SearchPostsEndpointTests(ApiFixture fixture) : TestBase<ApiFixture>
 
         // assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
+        message.Headers.ETag.ShouldNotBeNull();
     }
 
 }
