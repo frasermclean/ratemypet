@@ -1,4 +1,5 @@
-﻿using FastEndpoints;
+﻿using Delta;
+using FastEndpoints;
 using Gridify;
 using Gridify.EntityFramework;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -15,6 +16,7 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext)
     public override void Configure()
     {
         Get("posts");
+        Options(builder => builder.UseDelta<ApplicationDbContext>());
         AllowAnonymous();
     }
 

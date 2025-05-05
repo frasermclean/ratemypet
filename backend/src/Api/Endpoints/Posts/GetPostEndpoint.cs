@@ -1,4 +1,5 @@
-﻿using FastEndpoints;
+﻿using Delta;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Api.Extensions;
@@ -13,6 +14,7 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
     public override void Configure()
     {
         Get("posts/{postId:guid}", "posts/{postSlug}");
+        Options(builder => builder.UseDelta<ApplicationDbContext>());
         AllowAnonymous();
     }
 

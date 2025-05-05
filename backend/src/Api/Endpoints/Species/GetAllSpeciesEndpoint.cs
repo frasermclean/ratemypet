@@ -1,4 +1,5 @@
-﻿using FastEndpoints;
+﻿using Delta;
+using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Infrastructure.Services;
 
@@ -10,6 +11,7 @@ public class GetAllSpeciesEndpoint(ApplicationDbContext dbContext)
     public override void Configure()
     {
         Get("species");
+        Options(builder => builder.UseDelta<ApplicationDbContext>());
         AllowAnonymous();
     }
 
