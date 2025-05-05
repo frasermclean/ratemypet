@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { AuthState } from '@auth/auth.state';
 import { select } from '@ngxs/store';
@@ -6,6 +6,7 @@ import { PostReactionButtonComponent } from '../../post-reaction-button/post-rea
 import { allReactions, PostReactions, Reaction } from '../../post.models';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'post-reactions-card',
   imports: [MatCardModule, PostReactionButtonComponent],
   templateUrl: './post-reactions-card.component.html',

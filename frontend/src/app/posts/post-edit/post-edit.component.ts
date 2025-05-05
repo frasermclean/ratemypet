@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnInit, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,6 +19,7 @@ import { PostsActions } from '../posts.actions';
 import { PostsState } from '../posts.state';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     MatButtonModule,

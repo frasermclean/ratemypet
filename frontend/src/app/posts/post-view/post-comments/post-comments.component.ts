@@ -1,4 +1,4 @@
-import { Component, input, TrackByFunction } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, TrackByFunction } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTreeModule } from '@angular/material/tree';
@@ -8,6 +8,7 @@ import { PostComment } from '../../post.models';
 import { PostCommentComponent } from './post-comment/post-comment.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-post-comments',
   imports: [MatButtonModule, MatIconModule, MatTreeModule, PostCommentComponent],
   templateUrl: './post-comments.component.html',

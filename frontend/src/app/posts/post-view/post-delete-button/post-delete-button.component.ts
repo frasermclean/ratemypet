@@ -1,4 +1,4 @@
-import { Component, inject, input, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, OnDestroy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +10,7 @@ import { filter, Subject, takeUntil } from 'rxjs';
 import { PostsActions } from '../../posts.actions';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-post-delete-button',
   imports: [MatButtonModule, MatIconModule],
   template: `

@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -9,6 +9,7 @@ import { select, Store } from '@ngxs/store';
 import { UserMenuComponent } from './user-menu/user-menu.component';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-toolbar',
   imports: [MatIconModule, MatButtonModule, MatProgressSpinnerModule, MatToolbarModule, RouterLink, UserMenuComponent],
   templateUrl: './toolbar.component.html',

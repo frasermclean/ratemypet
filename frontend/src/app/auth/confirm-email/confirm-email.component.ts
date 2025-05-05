@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { dispatch } from '@ngxs/store';
 
 import { AuthActions } from '../auth.actions';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: ''
 })
 export class ConfirmEmailComponent implements OnInit {

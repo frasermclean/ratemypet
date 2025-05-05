@@ -1,5 +1,5 @@
 import { TitleCasePipe } from '@angular/common';
-import { Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +11,7 @@ import { Reaction } from '../post.models';
 import { PostsActions } from '../posts.actions';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'post-reaction-button',
   imports: [TitleCasePipe, MatButtonModule, MatBadgeModule, MatIconModule, MatTooltipModule],
   templateUrl: './post-reaction-button.component.html',

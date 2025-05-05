@@ -1,4 +1,4 @@
-import { Component, effect, inject, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, output, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { NotificationService } from '@shared/services/notification.service';
@@ -11,6 +11,7 @@ interface ImageInfo {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-image-upload',
   imports: [MatButtonModule, MatIconModule],
   templateUrl: './image-upload.component.html',

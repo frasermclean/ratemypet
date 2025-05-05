@@ -1,7 +1,8 @@
-import { Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { ImageUrlService } from '@shared/services/image-url.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-post-image',
   imports: [],
   templateUrl: './post-image.component.html',
