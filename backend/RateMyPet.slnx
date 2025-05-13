@@ -5,6 +5,7 @@
     <Project Path="tests\Infrastructure.Tests\Infrastructure.Tests.csproj" Type="Classic C#" />
   </Folder>
   <Project Path="src\Api\Api.csproj" Type="Classic C#" />
+  <Project Path="src\AppHost\AppHost.csproj" Type="Classic C#" />
   <Project Path="src\Core\Core.csproj" Type="Classic C#" />
   <Project Path="src\Infrastructure\Infrastructure.csproj" Type="Classic C#" />
   <Project Path="src\Jobs\Jobs.csproj" Type="Classic C#" />
