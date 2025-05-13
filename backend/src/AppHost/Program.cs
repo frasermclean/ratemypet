@@ -17,6 +17,10 @@ public static class Program
             .WithReference(database)
             .WaitFor(database);
 
+        var initializer = builder.AddProject<Projects.Initializer>("initializer")
+            .WithReference(database)
+            .WaitFor(database);
+
         builder.Build().Run();
     }
 }

@@ -1,4 +1,7 @@
 ﻿<Solution>
+  <Folder Name="/Infrastructure/">
+    <Project Path="src\Initializer\Initializer.csproj" Type="Classic C#" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="tests\Api.Tests\Api.Tests.csproj" Type="Classic C#" />
     <Project Path="tests\Core.Tests\Core.Tests.csproj" Type="Classic C#" />
