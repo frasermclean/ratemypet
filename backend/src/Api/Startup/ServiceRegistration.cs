@@ -20,11 +20,11 @@ public static class ServiceRegistration
             .AddInfrastructureServices(builder.Configuration);
 
         // open telemetry
-        if (!builder.Environment.IsEnvironment("Testing"))
-        {
-            builder.Services.AddOpenTelemetry()
-                .UseAzureMonitor(options => options.Credential = TokenCredentialFactory.Create());
-        }
+        // if (!builder.Environment.IsEnvironment("Testing"))
+        // {
+        //     builder.Services.AddOpenTelemetry()
+        //         .UseAzureMonitor(options => options.Credential = TokenCredentialFactory.Create());
+        // }
 
         // json serialization options
         builder.Services.Configure<JsonOptions>(options =>

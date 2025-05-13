@@ -9,4 +9,5 @@
   <Project Path="src\Core\Core.csproj" Type="Classic C#" />
   <Project Path="src\Infrastructure\Infrastructure.csproj" Type="Classic C#" />
   <Project Path="src\Jobs\Jobs.csproj" Type="Classic C#" />
+  <Project Path="src\ServiceDefaults\ServiceDefaults.csproj" Type="Classic C#" />
 </Solution>
