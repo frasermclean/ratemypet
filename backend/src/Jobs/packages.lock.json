@@ -1415,17 +1415,23 @@
           "Microsoft.Extensions.Identity.Stores": "[9.0.4, )"
         }
       },
-      "RateMyPet.Infrastructure": {
+      "RateMyPet.Database": {
         "type": "Project",
         "dependencies": {
           "Aspire.Microsoft.EntityFrameworkCore.SqlServer": "[9.2.1, )",
+          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[9.0.4, )",
+          "RateMyPet.Core": "[1.0.0, )"
+        }
+      },
+      "RateMyPet.Infrastructure": {
+        "type": "Project",
+        "dependencies": {
           "Azure.AI.ContentSafety": "[1.0.0, )",
           "Azure.AI.Vision.ImageAnalysis": "[1.0.0, )",
           "Azure.Communication.Email": "[1.0.1, )",
           "Azure.Storage.Blobs": "[12.24.0, )",
           "Azure.Storage.Queues": "[12.22.0, )",
           "CloudinaryDotNet": "[1.27.5, )",
-          "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[9.0.4, )",
           "Microsoft.Extensions.Azure": "[1.11.0, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[9.0.4, )",
           "Microsoft.Extensions.Http": "[9.0.4, )",

@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
-using RateMyPet.Infrastructure.Converters;
+using RateMyPet.Database.Converters;
 
-namespace RateMyPet.Infrastructure.Services;
+namespace RateMyPet.Database;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>(options)

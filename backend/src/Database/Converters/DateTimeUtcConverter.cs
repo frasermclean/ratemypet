@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace RateMyPet.Infrastructure.Converters;
+namespace RateMyPet.Database.Converters;
 
 public class DateTimeUtcConverter() : ValueConverter<DateTime, DateTime>(
     static datetime => datetime.ToUniversalTime(),

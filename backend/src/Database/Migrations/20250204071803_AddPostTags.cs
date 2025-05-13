@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace RateMyPet.Infrastructure.Migrations
+namespace RateMyPet.Database.Migrations
 {
     /// <inheritdoc />
     public partial class AddPostTags : Migration

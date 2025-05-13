@@ -1,13 +1,38 @@
-﻿namespace RateMyPet.Initializer;
+﻿using Microsoft.EntityFrameworkCore;
+using RateMyPet.Database;
 
-public class WorkerService(ILogger<WorkerService> logger, IHostApplicationLifetime applicationLifetime) : BackgroundService
+namespace RateMyPet.Initializer;
+
+public class WorkerService(
+    ILogger<WorkerService> logger,
+    IServiceProvider serviceProvider,
+    IHostApplicationLifetime applicationLifetime) : BackgroundService
 {
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogInformation("Worker service started");
+        await InitializeDatabaseAsync(stoppingToken);
 
         applicationLifetime.StopApplication();
+    }
 
-        return Task.CompletedTask;
+    private async Task InitializeDatabaseAsync(CancellationToken cancellationToken)
+    {
+        await using var scope = serviceProvider.CreateAsyncScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        await dbContext.Database.EnsureDeletedAsync(cancellationToken);
+
+        var pendingMigrations = (await dbContext.Database.GetPendingMigrationsAsync(cancellationToken)).ToList();
+
+        if (pendingMigrations.Count > 0)
+        {
+            logger.LogInformation("Attempting to apply {PendingMigrationsCount} pending migrations",
+                pendingMigrations.Count);
+            await dbContext.Database.MigrateAsync(cancellationToken);
+        }
+        else
+        {
+            logger.LogInformation("Database is up to date with all migrations");
+        }
     }
 }

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RateMyPet.Core;
 
-namespace RateMyPet.Infrastructure.Configuration;
+namespace RateMyPet.Database.Configuration;
 
 public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
 {

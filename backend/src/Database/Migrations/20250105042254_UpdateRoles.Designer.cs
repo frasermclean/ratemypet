@@ -5,22 +5,21 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RateMyPet.Infrastructure.Services;
 
 #nullable disable
 
-namespace RateMyPet.Infrastructure.Migrations
+namespace RateMyPet.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250130030118_AddCloudinaryImages")]
-    partial class AddCloudinaryImages
+    [Migration("20250105042254_UpdateRoles")]
+    partial class UpdateRoles
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -47,10 +46,6 @@ namespace RateMyPet.Infrastructure.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<string>("Slug")
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
-
                     b.Property<int>("SpeciesId")
                         .HasColumnType("int");
 
@@ -67,8 +62,6 @@ namespace RateMyPet.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Slug");
 
                     b.HasIndex("SpeciesId");
 
@@ -237,11 +230,6 @@ namespace RateMyPet.Infrastructure.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("PluralName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .IsRequired()
@@ -257,21 +245,18 @@ namespace RateMyPet.Infrastructure.Migrations
                         {
                             Id = 1,
                             Name = "Dog",
-                            PluralName = "Dogs",
                             RowVersion = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }
                         },
                         new
                         {
                             Id = 2,
                             Name = "Cat",
-                            PluralName = "Cats",
                             RowVersion = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }
                         },
                         new
                         {
                             Id = 3,
                             Name = "Bird",
-                            PluralName = "Birds",
                             RowVersion = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }
                         });
                 });
@@ -486,21 +471,25 @@ namespace RateMyPet.Infrastructure.Migrations
                             b1.Property<Guid>("PostId")
                                 .HasColumnType("uniqueidentifier");
 
-                            b1.Property<string>("AssetId")
+                            b1.Property<string>("FileName")
                                 .IsRequired()
-                                .HasMaxLength(64)
-                                .HasColumnType("nvarchar(64)")
-                                .HasColumnName("ImageAssetId");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)")
+                                .HasColumnName("ImageFileName");
 
                             b1.Property<int>("Height")
                                 .HasColumnType("int")
                                 .HasColumnName("ImageHeight");
 
-                            b1.Property<string>("PublicId")
+                            b1.Property<bool>("IsProcessed")
+                                .HasColumnType("bit")
+                                .HasColumnName("ImageIsProcessed");
+
+                            b1.Property<string>("MimeType")
                                 .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)")
-                                .HasColumnName("ImagePublicId");
+                                .HasMaxLength(64)
+                                .HasColumnType("nvarchar(64)")
+                                .HasColumnName("ImageMimeType");
 
                             b1.Property<long>("Size")
                                 .HasColumnType("bigint")
@@ -518,7 +507,8 @@ namespace RateMyPet.Infrastructure.Migrations
                                 .HasForeignKey("PostId");
                         });
 
-                    b.Navigation("Image");
+                    b.Navigation("Image")
+                        .IsRequired();
 
                     b.Navigation("Species");
 

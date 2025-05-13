@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RateMyPet.Core;
 
-namespace RateMyPet.Infrastructure.Configuration;
+namespace RateMyPet.Database.Configuration;
 
 public class SpeciesConfiguration : IEntityTypeConfiguration<Species>
 {

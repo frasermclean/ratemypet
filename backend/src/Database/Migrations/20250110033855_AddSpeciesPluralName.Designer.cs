@@ -3,21 +3,23 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RateMyPet.Infrastructure.Services;
 
 #nullable disable
 
-namespace RateMyPet.Infrastructure.Migrations
+namespace RateMyPet.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250110033855_AddSpeciesPluralName")]
+    partial class AddSpeciesPluralName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -44,19 +46,8 @@ namespace RateMyPet.Infrastructure.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<string>("Slug")
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
-
                     b.Property<int>("SpeciesId")
                         .HasColumnType("int");
-
-                    b.Property<byte>("Status")
-                        .HasColumnType("tinyint");
-
-                    b.PrimitiveCollection<string>("Tags")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -72,11 +63,7 @@ namespace RateMyPet.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Slug");
-
                     b.HasIndex("SpeciesId");
-
-                    b.HasIndex("Status");
 
                     b.HasIndex("UserId");
 
@@ -492,21 +479,25 @@ namespace RateMyPet.Infrastructure.Migrations
                             b1.Property<Guid>("PostId")
                                 .HasColumnType("uniqueidentifier");
 
-                            b1.Property<string>("AssetId")
+                            b1.Property<string>("FileName")
                                 .IsRequired()
-                                .HasMaxLength(64)
-                                .HasColumnType("nvarchar(64)")
-                                .HasColumnName("ImageAssetId");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)")
+                                .HasColumnName("ImageFileName");
 
                             b1.Property<int>("Height")
                                 .HasColumnType("int")
                                 .HasColumnName("ImageHeight");
 
-                            b1.Property<string>("PublicId")
+                            b1.Property<bool>("IsProcessed")
+                                .HasColumnType("bit")
+                                .HasColumnName("ImageIsProcessed");
+
+                            b1.Property<string>("MimeType")
                                 .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)")
-                                .HasColumnName("ImagePublicId");
+                                .HasMaxLength(64)
+                                .HasColumnType("nvarchar(64)")
+                                .HasColumnName("ImageMimeType");
 
                             b1.Property<long>("Size")
                                 .HasColumnType("bigint")
@@ -524,7 +515,8 @@ namespace RateMyPet.Infrastructure.Migrations
                                 .HasForeignKey("PostId");
                         });
 
-                    b.Navigation("Image");
+                    b.Navigation("Image")
+                        .IsRequired();
 
                     b.Navigation("Species");
 

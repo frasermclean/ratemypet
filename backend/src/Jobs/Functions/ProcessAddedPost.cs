@@ -4,8 +4,8 @@ using Microsoft.Extensions.Logging;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Messages;
+using RateMyPet.Database;
 using RateMyPet.Infrastructure;
-using RateMyPet.Infrastructure.Services;
 
 namespace RateMyPet.Jobs.Functions;
 

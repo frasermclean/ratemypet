@@ -1,4 +1,5 @@
-﻿using RateMyPet.ServiceDefaults;
+﻿using RateMyPet.Database;
+using RateMyPet.ServiceDefaults;
 
 namespace RateMyPet.Initializer;
 
@@ -8,6 +9,8 @@ public static class Program
     {
         var builder = Host.CreateApplicationBuilder(args)
             .AddServiceDefaults();
+
+        builder.AddSqlServerDbContext<ApplicationDbContext>("database");
 
         builder.Services.AddHostedService<WorkerService>();
 

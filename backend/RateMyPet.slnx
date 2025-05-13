@@ -1,5 +1,6 @@
 ﻿<Solution>
   <Folder Name="/Infrastructure/">
+    <Project Path="src\Database\Database.csproj" Type="Classic C#" />
     <Project Path="src\Initializer\Initializer.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/Tests/">

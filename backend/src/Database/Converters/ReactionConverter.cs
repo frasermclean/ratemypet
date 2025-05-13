@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RateMyPet.Core;
 
-namespace RateMyPet.Infrastructure.Converters;
+namespace RateMyPet.Database.Converters;
 
 public class ReactionConverter() : ValueConverter<Reaction, char>(
     reaction => ReactionToChar(reaction),

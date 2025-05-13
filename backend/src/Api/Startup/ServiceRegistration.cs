@@ -4,6 +4,7 @@ using FastEndpoints;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using RateMyPet.Core;
+using RateMyPet.Database;
 using RateMyPet.Infrastructure.Services;
 
 namespace RateMyPet.Api.Startup;

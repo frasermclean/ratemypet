@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace RateMyPet.Infrastructure.Migrations
+namespace RateMyPet.Database.Migrations
 {
     /// <inheritdoc />
     public partial class AddPostImage : Migration

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace RateMyPet.Infrastructure.Services;
+namespace RateMyPet.Database;
 
 public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
 {
@@ -11,8 +11,7 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
             "Server=localhost;Database=RateMyPet;User ID=sa;Password=sup3rSECRET!;TrustServerCertificate=True";
 
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlServer(connectionString)
-            .Options;
+            .UseSqlServer(connectionString).Options;
 
         return new ApplicationDbContext(options);
     }

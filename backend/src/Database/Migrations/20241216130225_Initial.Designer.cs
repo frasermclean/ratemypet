@@ -5,15 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RateMyPet.Infrastructure.Services;
 
 #nullable disable
 
-namespace RateMyPet.Infrastructure.Migrations
+namespace RateMyPet.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250105042254_UpdateRoles")]
-    partial class UpdateRoles
+    [Migration("20241216130225_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,7 +28,8 @@ namespace RateMyPet.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("newid()");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .ValueGeneratedOnAdd()
@@ -40,6 +40,9 @@ namespace RateMyPet.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsProcessed")
+                        .HasColumnType("bit");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -183,8 +186,8 @@ namespace RateMyPet.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36"),
-                            Name = "Contributor",
-                            NormalizedName = "CONTRIBUTOR"
+                            Name = "User",
+                            NormalizedName = "USER"
                         },
                         new
                         {
@@ -216,6 +219,29 @@ namespace RateMyPet.Infrastructure.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("RoleClaims", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ClaimType = "Permissions",
+                            ClaimValue = "Posts.Add",
+                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ClaimType = "Permissions",
+                            ClaimValue = "Posts.Edit.Owned",
+                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ClaimType = "Permissions",
+                            ClaimValue = "Posts.Delete.Owned",
+                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
+                        });
                 });
 
             modelBuilder.Entity("RateMyPet.Core.Species", b =>
@@ -465,50 +491,6 @@ namespace RateMyPet.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsOne("RateMyPet.Core.PostImage", "Image", b1 =>
-                        {
-                            b1.Property<Guid>("PostId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("FileName")
-                                .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)")
-                                .HasColumnName("ImageFileName");
-
-                            b1.Property<int>("Height")
-                                .HasColumnType("int")
-                                .HasColumnName("ImageHeight");
-
-                            b1.Property<bool>("IsProcessed")
-                                .HasColumnType("bit")
-                                .HasColumnName("ImageIsProcessed");
-
-                            b1.Property<string>("MimeType")
-                                .IsRequired()
-                                .HasMaxLength(64)
-                                .HasColumnType("nvarchar(64)")
-                                .HasColumnName("ImageMimeType");
-
-                            b1.Property<long>("Size")
-                                .HasColumnType("bigint")
-                                .HasColumnName("ImageSize");
-
-                            b1.Property<int>("Width")
-                                .HasColumnType("int")
-                                .HasColumnName("ImageWidth");
-
-                            b1.HasKey("PostId");
-
-                            b1.ToTable("Posts");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PostId");
-                        });
-
-                    b.Navigation("Image")
                         .IsRequired();
 
                     b.Navigation("Species");

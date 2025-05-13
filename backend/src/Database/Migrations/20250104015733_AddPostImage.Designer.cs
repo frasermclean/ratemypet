@@ -5,15 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RateMyPet.Infrastructure.Services;
 
 #nullable disable
 
-namespace RateMyPet.Infrastructure.Migrations
+namespace RateMyPet.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250110033855_AddSpeciesPluralName")]
-    partial class AddSpeciesPluralName
+    [Migration("20250104015733_AddPostImage")]
+    partial class AddPostImage
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -183,8 +182,8 @@ namespace RateMyPet.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36"),
-                            Name = "Contributor",
-                            NormalizedName = "CONTRIBUTOR"
+                            Name = "User",
+                            NormalizedName = "USER"
                         },
                         new
                         {
@@ -216,6 +215,29 @@ namespace RateMyPet.Infrastructure.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("RoleClaims", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ClaimType = "Permissions",
+                            ClaimValue = "Posts.Add",
+                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ClaimType = "Permissions",
+                            ClaimValue = "Posts.Edit.Owned",
+                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ClaimType = "Permissions",
+                            ClaimValue = "Posts.Delete.Owned",
+                            RoleId = new Guid("57c523c9-0957-4834-8fce-ff37fa861c36")
+                        });
                 });
 
             modelBuilder.Entity("RateMyPet.Core.Species", b =>
@@ -227,11 +249,6 @@ namespace RateMyPet.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("PluralName")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
@@ -251,21 +268,18 @@ namespace RateMyPet.Infrastructure.Migrations
                         {
                             Id = 1,
                             Name = "Dog",
-                            PluralName = "Dogs",
                             RowVersion = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }
                         },
                         new
                         {
                             Id = 2,
                             Name = "Cat",
-                            PluralName = "Cats",
                             RowVersion = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }
                         },
                         new
                         {
                             Id = 3,
                             Name = "Bird",
-                            PluralName = "Birds",
                             RowVersion = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }
                         });
                 });

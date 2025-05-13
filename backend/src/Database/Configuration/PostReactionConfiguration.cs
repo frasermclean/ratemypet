@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RateMyPet.Core;
-using RateMyPet.Infrastructure.Converters;
+using RateMyPet.Database.Converters;
 
-namespace RateMyPet.Infrastructure.Configuration;
+namespace RateMyPet.Database.Configuration;
 
 public class PostReactionConfiguration : IEntityTypeConfiguration<PostReaction>
 {

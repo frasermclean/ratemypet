@@ -2,8 +2,8 @@
 using FastEndpoints.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using RateMyPet.Database;
 using RateMyPet.Infrastructure;
-using RateMyPet.Infrastructure.Services;
 
 namespace RateMyPet.Api;
 

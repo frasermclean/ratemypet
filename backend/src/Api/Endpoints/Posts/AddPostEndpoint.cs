@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Messages;
-using RateMyPet.Infrastructure.Services;
+using RateMyPet.Database;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 

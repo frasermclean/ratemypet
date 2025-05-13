@@ -1,5 +1,4 @@
 using Azure.Storage.Blobs;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,13 +15,6 @@ public static class ServiceRegistration
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services,
         IConfiguration configuration)
     {
-        // db context factory
-        // services.AddDbContextFactory<ApplicationDbContext>(builder =>
-        // {
-        //     var connectionString = configuration.GetConnectionString("Database");
-        //     builder.UseSqlServer(connectionString);
-        // });
-
         services.AddAzureClients(configuration)
             .AddBlobContainerManagers()
             .AddImageHosting()

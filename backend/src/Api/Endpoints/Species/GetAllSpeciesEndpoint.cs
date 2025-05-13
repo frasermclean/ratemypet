@@ -1,7 +1,7 @@
 ﻿using Delta;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
-using RateMyPet.Infrastructure.Services;
+using RateMyPet.Database;
 
 namespace RateMyPet.Api.Endpoints.Species;
 
