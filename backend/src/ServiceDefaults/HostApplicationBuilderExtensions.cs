@@ -1,5 +1,4 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
@@ -10,16 +9,15 @@ using OpenTelemetry.Trace;
 
 namespace RateMyPet.ServiceDefaults;
 
-// Adds common .NET Aspire services: service discovery, resilience, health checks, and OpenTelemetry.
-// This project should be referenced by each service project in your solution.
-// To learn more about using this project, see https://aka.ms/dotnet/aspire/service-defaults
 public static class HostApplicationBuilderExtensions
 {
+    /// <summary>
+    /// Add common .NET Aspire services: service discovery, resilience, health checks, and OpenTelemetry
+    /// </summary>
     public static TBuilder AddServiceDefaults<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
-        builder.AddOpenTelemetry();
-
-        builder.AddDefaultHealthChecks();
+        builder.AddOpenTelemetry()
+            .AddHealthChecks();
 
         builder.Services.AddServiceDiscovery();
 
@@ -71,32 +69,24 @@ public static class HostApplicationBuilderExtensions
                     .AddHttpClientInstrumentation();
             });
 
-        builder.AddOpenTelemetryExporters();
-
-        return builder;
-    }
-
-    private static TBuilder AddOpenTelemetryExporters<TBuilder>(this TBuilder builder)
-        where TBuilder : IHostApplicationBuilder
-    {
-        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
-
-        if (useOtlpExporter)
+        // add OpenTelemetry protocol exporter
+        if (!string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
         {
-            builder.Services.AddOpenTelemetry().UseOtlpExporter();
+            builder.Services.AddOpenTelemetry()
+                .UseOtlpExporter();
         }
 
-        // Uncomment the following lines to enable the Azure Monitor exporter (requires the Azure.Monitor.OpenTelemetry.AspNetCore package)
-        //if (!string.IsNullOrEmpty(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
-        //{
-        //    builder.Services.AddOpenTelemetry()
-        //       .UseAzureMonitor();
-        //}
+        // add Azure Monitor exporter
+        if (!string.IsNullOrWhiteSpace(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
+        {
+            builder.Services.AddOpenTelemetry()
+                .UseAzureMonitor();
+        }
 
         return builder;
     }
 
-    private static TBuilder AddDefaultHealthChecks<TBuilder>(this TBuilder builder)
+    private static TBuilder AddHealthChecks<TBuilder>(this TBuilder builder)
         where TBuilder : IHostApplicationBuilder
     {
         builder.Services.AddHealthChecks()

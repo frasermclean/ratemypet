@@ -1710,7 +1710,6 @@
       "RateMyPet.Api": {
         "type": "Project",
         "dependencies": {
-          "Azure.Monitor.OpenTelemetry.AspNetCore": "[1.3.0, )",
           "Delta.EF": "[6.4.0, )",
           "FastEndpoints": "[6.1.0, )",
           "Gridify.EntityFramework": "[2.16.3, )",
@@ -1748,6 +1747,7 @@
       "RateMyPet.ServiceDefaults": {
         "type": "Project",
         "dependencies": {
+          "Azure.Monitor.OpenTelemetry.AspNetCore": "[1.3.0, )",
           "Microsoft.Extensions.Http.Resilience": "[9.4.0, )",
           "Microsoft.Extensions.ServiceDiscovery": "[9.2.1, )",
           "OpenTelemetry.Exporter.OpenTelemetryProtocol": "[1.12.0, )",
