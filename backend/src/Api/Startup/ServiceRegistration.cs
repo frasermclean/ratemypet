@@ -12,6 +12,8 @@ public static class ServiceRegistration
 {
     public static WebApplicationBuilder RegisterServices(this WebApplicationBuilder builder)
     {
+        builder.AddSqlServerDbContext<ApplicationDbContext>("database");
+
         builder.Services
             .AddIdentity()
             .AddFastEndpoints()

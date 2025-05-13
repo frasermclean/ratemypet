@@ -17,11 +17,11 @@ public static class ServiceRegistration
         IConfiguration configuration)
     {
         // db context factory
-        services.AddDbContextFactory<ApplicationDbContext>(builder =>
-        {
-            var connectionString = configuration.GetConnectionString("Database");
-            builder.UseSqlServer(connectionString);
-        });
+        // services.AddDbContextFactory<ApplicationDbContext>(builder =>
+        // {
+        //     var connectionString = configuration.GetConnectionString("Database");
+        //     builder.UseSqlServer(connectionString);
+        // });
 
         services.AddAzureClients(configuration)
             .AddBlobContainerManagers()
