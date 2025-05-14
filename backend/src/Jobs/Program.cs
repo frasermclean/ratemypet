@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RateMyPet.Database;
 using RateMyPet.Infrastructure.Services;
+using RateMyPet.ServiceDefaults;
 using RateMyPet.Storage;
 
 namespace RateMyPet.Jobs;
@@ -13,6 +14,7 @@ public static class Program
     public static void Main(string[] args)
     {
         var host = FunctionsApplication.CreateBuilder(args)
+            .AddServiceDefaults()
             .RegisterServices()
             .Build();
 

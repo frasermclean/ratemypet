@@ -27,11 +27,19 @@ public static class Program
             .WaitFor(blobStorage)
             .WaitFor(queueStorage);
 
-        var api = builder.AddProject<Projects.Api>("api")
+        builder.AddProject<Projects.Api>("api")
+            .WaitForCompletion(initializer)
             .WithReference(database)
             .WithReference(blobStorage)
             .WithReference(queueStorage)
+            .WithExternalHttpEndpoints();
+
+        builder.AddAzureFunctionsProject<Projects.Jobs>("jobs")
             .WaitForCompletion(initializer)
+            .WithHostStorage(storage)
+            .WithReference(database)
+            .WithReference(blobStorage)
+            .WithReference(queueStorage)
             .WithExternalHttpEndpoints();
 
         builder.Build().Run();
