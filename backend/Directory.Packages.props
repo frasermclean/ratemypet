@@ -23,12 +23,12 @@
     <PackageVersion Include="FastEndpoints.Testing" Version="6.1.0" />
     <PackageVersion Include="FluentResults" Version="3.16.0" />
     <PackageVersion Include="Gridify.EntityFramework" Version="2.16.3" />
-    <PackageVersion Include="Microsoft.ApplicationInsights.WorkerService" Version="2.23.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.5" />
     <PackageVersion Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="8.1.2" />
-    <PackageVersion Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" Version="2.0.0" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker" Version="2.0.0" />
+    <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.0.1" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues" Version="5.5.2" />
+    <PackageVersion Include="Microsoft.Azure.Functions.Worker.OpenTelemetry" Version="1.1.0-preview6" />
     <PackageVersion Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
       <PrivateAssets>all</PrivateAssets>
