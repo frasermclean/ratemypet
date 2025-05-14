@@ -1,47 +1,72 @@
+using Aspire.Hosting.Azure;
+
 namespace RateMyPet.AppHost;
 
 public static class Program
 {
     public static void Main(string[] args)
     {
-        var builder = DistributedApplication.CreateBuilder(args);
-
-        var saPassword = builder.AddParameter("SaPassword", true);
-
-        var sqlServer = builder.AddSqlServer("sql-server", saPassword)
-            .WithDataVolume("rmp-sql-server");
-
-        var database = sqlServer.AddDatabase("database", "RateMyPet");
-
-        var storage = builder.AddAzureStorage("storage")
-            .RunAsEmulator(resourceBuilder => resourceBuilder.WithDataVolume("rmp-storage"));
-
-        var blobStorage = storage.AddBlobs("blobs");
-        var queueStorage = storage.AddQueues("queues");
+        var builder = DistributedApplication.CreateBuilder(args)
+            .AddSqlServerWithDatabase(out var database)
+            .AddAzureStorage(out var storage, out var blobs, out var queues);
 
         var initializer = builder.AddProject<Projects.Initializer>("initializer")
             .WithReference(database)
-            .WithReference(blobStorage)
-            .WithReference(queueStorage)
+            .WithReference(blobs)
+            .WithReference(queues)
             .WaitFor(database)
-            .WaitFor(blobStorage)
-            .WaitFor(queueStorage);
+            .WaitFor(blobs)
+            .WaitFor(queues);
 
         builder.AddProject<Projects.Api>("api")
             .WaitForCompletion(initializer)
             .WithReference(database)
-            .WithReference(blobStorage)
-            .WithReference(queueStorage)
+            .WithReference(blobs)
+            .WithReference(queues)
             .WithExternalHttpEndpoints();
 
         builder.AddAzureFunctionsProject<Projects.Jobs>("jobs")
             .WaitForCompletion(initializer)
             .WithHostStorage(storage)
             .WithReference(database)
-            .WithReference(blobStorage)
-            .WithReference(queueStorage)
             .WithExternalHttpEndpoints();
 
         builder.Build().Run();
+    }
+
+    private static IDistributedApplicationBuilder AddSqlServerWithDatabase(
+        this IDistributedApplicationBuilder builder,
+        out IResourceBuilder<SqlServerDatabaseResource> database)
+    {
+        var saPassword = builder.AddParameter("SaPassword", true);
+
+        var sqlServer = builder.AddSqlServer("sql-server", saPassword)
+            .WithContainerName("rmp-sql-server")
+            .WithLifetime(ContainerLifetime.Persistent)
+            .WithDataVolume("rmp-sql-server");
+
+        database = sqlServer.AddDatabase("database", "RateMyPet");
+
+        return builder;
+    }
+
+    private static IDistributedApplicationBuilder AddAzureStorage(
+        this IDistributedApplicationBuilder builder,
+        out IResourceBuilder<AzureStorageResource> storage,
+        out IResourceBuilder<AzureBlobStorageResource> blobs,
+        out IResourceBuilder<AzureQueueStorageResource> queues)
+    {
+        storage = builder.AddAzureStorage("storage")
+            .RunAsEmulator(resourceBuilder =>
+            {
+                resourceBuilder.WithContainerName("rmp-storage");
+                resourceBuilder.WithLifetime(ContainerLifetime.Persistent);
+                resourceBuilder.WithDataVolume("rmp-storage");
+            });
+
+        blobs = storage.AddBlobs("blobs");
+        queues = storage.AddQueues("queues");
+
+        return builder;
     }
 }
