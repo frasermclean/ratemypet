@@ -1,7 +1,7 @@
 ﻿using Azure.Core;
 using Azure.Identity;
 
-namespace RateMyPet.Infrastructure;
+namespace RateMyPet.Core;
 
 public static class TokenCredentialFactory
 {

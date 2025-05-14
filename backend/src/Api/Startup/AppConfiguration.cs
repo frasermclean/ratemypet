@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
-using RateMyPet.Infrastructure;
+using RateMyPet.Core;
 
 namespace RateMyPet.Api.Startup;
 

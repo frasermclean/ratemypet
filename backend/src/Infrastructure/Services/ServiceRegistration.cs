@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
-using RateMyPet.Infrastructure.Services.Email;
 using RateMyPet.Infrastructure.Services.ImageAnalysis;
 using RateMyPet.Infrastructure.Services.Moderation;
 
@@ -15,8 +15,7 @@ public static class ServiceRegistration
     {
         services.AddAzureClients(configuration)
             .AddImageAnalysis()
-            .AddModeration()
-            .AddEmailSending();
+            .AddModeration();
 
         return services;
     }
@@ -28,8 +27,6 @@ public static class ServiceRegistration
             // ai services
             builder.AddImageAnalysisClient(configuration.GetValue<Uri>("AiServices:ComputerVisionEndpoint"));
             builder.AddContentSafetyClient(configuration.GetValue<Uri>("AiServices:ContentSafetyEndpoint"));
-
-            builder.AddEmailClient(configuration.GetValue<Uri>("Email:AcsEndpoint"));
 
             builder.UseCredential(TokenCredentialFactory.Create());
             builder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
@@ -56,17 +53,6 @@ public static class ServiceRegistration
             .ValidateDataAnnotations();
 
         services.AddSingleton<IModerationService, ModerationService>();
-
-        return services;
-    }
-
-    private static IServiceCollection AddEmailSending(this IServiceCollection services)
-    {
-        services.AddOptions<EmailOptions>()
-            .BindConfiguration(EmailOptions.SectionName)
-            .ValidateDataAnnotations();
-
-        services.AddTransient<IEmailSender, EmailSender>();
 
         return services;
     }
