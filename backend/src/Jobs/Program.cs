@@ -3,6 +3,7 @@ using Microsoft.Azure.Functions.Worker.OpenTelemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RateMyPet.Database;
+using RateMyPet.ImageHosting;
 using RateMyPet.Infrastructure.Services;
 using RateMyPet.ServiceDefaults;
 using RateMyPet.Storage;
@@ -29,7 +30,8 @@ public static class Program
         builder.Services.AddOpenTelemetry()
             .UseFunctionsWorkerDefaults();
 
-        builder.Services.AddInfrastructureServices(builder.Configuration);
+        builder.Services.AddInfrastructureServices(builder.Configuration)
+            .AddImageHosting();
 
         return builder;
     }

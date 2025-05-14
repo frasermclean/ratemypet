@@ -1,6 +1,7 @@
 ﻿<Solution>
   <Folder Name="/Infrastructure/">
     <Project Path="src\Database\Database.csproj" Type="Classic C#" />
+    <Project Path="src\ImageHosting\ImageHosting.csproj" Type="Classic C#" />
     <Project Path="src\Initializer\Initializer.csproj" Type="Classic C#" />
     <Project Path="src\Storage\Storage.csproj" Type="Classic C#" />
   </Folder>

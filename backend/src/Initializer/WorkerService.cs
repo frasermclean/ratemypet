@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RateMyPet.Database;
-
-namespace RateMyPet.Initializer;
+﻿namespace RateMyPet.Initializer;
 
 public class WorkerService(IServiceProvider serviceProvider, IHostApplicationLifetime applicationLifetime)
     : BackgroundService

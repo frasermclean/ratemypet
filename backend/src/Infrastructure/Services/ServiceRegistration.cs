@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Infrastructure.Services.Email;
 using RateMyPet.Infrastructure.Services.ImageAnalysis;
-using RateMyPet.Infrastructure.Services.ImageHosting;
 using RateMyPet.Infrastructure.Services.Moderation;
 
 namespace RateMyPet.Infrastructure.Services;
@@ -15,7 +14,6 @@ public static class ServiceRegistration
         IConfiguration configuration)
     {
         services.AddAzureClients(configuration)
-            .AddImageHosting()
             .AddImageAnalysis()
             .AddModeration()
             .AddEmailSending();
@@ -36,17 +34,6 @@ public static class ServiceRegistration
             builder.UseCredential(TokenCredentialFactory.Create());
             builder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
         });
-
-        return services;
-    }
-
-    private static IServiceCollection AddImageHosting(this IServiceCollection services)
-    {
-        services.AddOptions<CloudinaryOptions>()
-            .BindConfiguration(CloudinaryOptions.SectionName)
-            .ValidateDataAnnotations();
-
-        services.AddHttpClient<IImageHostingService, ImageHostingService>();
 
         return services;
     }

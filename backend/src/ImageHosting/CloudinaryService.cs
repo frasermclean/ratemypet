@@ -7,20 +7,22 @@ using Microsoft.Extensions.Options;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 
-namespace RateMyPet.Infrastructure.Services.ImageHosting;
+namespace RateMyPet.ImageHosting;
 
-public class ImageHostingService : IImageHostingService
+public class CloudinaryService : IImageHostingService
 {
-    private readonly ILogger<ImageHostingService> logger;
+    private readonly ILogger<CloudinaryService> logger;
     private readonly string environment;
     private readonly Cloudinary cloudinary;
 
-    public ImageHostingService(IOptions<CloudinaryOptions> options, HttpClient httpClient,
-        ILogger<ImageHostingService> logger, IHostEnvironment environment)
+    public CloudinaryService(IOptions<CloudinaryOptions> options, HttpClient httpClient,
+        ILogger<CloudinaryService> logger, IHostEnvironment environment)
     {
         this.logger = logger;
         this.environment = environment.EnvironmentName.ToLower();
-        var account = new Account(options.Value.CloudName, options.Value.ApiKey, options.Value.ApiSecret);
+
+        var (cloudName, apiKey, apiSecret) = options.Value;
+        var account = new Account(cloudName, apiKey, apiSecret);
 
         cloudinary = new Cloudinary(account)
         {

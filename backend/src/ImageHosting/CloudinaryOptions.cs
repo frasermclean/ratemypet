@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RateMyPet.Infrastructure.Services.ImageHosting;
+namespace RateMyPet.ImageHosting;
 
 public class CloudinaryOptions
 {
@@ -8,4 +8,11 @@ public class CloudinaryOptions
     [Required] public required string CloudName { get; init; }
     [Required] public required string ApiKey { get; init; }
     [Required] public required string ApiSecret { get; init; }
+
+    public void Deconstruct(out string cloudName, out string apiKey, out string apiSecret)
+    {
+        cloudName = CloudName;
+        apiKey = ApiKey;
+        apiSecret = ApiSecret;
+    }
 }

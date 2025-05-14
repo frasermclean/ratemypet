@@ -1,12 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">  
 
   <ItemGroup>
-    <PackageReference Include="Azure.AI.ContentSafety" />
-    <PackageReference Include="Azure.AI.Vision.ImageAnalysis" />
-    <PackageReference Include="Azure.Communication.Email" />
-    <PackageReference Include="Azure.Storage.Blobs" />
-    <PackageReference Include="Azure.Storage.Queues" />
-    <PackageReference Include="Microsoft.Extensions.Azure" />
+    <PackageReference Include="CloudinaryDotNet" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Http" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />

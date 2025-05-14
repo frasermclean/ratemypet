@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using RateMyPet.Core;
 using RateMyPet.Database;
+using RateMyPet.ImageHosting;
 using RateMyPet.Infrastructure.Services;
 using RateMyPet.Storage;
 
@@ -20,7 +21,8 @@ public static class ServiceRegistration
         builder.Services
             .AddIdentity()
             .AddFastEndpoints()
-            .AddInfrastructureServices(builder.Configuration);
+            .AddInfrastructureServices(builder.Configuration)
+            .AddImageHosting();
 
         // json serialization options
         builder.Services.Configure<JsonOptions>(options =>

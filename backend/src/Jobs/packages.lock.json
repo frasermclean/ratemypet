@@ -1497,6 +1497,17 @@
           "RateMyPet.Core": "[1.0.0, )"
         }
       },
+      "RateMyPet.ImageHosting": {
+        "type": "Project",
+        "dependencies": {
+          "CloudinaryDotNet": "[1.27.5, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[9.0.5, )",
+          "Microsoft.Extensions.Http": "[9.0.5, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[9.0.5, )",
+          "Microsoft.Extensions.Options.DataAnnotations": "[9.0.5, )",
+          "RateMyPet.Core": "[1.0.0, )"
+        }
+      },
       "RateMyPet.Infrastructure": {
         "type": "Project",
         "dependencies": {
@@ -1505,7 +1516,6 @@
           "Azure.Communication.Email": "[1.0.1, )",
           "Azure.Storage.Blobs": "[12.24.0, )",
           "Azure.Storage.Queues": "[12.22.0, )",
-          "CloudinaryDotNet": "[1.27.5, )",
           "Microsoft.Extensions.Azure": "[1.11.0, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[9.0.5, )",
           "Microsoft.Extensions.Http": "[9.0.5, )",
