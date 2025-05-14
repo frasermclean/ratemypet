@@ -1,4 +1,3 @@
-using Azure.Storage.Blobs;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,12 +15,10 @@ public static class ServiceRegistration
         IConfiguration configuration)
     {
         services.AddAzureClients(configuration)
-            .AddBlobContainerManagers()
             .AddImageHosting()
             .AddImageAnalysis()
             .AddModeration()
-            .AddEmailSending()
-            .AddSingleton<IMessagePublisher, MessagePublisher>();
+            .AddEmailSending();
 
         return services;
     }
@@ -30,22 +27,6 @@ public static class ServiceRegistration
     {
         services.AddAzureClients(builder =>
         {
-            // azure storage services
-            var blobEndpoint = configuration["Storage:BlobEndpoint"];
-            var queueEndpoint = configuration["Storage:QueueEndpoint"];
-            if (string.IsNullOrEmpty(blobEndpoint) || string.IsNullOrEmpty(queueEndpoint))
-            {
-                // use connection string if endpoints are not provided
-                var connectionString = configuration.GetConnectionString("Storage");
-                builder.AddBlobServiceClient(connectionString);
-                builder.AddQueueServiceClient(connectionString);
-            }
-            else
-            {
-                builder.AddBlobServiceClient(new Uri(blobEndpoint));
-                builder.AddQueueServiceClient(new Uri(queueEndpoint));
-            }
-
             // ai services
             builder.AddImageAnalysisClient(configuration.GetValue<Uri>("AiServices:ComputerVisionEndpoint"));
             builder.AddContentSafetyClient(configuration.GetValue<Uri>("AiServices:ContentSafetyEndpoint"));
@@ -55,15 +36,6 @@ public static class ServiceRegistration
             builder.UseCredential(TokenCredentialFactory.Create());
             builder.ConfigureDefaults(options => options.Diagnostics.IsLoggingEnabled = false);
         });
-
-        return services;
-    }
-
-    private static IServiceCollection AddBlobContainerManagers(this IServiceCollection services)
-    {
-        services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.PostImages, (provider, _) =>
-            new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
-                .GetBlobContainerClient(BlobContainerNames.PostImages)));
 
         return services;
     }

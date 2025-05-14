@@ -5,7 +5,7 @@ using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Messages;
 using RateMyPet.Database;
-using RateMyPet.Infrastructure;
+using RateMyPet.Storage;
 
 namespace RateMyPet.Jobs.Functions;
 

@@ -63,6 +63,24 @@
           "System.Text.Json": "9.0.5"
         }
       },
+      "AspNetCore.HealthChecks.Azure.Storage.Blobs": {
+        "type": "Transitive",
+        "resolved": "9.0.0",
+        "contentHash": "fORaHfhyerL+7Tu4lTyj5CBHEMPYdH0LS1bm9N2Wd/K4mgd/zzg+iXLFBYTNTbF+hLYpVNZyO2Tx/wU0/s4KqQ==",
+        "dependencies": {
+          "Azure.Storage.Blobs": "12.19.1",
+          "Microsoft.Extensions.Diagnostics.HealthChecks": "8.0.11"
+        }
+      },
+      "AspNetCore.HealthChecks.Azure.Storage.Queues": {
+        "type": "Transitive",
+        "resolved": "9.0.0",
+        "contentHash": "ne+XNpiO2yVH9g6x5B1SJBMzNz8JR0YRiBvJR9qGdpTsHtcTY8GhmA9+mznQ+nTLgUQNvEbr6Xj8Ha9zjW0QDQ==",
+        "dependencies": {
+          "Azure.Storage.Queues": "12.17.1",
+          "Microsoft.Extensions.Diagnostics.HealthChecks": "8.0.11"
+        }
+      },
       "Azure.Core": {
         "type": "Transitive",
         "resolved": "1.46.1",
@@ -1109,8 +1127,8 @@
       },
       "System.IO.Hashing": {
         "type": "Transitive",
-        "resolved": "6.0.0",
-        "contentHash": "Rfm2jYCaUeGysFEZjDe7j1R4x6Z6BzumS/vUT5a1AA/AWJuGX71PoGB0RmpyX3VmrGqVnAwtfMn39OHR8Y/5+g=="
+        "resolved": "9.0.3",
+        "contentHash": "BrMGzDRLz410PE4qC8UeKeAc0hFRjBkiCUOLTwuod65NAjqg5tDNqYU7gP0A09taEXtecB+HJc1NNnnTjsKFAQ=="
       },
       "System.IO.Pipelines": {
         "type": "Transitive",
@@ -1551,6 +1569,62 @@
           "OpenTelemetry.Instrumentation.AspNetCore": "[1.12.0, )",
           "OpenTelemetry.Instrumentation.Http": "[1.12.0, )",
           "OpenTelemetry.Instrumentation.Runtime": "[1.12.0, )"
+        }
+      },
+      "RateMyPet.Storage": {
+        "type": "Project",
+        "dependencies": {
+          "Aspire.Azure.Storage.Blobs": "[9.2.1, )",
+          "Aspire.Azure.Storage.Queues": "[9.2.1, )",
+          "RateMyPet.Core": "[1.0.0, )"
+        }
+      },
+      "Aspire.Azure.Storage.Blobs": {
+        "type": "CentralTransitive",
+        "requested": "[9.2.1, )",
+        "resolved": "9.2.1",
+        "contentHash": "h6WJKaXL83e8j/L7oIUcCkR/Lr3lxZ+S5e2M43G5+Nbbzr6YdZ1HxjWfQQgzFbwzTGKh+3rg0wchUTwOHXlp+A==",
+        "dependencies": {
+          "AspNetCore.HealthChecks.Azure.Storage.Blobs": "9.0.0",
+          "Azure.Core": "1.44.1",
+          "Azure.Identity": "1.13.2",
+          "Azure.Storage.Blobs": "12.24.0",
+          "Microsoft.Extensions.Azure": "1.11.0",
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Configuration.Binder": "8.0.2",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2",
+          "Microsoft.Extensions.Diagnostics.HealthChecks": "8.0.15",
+          "Microsoft.Extensions.Hosting.Abstractions": "8.0.1",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.3",
+          "Microsoft.Extensions.Options": "8.0.2",
+          "Microsoft.Extensions.Primitives": "8.0.0",
+          "OpenTelemetry.Extensions.Hosting": "1.9.0",
+          "System.IO.Hashing": "9.0.3",
+          "System.Text.Json": "8.0.5"
+        }
+      },
+      "Aspire.Azure.Storage.Queues": {
+        "type": "CentralTransitive",
+        "requested": "[9.2.1, )",
+        "resolved": "9.2.1",
+        "contentHash": "S8n/hVWZu1rL5dV6BBBU/pq4ANoLWdgY25EffprC2dgvQL1gQZZ6OlMNhSfbqeGp6qaTjlNrhCY9RIaVijIkOw==",
+        "dependencies": {
+          "AspNetCore.HealthChecks.Azure.Storage.Queues": "9.0.0",
+          "Azure.Core": "1.44.1",
+          "Azure.Identity": "1.13.2",
+          "Azure.Storage.Queues": "12.22.0",
+          "Microsoft.Extensions.Azure": "1.11.0",
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Configuration.Binder": "8.0.2",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2",
+          "Microsoft.Extensions.Diagnostics.HealthChecks": "8.0.15",
+          "Microsoft.Extensions.Hosting.Abstractions": "8.0.1",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.3",
+          "Microsoft.Extensions.Options": "8.0.2",
+          "Microsoft.Extensions.Primitives": "8.0.0",
+          "OpenTelemetry.Extensions.Hosting": "1.9.0",
+          "System.IO.Hashing": "9.0.3",
+          "System.Text.Json": "8.0.5"
         }
       },
       "Aspire.Microsoft.EntityFrameworkCore.SqlServer": {

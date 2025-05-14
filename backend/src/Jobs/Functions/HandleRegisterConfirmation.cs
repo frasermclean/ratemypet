@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Messages;
-using RateMyPet.Infrastructure;
 using RateMyPet.Infrastructure.Services.Email;
+using RateMyPet.Storage;
 
 namespace RateMyPet.Jobs.Functions;
 

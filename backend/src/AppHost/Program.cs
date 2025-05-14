@@ -13,9 +13,18 @@ public static class Program
 
         var database = sqlServer.AddDatabase("database", "RateMyPet");
 
+        var storage = builder.AddAzureStorage("storage")
+            .RunAsEmulator(resourceBuilder => resourceBuilder.WithDataVolume("rmp-storage"));
+
+        var blobStorage = storage.AddBlobs("blobs");
+        var queueStorage = storage.AddQueues("queues");
+
         var api = builder.AddProject<Projects.Api>("api")
             .WithReference(database)
-            .WaitFor(database);
+            .WithReference(blobStorage)
+            .WithReference(queueStorage)
+            .WaitFor(database)
+            .WithExternalHttpEndpoints();
 
         var initializer = builder.AddProject<Projects.Initializer>("initializer")
             .WithReference(database)

@@ -1,4 +1,4 @@
-namespace RateMyPet.Infrastructure;
+namespace RateMyPet.Storage;
 
 public static class BlobContainerNames
 {

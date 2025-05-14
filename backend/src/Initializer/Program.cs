@@ -7,10 +7,10 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        var builder = Host.CreateApplicationBuilder(args)
-            .AddServiceDefaults();
+        var builder = Host.CreateApplicationBuilder(args);
 
-        builder.AddSqlServerDbContext<ApplicationDbContext>("database");
+        builder.AddServiceDefaults()
+            .AddDatabaseServices();
 
         builder.Services.AddHostedService<WorkerService>();
 

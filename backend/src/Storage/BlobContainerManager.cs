@@ -2,7 +2,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using RateMyPet.Core.Abstractions;
 
-namespace RateMyPet.Infrastructure.Services;
+namespace RateMyPet.Storage;
 
 public class BlobContainerManager(BlobContainerClient containerClient) : IBlobContainerManager
 {

@@ -3,7 +3,7 @@ using FastEndpoints.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using RateMyPet.Database;
-using RateMyPet.Infrastructure;
+using RateMyPet.Storage;
 
 namespace RateMyPet.Api;
 
@@ -14,8 +14,9 @@ public class ApiFixture : AppFixture<Program>
 
     protected override void ConfigureApp(IWebHostBuilder hostBuilder)
     {
-        hostBuilder.UseSetting("ConnectionStrings:Database", databaseProvider.ConnectionString);
-        hostBuilder.UseSetting("ConnectionStrings:Storage", storageProvider.ConnectionString);
+        hostBuilder.UseSetting("ConnectionStrings:database", databaseProvider.ConnectionString);
+        hostBuilder.UseSetting("ConnectionStrings:blobs", storageProvider.ConnectionString);
+        hostBuilder.UseSetting("ConnectionStrings:queues", storageProvider.ConnectionString);
     }
 
     protected override void ConfigureServices(IServiceCollection services)

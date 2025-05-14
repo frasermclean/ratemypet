@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using RateMyPet.Core;
 using RateMyPet.Database;
 using RateMyPet.Infrastructure.Services;
+using RateMyPet.Storage;
 
 namespace RateMyPet.Api.Startup;
 
@@ -13,7 +14,8 @@ public static class ServiceRegistration
 {
     public static WebApplicationBuilder RegisterServices(this WebApplicationBuilder builder)
     {
-        builder.AddSqlServerDbContext<ApplicationDbContext>("database");
+        builder.AddDatabaseServices()
+            .AddStorageServices();
 
         builder.Services
             .AddIdentity()

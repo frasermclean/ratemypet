@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Messages;
 
-namespace RateMyPet.Infrastructure.Services;
+namespace RateMyPet.Storage;
 
 public class MessagePublisher(ILogger<MessagePublisher> logger, QueueServiceClient serviceClient) : IMessagePublisher
 {
