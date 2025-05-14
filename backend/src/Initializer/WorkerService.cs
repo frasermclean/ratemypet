@@ -10,8 +10,11 @@ public class WorkerService(IServiceProvider serviceProvider, IHostApplicationLif
     {
         await using var scope = serviceProvider.CreateAsyncScope();
         var databaseInitializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
+        var storageInitializer = scope.ServiceProvider.GetRequiredService<StorageInitializer>();
 
-        await databaseInitializer.InitializeAsync(cancellationToken);
+        await Task.WhenAll(
+            databaseInitializer.InitializeAsync(cancellationToken),
+            storageInitializer.InitializeAsync(cancellationToken));
 
         applicationLifetime.StopApplication();
     }

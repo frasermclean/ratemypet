@@ -19,16 +19,20 @@ public static class Program
         var blobStorage = storage.AddBlobs("blobs");
         var queueStorage = storage.AddQueues("queues");
 
-        var api = builder.AddProject<Projects.Api>("api")
+        var initializer = builder.AddProject<Projects.Initializer>("initializer")
             .WithReference(database)
             .WithReference(blobStorage)
             .WithReference(queueStorage)
             .WaitFor(database)
-            .WithExternalHttpEndpoints();
+            .WaitFor(blobStorage)
+            .WaitFor(queueStorage);
 
-        var initializer = builder.AddProject<Projects.Initializer>("initializer")
+        var api = builder.AddProject<Projects.Api>("api")
             .WithReference(database)
-            .WaitFor(database);
+            .WithReference(blobStorage)
+            .WithReference(queueStorage)
+            .WaitForCompletion(initializer)
+            .WithExternalHttpEndpoints();
 
         builder.Build().Run();
     }
