@@ -12,7 +12,8 @@ public static class Program
         builder.AddServiceDefaults()
             .AddDatabaseServices();
 
-        builder.Services.AddHostedService<WorkerService>();
+        builder.Services.AddHostedService<WorkerService>()
+            .AddScoped<DatabaseInitializer>();
 
         var app = builder.Build();
 
