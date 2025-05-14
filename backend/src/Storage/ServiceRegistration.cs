@@ -7,7 +7,7 @@ namespace RateMyPet.Storage;
 
 public static class ServiceRegistration
 {
-    public static IHostApplicationBuilder AddStorageServices(this IHostApplicationBuilder builder)
+    public static TBuilder AddStorageServices<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.AddAzureBlobClient("blobs");
         builder.AddAzureQueueClient("queues");

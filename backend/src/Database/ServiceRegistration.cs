@@ -4,7 +4,7 @@ namespace RateMyPet.Database;
 
 public static class ServiceRegistration
 {
-    public static IHostApplicationBuilder AddDatabaseServices(this IHostApplicationBuilder builder)
+    public static TBuilder AddDatabaseServices<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.AddSqlServerDbContext<ApplicationDbContext>("Database");
 
