@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <UserSecretsId>e5a738df-5b24-4d63-a1f0-6d0d6f425dec</UserSecretsId>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -12,11 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Database\Database.csproj" />
+    <ProjectReference Include="..\ImageHosting\ImageHosting.csproj" />
+    <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
+    <ProjectReference Include="..\Storage\Storage.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" />
+  <ItemGroup>    
     <PackageReference Include="Delta.EF" />
     <PackageReference Include="FastEndpoints" />
     <PackageReference Include="Gridify.EntityFramework" />

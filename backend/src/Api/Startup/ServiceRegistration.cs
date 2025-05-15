@@ -1,12 +1,12 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Monitor.OpenTelemetry.AspNetCore;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
 using RateMyPet.Core;
-using RateMyPet.Infrastructure;
-using RateMyPet.Infrastructure.Services;
+using RateMyPet.Database;
+using RateMyPet.ImageHosting;
+using RateMyPet.Storage;
 
 namespace RateMyPet.Api.Startup;
 
@@ -14,17 +14,13 @@ public static class ServiceRegistration
 {
     public static WebApplicationBuilder RegisterServices(this WebApplicationBuilder builder)
     {
+        builder.AddDatabaseServices()
+            .AddStorageServices();
+
         builder.Services
             .AddIdentity()
             .AddFastEndpoints()
-            .AddInfrastructureServices(builder.Configuration);
-
-        // open telemetry
-        if (!builder.Environment.IsEnvironment("Testing"))
-        {
-            builder.Services.AddOpenTelemetry()
-                .UseAzureMonitor(options => options.Credential = TokenCredentialFactory.Create());
-        }
+            .AddImageHosting();
 
         // json serialization options
         builder.Services.Configure<JsonOptions>(options =>

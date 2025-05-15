@@ -5,7 +5,7 @@ using FastEndpoints;
 using FastEndpoints.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using RateMyPet.Core.Messages;
-using RateMyPet.Infrastructure;
+using RateMyPet.Storage;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 

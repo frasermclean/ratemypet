@@ -2,14 +2,25 @@
   <PropertyGroup>
     <AzureFunctionsVersion>V4</AzureFunctionsVersion>
     <OutputType>Exe</OutputType>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" />
-    <PackageReference Include="Microsoft.Azure.Functions.Worker.ApplicationInsights" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Storage.Queues" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.OpenTelemetry" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Database\Database.csproj" />
+    <ProjectReference Include="..\Email\Email.csproj" />
+    <ProjectReference Include="..\ImageHosting\ImageHosting.csproj" />
+    <ProjectReference Include="..\AiServices\AiServices.csproj" />
+    <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
+    <ProjectReference Include="..\Storage\Storage.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,10 +32,9 @@
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
   </ItemGroup>
+  
   <ItemGroup>
     <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-  </ItemGroup>
+  </ItemGroup>  
+  
 </Project>

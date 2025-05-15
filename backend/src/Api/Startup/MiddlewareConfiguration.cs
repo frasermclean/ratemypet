@@ -1,6 +1,5 @@
-﻿using Delta;
-using FastEndpoints;
-using RateMyPet.Infrastructure.Services;
+﻿using FastEndpoints;
+using RateMyPet.ServiceDefaults;
 
 namespace RateMyPet.Api.Startup;
 
@@ -20,6 +19,8 @@ public static class MiddlewareConfiguration
             config.Endpoints.RoutePrefix = "api";
             config.Errors.UseProblemDetails();
         });
+
+        app.MapHealthEndpoints();
 
         return app;
     }

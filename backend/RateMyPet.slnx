@@ -1,11 +1,20 @@
 ﻿<Solution>
+  <Folder Name="/Infrastructure/">
+    <Project Path="src\AiServices\AiServices.csproj" Type="Classic C#" />
+    <Project Path="src\Database\Database.csproj" Type="Classic C#" />
+    <Project Path="src\Email\Email.csproj" Type="Classic C#" />
+    <Project Path="src\ImageHosting\ImageHosting.csproj" Type="Classic C#" />
+    <Project Path="src\Initializer\Initializer.csproj" Type="Classic C#" />
+    <Project Path="src\Storage\Storage.csproj" Type="Classic C#" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="tests\Api.Tests\Api.Tests.csproj" Type="Classic C#" />
     <Project Path="tests\Core.Tests\Core.Tests.csproj" Type="Classic C#" />
     <Project Path="tests\Infrastructure.Tests\Infrastructure.Tests.csproj" Type="Classic C#" />
   </Folder>
   <Project Path="src\Api\Api.csproj" Type="Classic C#" />
+  <Project Path="src\AppHost\AppHost.csproj" Type="Classic C#" />
   <Project Path="src\Core\Core.csproj" Type="Classic C#" />
-  <Project Path="src\Infrastructure\Infrastructure.csproj" Type="Classic C#" />
   <Project Path="src\Jobs\Jobs.csproj" Type="Classic C#" />
+  <Project Path="src\ServiceDefaults\ServiceDefaults.csproj" Type="Classic C#" />
 </Solution>
