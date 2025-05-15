@@ -1,5 +1,6 @@
 ﻿<Solution>
   <Folder Name="/Infrastructure/">
+    <Project Path="src\AiServices\AiServices.csproj" Type="Classic C#" />
     <Project Path="src\Database\Database.csproj" Type="Classic C#" />
     <Project Path="src\Email\Email.csproj" Type="Classic C#" />
     <Project Path="src\ImageHosting\ImageHosting.csproj" Type="Classic C#" />
@@ -14,7 +15,6 @@
   <Project Path="src\Api\Api.csproj" Type="Classic C#" />
   <Project Path="src\AppHost\AppHost.csproj" Type="Classic C#" />
   <Project Path="src\Core\Core.csproj" Type="Classic C#" />
-  <Project Path="src\Infrastructure\Infrastructure.csproj" Type="Classic C#" />
   <Project Path="src\Jobs\Jobs.csproj" Type="Classic C#" />
   <Project Path="src\ServiceDefaults\ServiceDefaults.csproj" Type="Classic C#" />
 </Solution>

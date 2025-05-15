@@ -3,10 +3,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RateMyPet.Core.Abstractions;
 
-namespace RateMyPet.Infrastructure.Services.ImageAnalysis;
+namespace RateMyPet.AiServices;
 
 public class ImageAnalysisService(
-    IOptions<ImageAnalysisOptions> options,
+    IOptions<AiServicesOptions> options,
     ILogger<ImageAnalysisService> logger,
     ImageAnalysisClient analysisClient) : IImageAnalysisService
 {

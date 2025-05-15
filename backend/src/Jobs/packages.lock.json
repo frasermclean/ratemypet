@@ -297,6 +297,20 @@
           "Microsoft.Extensions.Options.ConfigurationExtensions": "9.0.5"
         }
       },
+      "Microsoft.Extensions.Azure": {
+        "type": "Transitive",
+        "resolved": "1.11.0",
+        "contentHash": "j6Vb858BgfAbzuv0UQxOvn8jPo8i+96Kkacu1q0RwQi+fAwVljL8WmI0oZX4CCLUsJCs1yzbpJCaS7MYPPCUjw==",
+        "dependencies": {
+          "Azure.Core": "1.44.1",
+          "Azure.Identity": "1.13.1",
+          "Microsoft.Extensions.Configuration.Abstractions": "2.1.0",
+          "Microsoft.Extensions.Configuration.Binder": "2.1.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2",
+          "Microsoft.Extensions.Logging.Abstractions": "2.1.0",
+          "Microsoft.Extensions.Options": "2.1.0"
+        }
+      },
       "Microsoft.Extensions.Caching.Abstractions": {
         "type": "Transitive",
         "resolved": "9.0.5",
@@ -1477,6 +1491,17 @@
         "resolved": "4.5.4",
         "contentHash": "zteT+G8xuGu6mS+mzDzYXbzS7rd3K6Fjb9RiZlYlJPam2/hU7JCBZBVEcywNuR+oZ1ncTvc/cq0faRr3P01OVg=="
       },
+      "RateMyPet.AiServices": {
+        "type": "Project",
+        "dependencies": {
+          "Azure.AI.ContentSafety": "[1.0.0, )",
+          "Azure.AI.Vision.ImageAnalysis": "[1.0.0, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[9.0.5, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[9.0.5, )",
+          "Microsoft.Extensions.Options.DataAnnotations": "[9.0.5, )",
+          "RateMyPet.Core": "[1.0.0, )"
+        }
+      },
       "RateMyPet.Core": {
         "type": "Project",
         "dependencies": {
@@ -1507,19 +1532,6 @@
         "type": "Project",
         "dependencies": {
           "CloudinaryDotNet": "[1.27.5, )",
-          "Microsoft.Extensions.Hosting.Abstractions": "[9.0.5, )",
-          "Microsoft.Extensions.Http": "[9.0.5, )",
-          "Microsoft.Extensions.Options.ConfigurationExtensions": "[9.0.5, )",
-          "Microsoft.Extensions.Options.DataAnnotations": "[9.0.5, )",
-          "RateMyPet.Core": "[1.0.0, )"
-        }
-      },
-      "RateMyPet.Infrastructure": {
-        "type": "Project",
-        "dependencies": {
-          "Azure.AI.ContentSafety": "[1.0.0, )",
-          "Azure.AI.Vision.ImageAnalysis": "[1.0.0, )",
-          "Microsoft.Extensions.Azure": "[1.11.0, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[9.0.5, )",
           "Microsoft.Extensions.Http": "[9.0.5, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[9.0.5, )",
@@ -1715,21 +1727,6 @@
         "dependencies": {
           "Microsoft.EntityFrameworkCore.Relational": "9.0.5",
           "Microsoft.Extensions.Identity.Stores": "9.0.5"
-        }
-      },
-      "Microsoft.Extensions.Azure": {
-        "type": "CentralTransitive",
-        "requested": "[1.11.0, )",
-        "resolved": "1.11.0",
-        "contentHash": "j6Vb858BgfAbzuv0UQxOvn8jPo8i+96Kkacu1q0RwQi+fAwVljL8WmI0oZX4CCLUsJCs1yzbpJCaS7MYPPCUjw==",
-        "dependencies": {
-          "Azure.Core": "1.44.1",
-          "Azure.Identity": "1.13.1",
-          "Microsoft.Extensions.Configuration.Abstractions": "2.1.0",
-          "Microsoft.Extensions.Configuration.Binder": "2.1.0",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2",
-          "Microsoft.Extensions.Logging.Abstractions": "2.1.0",
-          "Microsoft.Extensions.Options": "2.1.0"
         }
       },
       "Microsoft.Extensions.Hosting.Abstractions": {

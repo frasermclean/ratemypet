@@ -4,11 +4,11 @@ using Microsoft.Extensions.Options;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Results;
 
-namespace RateMyPet.Infrastructure.Services.Moderation;
+namespace RateMyPet.AiServices;
 
 public class ModerationService(
     ILogger<ModerationService> logger,
-    IOptions<ModerationOptions> options,
+    IOptions<AiServicesOptions> options,
     ContentSafetyClient safetyClient,
     HttpClient httpClient) : IModerationService
 {
