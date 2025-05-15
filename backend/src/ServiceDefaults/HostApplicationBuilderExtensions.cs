@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -47,6 +48,9 @@ public static class HostApplicationBuilderExtensions
             logging.IncludeFormattedMessage = true;
             logging.IncludeScopes = true;
         });
+
+        // add ActivitySource with application name for OpenTelemetry tracing
+        builder.Services.AddTransient(_ => new ActivitySource(builder.Environment.ApplicationName));
 
         builder.Services.AddOpenTelemetry()
             .WithMetrics(metrics =>
