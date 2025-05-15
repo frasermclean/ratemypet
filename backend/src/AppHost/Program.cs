@@ -18,7 +18,7 @@ public static class Program
             .WaitFor(blobs)
             .WaitFor(queues);
 
-        builder.AddProject<Projects.Api>("api")
+        var api = builder.AddProject<Projects.Api>("api")
             .WaitForCompletion(initializer)
             .WithReference(database)
             .WithReference(blobs)
@@ -29,6 +29,11 @@ public static class Program
             .WaitForCompletion(initializer)
             .WithHostStorage(storage)
             .WithReference(database)
+            .WithExternalHttpEndpoints();
+
+        builder.AddNpmApp("frontend", "../../../frontend")
+            .WaitFor(api)
+            .WithHttpEndpoint(4200, isProxied: false)
             .WithExternalHttpEndpoints();
 
         builder.Build().Run();
