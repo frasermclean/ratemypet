@@ -41,9 +41,9 @@ public static class Program
         var saPassword = builder.AddParameter("SaPassword", true);
 
         var sqlServer = builder.AddSqlServer("sql-server", saPassword)
-            .WithContainerName("rmp-sql-server")
+            .WithContainerName("ratemypet-sql-server")
             .WithLifetime(ContainerLifetime.Persistent)
-            .WithDataVolume("rmp-sql-server");
+            .WithDataVolume("ratemypet-sql-server");
 
         database = sqlServer.AddDatabase("database", "RateMyPet");
 
@@ -57,12 +57,10 @@ public static class Program
         out IResourceBuilder<AzureQueueStorageResource> queues)
     {
         storage = builder.AddAzureStorage("storage")
-            .RunAsEmulator(resourceBuilder =>
-            {
-                resourceBuilder.WithContainerName("rmp-storage");
-                resourceBuilder.WithLifetime(ContainerLifetime.Persistent);
-                resourceBuilder.WithDataVolume("rmp-storage");
-            });
+            .RunAsEmulator(resourceBuilder => resourceBuilder
+                .WithContainerName("ratemypet-storage")
+                .WithLifetime(ContainerLifetime.Persistent)
+                .WithDataVolume("ratemypet-storage"));
 
         blobs = storage.AddBlobs("blobs");
         queues = storage.AddQueues("queues");
