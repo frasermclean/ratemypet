@@ -103,14 +103,6 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
           value: applicationInsightsConnectionString
         }
         {
-          name: 'Storage__BlobEndpoint'
-          value: storageAccount.properties.primaryEndpoints.blob
-        }
-        {
-          name: 'Storage__QueueEndpoint'
-          value: storageAccount.properties.primaryEndpoints.queue
-        }
-        {
           name: 'Email__AcsEndpoint'
           value: 'https://${communicationServiceName}.australia.communication.azure.com'
         }
@@ -148,6 +140,16 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
           name: 'Database'
           type: 'SQLAzure'
           connectionString: databaseConnectionString
+        }
+        {
+          name: 'Blobs'
+          type: 'Custom'
+          connectionString: storageAccount.properties.primaryEndpoints.blob
+        }
+        {
+          name: 'Queues'
+          type: 'Custom'
+          connectionString: storageAccount.properties.primaryEndpoints.queue
         }
       ]
       cors: {
