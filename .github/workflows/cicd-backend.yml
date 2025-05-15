@@ -95,7 +95,7 @@ jobs:
           --idempotent
           --output ${{ env.MIGRATIONS_SCRIPT }}
           --configuration ${{ env.BUILD_CONFIGURATION }}
-          --project src/Infrastructure/Infrastructure.csproj
+          --project src/Database/Database.csproj
           --startup-project src/Api/Api.csproj
 
       # Upload migrations script
