@@ -4,9 +4,12 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY *.props .
 COPY ["src/Api/Api.csproj", "Api/"]
-COPY ["src/Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["src/Database/Database.csproj", "Database/"]
+COPY ["src/ImageHosting/ImageHosting.csproj", "ImageHosting/"]
+COPY ["src/ServiceDefaults/ServiceDefaults.csproj", "ServiceDefaults/"]
+COPY ["src/Storage/Storage.csproj", "Storage/"]
 COPY ["src/Core/Core.csproj", "Core/"]
-RUN dotnet restore "./Api/Api.csproj"
+RUN dotnet restore "./Api/Api.csproj" --locked-mode
 COPY src/ .
 RUN dotnet publish "/src/Api/Api.csproj" -c $BUILD_CONFIGURATION -o /app
 
