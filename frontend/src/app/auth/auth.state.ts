@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Navigate } from '@ngxs/router-plugin';
 import { Action, NgxsOnInit, Selector, State, StateContext, StateToken } from '@ngxs/store';
 import { NotificationService } from '@shared/services/notification.service';
-import { catchError, finalize, of, tap } from 'rxjs';
+import { catchError, finalize, tap } from 'rxjs';
 import { AuthActions } from './auth.actions';
 import { Role } from './auth.models';
 import { AuthService } from './auth.service';
@@ -37,10 +37,7 @@ export class AuthState implements NgxsOnInit {
   private readonly notificationService = inject(NotificationService);
 
   ngxsOnInit(context: StateContext<AuthStateModel>): void {
-    const userId = context.getState().userId;
-    if (userId) {
-      context.dispatch(new AuthActions.VerifyUser());
-    }
+    context.dispatch(new AuthActions.VerifyUser());
   }
 
   @Action(AuthActions.Login)
@@ -80,18 +77,10 @@ export class AuthState implements NgxsOnInit {
     context.patchState({ isBusy: true });
     return this.authService.verifyUser().pipe(
       tap((response) => {
-        context.patchState(response);
-      }),
-      catchError((error) => {
-        context.patchState({
-          error: error,
-          userId: null,
-          userName: null,
-          emailAddress: null,
-          emailHash: null,
-          roles: []
-        });
-        return of(null);
+        const user = response.user;
+        if (user) {
+          context.patchState(user);
+        }
       }),
       finalize(() => {
         context.patchState({ isBusy: false });

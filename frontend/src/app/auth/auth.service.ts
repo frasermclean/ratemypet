@@ -1,6 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { ConfirmEmailRequest, LoginRequest, LoginResponse, RegisterRequest, ResetPasswordRequest } from './auth.models';
+import {
+  ConfirmEmailRequest,
+  LoginRequest,
+  LoginResponse,
+  RegisterRequest,
+  ResetPasswordRequest,
+  VerifyUserResponse
+} from './auth.models';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +25,7 @@ export class AuthService {
   }
 
   public verifyUser() {
-    return this.httpClient.get<LoginResponse>(`${this.baseUrl}/verify-user`);
+    return this.httpClient.get<VerifyUserResponse>(`${this.baseUrl}/verify-user`);
   }
 
   public register(request: RegisterRequest) {
