@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
 import { ConfirmEmailRequest, LoginRequest, LoginResponse, RegisterRequest, ResetPasswordRequest } from './auth.models';
 
 @Injectable({
@@ -8,7 +7,7 @@ import { ConfirmEmailRequest, LoginRequest, LoginResponse, RegisterRequest, Rese
 })
 export class AuthService {
   private readonly httpClient = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiBaseUrl}/api/auth`;
+  private readonly baseUrl = '/api/auth';
 
   public login(request: LoginRequest) {
     return this.httpClient.post<LoginResponse>(`${this.baseUrl}/login`, request);

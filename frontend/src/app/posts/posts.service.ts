@@ -2,7 +2,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { GridifyQueryBuilder, ConditionalOperator as op, Paging } from 'gridify-client';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
 import {
   AddPostRequest,
   Post,
@@ -23,7 +22,7 @@ const DEFAULT_DESCENDING = true;
 @Injectable()
 export class PostsService {
   private readonly httpClient = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiBaseUrl}/api/posts`;
+  private readonly baseUrl = '/api/posts';
 
   searchPosts(request: Partial<SearchPostsRequest>): Observable<Paging<SearchPostsMatch>> {
     const queryBuilder = new GridifyQueryBuilder()
