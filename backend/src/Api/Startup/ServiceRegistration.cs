@@ -67,8 +67,8 @@ public static class ServiceRegistration
 
         services.ConfigureApplicationCookie(options =>
         {
-            options.Cookie.Name = "rmp_app";
-            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.Name = "RateMyPet.Auth";
+            options.Cookie.SameSite = SameSiteMode.Strict;
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
             options.Events.OnRedirectToLogin = context =>
