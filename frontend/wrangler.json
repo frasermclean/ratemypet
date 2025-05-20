@@ -1,9 +1,11 @@
 {
   "name": "ratemypet-web",
-  "compatibility_date": "2025-05-01",
   "pages_build_output_dir": "./dist/browser",
+  "compatibility_date": "2025-05-01",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "vars": {
-    "NODE_VERSION": "v22.15.1",
     "API_BASE_URL": "http://localhost:5080"
   },
   "env": {
