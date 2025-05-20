@@ -1,5 +1,8 @@
 {
   "name": "ratemypet-web",
   "compatibility_date": "2025-05-01",
-  "pages_build_output_dir": "./dist/browser"
+  "pages_build_output_dir": "./dist/browser",
+  "vars": {
+    "NODE_VERSION": "v22.15.1"
+  }
 }
