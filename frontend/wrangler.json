@@ -1,4 +1,5 @@
 {
-  "name": "ratemypet",
-  "compatibility_date": "2025-05-01"
+  "name": "ratemypet-web",
+  "compatibility_date": "2025-05-01",
+  "pages_build_output_dir": "./dist/browser"
 }
