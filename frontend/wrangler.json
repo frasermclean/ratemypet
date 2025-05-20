@@ -9,11 +9,13 @@
   "env": {
     "preview": {
       "vars": {
+        "NODE_VERSION": "v22.15.1",
         "API_BASE_URL": "https://api.ratemy.pet"
       }
     },
     "production": {
       "vars": {
+        "NODE_VERSION": "v22.15.1",
         "API_BASE_URL": "https://api.ratemy.pet"
       }
     }
