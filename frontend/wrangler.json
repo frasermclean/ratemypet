@@ -3,6 +3,7 @@
   "compatibility_date": "2025-05-01",
   "pages_build_output_dir": "./dist/browser",
   "vars": {
-    "NODE_VERSION": "v22.15.1"
+    "NODE_VERSION": "v22.15.1",
+    "API_BASE_URL": "https://api.ratemy.pet"
   }
 }
