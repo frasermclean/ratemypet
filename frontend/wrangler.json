@@ -4,6 +4,18 @@
   "pages_build_output_dir": "./dist/browser",
   "vars": {
     "NODE_VERSION": "v22.15.1",
-    "API_BASE_URL": "https://api.ratemy.pet"
+    "API_BASE_URL": "http://localhost:5080"
+  },
+  "env": {
+    "preview": {
+      "vars": {
+        "API_BASE_URL": "https://api.ratemy.pet"
+      }
+    },
+    "production": {
+      "vars": {
+        "API_BASE_URL": "https://api.ratemy.pet"
+      }
+    }
   }
 }
