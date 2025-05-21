@@ -30,20 +30,6 @@ public static class ServiceRegistration
             options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
         });
 
-        // development services
-        if (builder.Environment.IsDevelopment())
-        {
-            // add CORS policy
-            builder.Services.AddCors(options => options.AddDefaultPolicy(policyBuilder => policyBuilder
-                .WithOrigins("http://localhost:4200")
-                .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .AllowAnyHeader()
-                .AllowCredentials()
-                .WithExposedHeaders("Location")
-                .SetPreflightMaxAge(TimeSpan.FromMinutes(10)))
-            );
-        }
-
         return builder;
     }
 
