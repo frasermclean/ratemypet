@@ -39,7 +39,10 @@
                 "src/styles"
               ]
             },
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "gridify-client"
+            ]
           },
           "configurations": {
             "production": {
