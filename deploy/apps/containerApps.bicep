@@ -9,9 +9,6 @@ param appEnv string
 @description('Azure region for the non-global resources')
 param location string = resourceGroup().location
 
-@description('Domain name')
-param domainName string
-
 @description('Name of the shared resource group')
 param sharedResourceGroup string
 
@@ -45,12 +42,6 @@ param apiImageRepository string
 @description('Tag of the API container image')
 param apiImageTag string
 
-@description('Allowed HTTP origins for the API container app')
-param apiAllowedOrigins array = []
-
-@description('Flag to create a managed certificates for the container apps. Set to true on first run.')
-param shouldBindManagedCertificate bool = false
-
 var apiContainerAppName = '${workload}-${appEnv}-api-ca'
 
 // shared managed identity
@@ -74,16 +65,6 @@ resource appsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
       destination: 'azure-monitor'
     }
   }
-
-  resource apiCertificate 'managedCertificates' = if (!shouldBindManagedCertificate) {
-    name: 'api-cert'
-    location: location
-    tags: tags
-    properties: {
-      subjectName: dnsRecordsModule.outputs.apiAppFqdn
-      domainControlValidation: 'CNAME'
-    }
-  }
 }
 
 // container apps environment diagnostic settings
@@ -98,17 +79,6 @@ resource appsEnvironmentDiagnosticSettings 'Microsoft.Insights/diagnosticSetting
         enabled: true
       }
     ]
-  }
-}
-
-module dnsRecordsModule 'dnsRecords.bicep' = {
-  name: 'dnsRecords-${appEnv}-containerApps'
-  scope: resourceGroup(sharedResourceGroup)
-  params: {
-    appEnv: appEnv
-    domainName: domainName
-    apiAppDefaultHostname: '${apiContainerAppName}.${appsEnvironment.properties.defaultDomain}'
-    customDomainVerificationId: appsEnvironment.properties.customDomainConfiguration.customDomainVerificationId
   }
 }
 
@@ -138,21 +108,6 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
             weight: 100
           }
         ]
-        customDomains: [
-          {
-            name: dnsRecordsModule.outputs.apiAppFqdn
-            bindingType: shouldBindManagedCertificate ? 'Disabled' : 'SniEnabled'
-            certificateId: shouldBindManagedCertificate ? null : appsEnvironment::apiCertificate.id
-          }
-        ]
-        corsPolicy: {
-          allowedOrigins: apiAllowedOrigins
-          allowCredentials: true
-          allowedHeaders: ['*']
-          allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-          exposeHeaders: ['Location']
-          maxAge: 600
-        }
       }
       registries: [
         {

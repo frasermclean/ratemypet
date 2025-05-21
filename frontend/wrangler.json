@@ -1,0 +1,25 @@
+{
+  "name": "ratemypet-web",
+  "pages_build_output_dir": "./dist/browser",
+  "compatibility_date": "2025-05-01",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "vars": {
+    "API_BASE_URL": "http://localhost:5080"
+  },
+  "env": {
+    "preview": {
+      "vars": {
+        "NODE_VERSION": "v22.15.1",
+        "API_BASE_URL": "https://ratemypet-test-api-ca.redmushroom-185c8742.australiaeast.azurecontainerapps.io"
+      }
+    },
+    "production": {
+      "vars": {
+        "NODE_VERSION": "v22.15.1",
+        "API_BASE_URL": "https://ratemypet-prod-api-ca.blacksand-5b338fab.australiaeast.azurecontainerapps.io"
+      }
+    }
+  }
+}

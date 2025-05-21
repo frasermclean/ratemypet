@@ -50,8 +50,6 @@ var tags = {
   appName: appName
 }
 
-var customDomainName = 'jobs.${appEnv}.${domainName}'
-
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' existing = {
   name: storageAccountName
 
@@ -179,17 +177,6 @@ resource functionApp 'Microsoft.Web/sites@2024-04-01' = {
     }
   }
 
-  // custom domain binding
-  resource hostNameBinding 'hostNameBindings' = {
-    name: customDomainName
-    dependsOn: [dnsRecords]
-    properties: {
-      hostNameType: 'Verified'
-      sslState: 'Disabled'
-      customHostNameDnsRecordType: 'CName'
-    }
-  }
-
   resource scmPublishingPolicy 'basicPublishingCredentialsPolicies' = {
     name: 'scm'
     properties: {
@@ -214,26 +201,6 @@ module dnsRecords 'dnsRecords.bicep' = {
     appEnv: appEnv
     jobsAppDefaultHostname: functionApp.properties.defaultHostName
     customDomainVerificationId: functionApp.properties.customDomainVerificationId
-  }
-}
-
-// managed certificate
-resource customDomainCertificate 'Microsoft.Web/certificates@2023-12-01' = {
-  name: 'jobs-cert'
-  location: location
-  properties: {
-    serverFarmId: appServicePlan.id
-    canonicalName: functionApp::hostNameBinding.name
-  }
-}
-
-// enable SNI binding for the custom domain
-module siteSniEnable './siteSniEnable.bicep' = {
-  name: 'siteSniEnable'
-  params: {
-    siteName: functionApp.name
-    hostname: customDomainName
-    certificateThumbprint: customDomainCertificate.properties.thumbprint
   }
 }
 

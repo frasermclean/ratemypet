@@ -87,20 +87,6 @@ module appInsightsModule 'appInsights.bicep' = {
   }
 }
 
-// static web app
-module staticWebAppModule 'staticWebApp.bicep' = {
-  name: 'staticWebApp'
-  params: {
-    workload: workload
-    appEnv: appEnv
-    appName: 'frontend'
-    location: 'eastasia'
-    domainName: domainName
-    sharedResourceGroup: sharedResourceGroup
-    tags: tags
-  }
-}
-
 // container apps
 module containerAppsModule 'containerApps.bicep' = {
   name: 'containerApps'
@@ -109,16 +95,12 @@ module containerAppsModule 'containerApps.bicep' = {
     appEnv: appEnv
     location: location
     tags: tags
-    domainName: domainName
     sharedResourceGroup: sharedResourceGroup
     logAnalyticsWorkspaceId: appInsightsModule.outputs.logAnalyticsWorkspaceId
     applicationInsightsConnectionString: appInsightsModule.outputs.connectionString
     appConfigurationName: appConfigurationName
     apiImageRepository: apiImageRepository
     apiImageTag: apiImageTag
-    apiAllowedOrigins: appEnv == 'prod'
-      ? map(staticWebAppModule.outputs.hostnames, (hostname) => 'https://${hostname}')
-      : ['*']
     containerRegistryName: containerRegistryName
     containerRegistryUsername: containerRegistryUsername
     keyVaultName: keyVaultName

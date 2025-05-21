@@ -33,7 +33,8 @@ public static class Program
 
         builder.AddNpmApp("frontend", "../../../frontend")
             .WaitFor(api)
-            .WithHttpEndpoint(4200, isProxied: false)
+            .WithReference(api)
+            .WithHttpEndpoint(4200, env: "PORT")
             .WithExternalHttpEndpoints();
 
         builder.Build().Run();

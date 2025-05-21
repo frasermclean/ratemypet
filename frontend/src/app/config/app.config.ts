@@ -1,4 +1,4 @@
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import {
   ApplicationConfig,
   ErrorHandler,
@@ -11,7 +11,6 @@ import { ApplicationinsightsAngularpluginErrorService } from '@microsoft/applica
 import { PageTitleService } from '@shared/services/page-title.service';
 import initializeApp from '../app.initializer';
 import { routes } from '../app.routes';
-import { authInterceptor } from '../auth/auth.interceptor';
 import provideNgxsStore from './ngxs.provider';
 import provideUiDefaults from './ui-defaults.provider';
 
@@ -19,7 +18,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideExperimentalZonelessChangeDetection(),
     provideRouter(routes, withComponentInputBinding()),
-    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    provideHttpClient(withFetch()),
     provideAnimationsAsync(),
     provideAppInitializer(initializeApp),
     provideUiDefaults(),
