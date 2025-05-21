@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using FastEndpoints;
+﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using RateMyPet.Api.Extensions;
