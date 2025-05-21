@@ -12,13 +12,13 @@
     "preview": {
       "vars": {
         "NODE_VERSION": "v22.15.1",
-        "API_BASE_URL": "https://api.ratemy.pet"
+        "API_BASE_URL": "https://ratemypet-test-api-ca.redmushroom-185c8742.australiaeast.azurecontainerapps.io"
       }
     },
     "production": {
       "vars": {
         "NODE_VERSION": "v22.15.1",
-        "API_BASE_URL": "https://api.ratemy.pet"
+        "API_BASE_URL": "https://ratemypet-prod-api-ca.blacksand-5b338fab.australiaeast.azurecontainerapps.io"
       }
     }
   }
