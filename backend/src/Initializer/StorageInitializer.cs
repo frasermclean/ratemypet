@@ -1,22 +1,27 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Queues;
+using OpenTelemetry.Trace;
 using RateMyPet.Storage;
 
 namespace RateMyPet.Initializer;
 
 public class StorageInitializer(
     ILogger<StorageInitializer> logger,
+    Tracer tracer,
     BlobServiceClient blobServiceClient,
     QueueServiceClient queueServiceClient)
 {
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
-        await InitializeBlobContainersAsync(cancellationToken);
-        await InitializeQueuesAsync(cancellationToken);
+        await Task.WhenAll(
+            InitializeBlobContainersAsync(cancellationToken),
+            InitializeQueuesAsync(cancellationToken));
     }
 
     private async Task InitializeBlobContainersAsync(CancellationToken cancellationToken)
     {
+        using var span = tracer.StartActiveSpan("Initialize blob containers");
+
         var postImagesContainerClient = blobServiceClient.GetBlobContainerClient(BlobContainerNames.PostImages);
         await postImagesContainerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
 
@@ -25,12 +30,16 @@ public class StorageInitializer(
 
     private async Task InitializeQueuesAsync(CancellationToken cancellationToken)
     {
-        var queuesToCreates = new[]
+        using var span = tracer.StartActiveSpan("Initialize queues");
+
+        var queuesToCreate = new[]
         {
             QueueNames.ForgotPassword, QueueNames.PostAdded, QueueNames.RegisterConfirmation
         };
 
-        foreach (var queueName in queuesToCreates)
+        span.SetAttribute("QueuesToCreate", queuesToCreate);
+
+        foreach (var queueName in queuesToCreate)
         {
             var queueClient = queueServiceClient.GetQueueClient(queueName);
             await queueClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);

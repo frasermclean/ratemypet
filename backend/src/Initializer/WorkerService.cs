@@ -1,11 +1,19 @@
-﻿namespace RateMyPet.Initializer;
+﻿using OpenTelemetry.Trace;
 
-public class WorkerService(IServiceProvider serviceProvider, IHostApplicationLifetime applicationLifetime)
+namespace RateMyPet.Initializer;
+
+public class WorkerService(
+    IServiceScopeFactory serviceScopeFactory,
+    IHostApplicationLifetime applicationLifetime,
+    Tracer tracer)
     : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        await using var scope = serviceProvider.CreateAsyncScope();
+        using var span = tracer.StartActiveSpan("Initialize systems");
+
+        await using var scope = serviceScopeFactory.CreateAsyncScope();
+
         var databaseInitializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
         var storageInitializer = scope.ServiceProvider.GetRequiredService<StorageInitializer>();
 
