@@ -12,6 +12,11 @@ export interface LoginResponse {
   roles: Role[];
 }
 
+export interface VerifyUserResponse {
+  isAuthenticated: boolean;
+  user: LoginResponse | null;
+}
+
 export interface RegisterRequest {
   userName: string;
   emailAddress: string;

@@ -60,8 +60,10 @@ export class TelemetryService {
   private registerUserContextHandlers(): void {
     // track authenticated user id on login and verify user
     this.actions$.pipe(ofActionSuccessful(AuthActions.Login, AuthActions.VerifyUser)).subscribe(() => {
-      const userId = this.store.selectSnapshot(AuthState.userId)!; // should not be null as the user is authenticated
-      this.appInsights.setAuthenticatedUserContext(userId, undefined, true);
+      const userId = this.store.selectSnapshot(AuthState.userId); // should not be null as the user is authenticated
+      if (userId) {
+        this.appInsights.setAuthenticatedUserContext(userId, undefined, true);
+      }
     });
 
     // clear user id on logout

@@ -30,20 +30,6 @@ public static class ServiceRegistration
             options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
         });
 
-        // development services
-        if (builder.Environment.IsDevelopment())
-        {
-            // add CORS policy
-            builder.Services.AddCors(options => options.AddDefaultPolicy(policyBuilder => policyBuilder
-                .WithOrigins("http://localhost:4200")
-                .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .AllowAnyHeader()
-                .AllowCredentials()
-                .WithExposedHeaders("Location")
-                .SetPreflightMaxAge(TimeSpan.FromMinutes(10)))
-            );
-        }
-
         return builder;
     }
 
@@ -67,8 +53,8 @@ public static class ServiceRegistration
 
         services.ConfigureApplicationCookie(options =>
         {
-            options.Cookie.Name = "rmp_app";
-            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.Name = "RateMyPet.Auth";
+            options.Cookie.SameSite = SameSiteMode.Strict;
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
             options.Events.OnRedirectToLogin = context =>

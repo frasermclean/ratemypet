@@ -1,5 +1,4 @@
 import { RouterStateSerializer, withNgxsRouterPlugin } from '@ngxs/router-plugin';
-import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { provideStore } from '@ngxs/store';
 import { AppRouterStateSerializer } from '@shared/router-state-serializer';
 import { SharedState } from '@shared/shared.state';
@@ -12,13 +11,7 @@ export function provideNgxsStore() {
     provideStore(
       [AuthState, SharedState, SpeciesState],
       { developmentMode: environment.name === 'development' },
-      ...[
-        withNgxsRouterPlugin(),
-        withNgxsStoragePlugin({
-          keys: ['auth.userId']
-        }),
-        ...environment.ngxsPlugins
-      ]
+      ...[withNgxsRouterPlugin(), ...environment.ngxsPlugins]
     ),
     {
       provide: RouterStateSerializer,

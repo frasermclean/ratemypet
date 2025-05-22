@@ -1,14 +1,20 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
-import { ConfirmEmailRequest, LoginRequest, LoginResponse, RegisterRequest, ResetPasswordRequest } from './auth.models';
+import {
+  ConfirmEmailRequest,
+  LoginRequest,
+  LoginResponse,
+  RegisterRequest,
+  ResetPasswordRequest,
+  VerifyUserResponse
+} from './auth.models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private readonly httpClient = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiBaseUrl}/api/auth`;
+  private readonly baseUrl = '/api/auth';
 
   public login(request: LoginRequest) {
     return this.httpClient.post<LoginResponse>(`${this.baseUrl}/login`, request);
@@ -19,7 +25,7 @@ export class AuthService {
   }
 
   public verifyUser() {
-    return this.httpClient.get<LoginResponse>(`${this.baseUrl}/verify-user`);
+    return this.httpClient.get<VerifyUserResponse>(`${this.baseUrl}/verify-user`);
   }
 
   public register(request: RegisterRequest) {
