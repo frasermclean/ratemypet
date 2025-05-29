@@ -2,7 +2,7 @@
 
 namespace RateMyPet.AppHost.Tests;
 
-public class HealthEndpointTests(DistributedApplicationFixture fixture)
+public class HealthEndpointTests(AppHostFixture fixture)
 {
     [Fact]
     public async Task GetHealth_Should_ReturnOk()
