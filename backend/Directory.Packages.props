@@ -10,6 +10,7 @@
     <PackageVersion Include="Aspire.Hosting.Azure.Storage" Version="9.3.0" />
     <PackageVersion Include="Aspire.Hosting.NodeJs" Version="9.3.0" />
     <PackageVersion Include="Aspire.Hosting.SqlServer" Version="9.3.0" />
+    <PackageVersion Include="Aspire.Hosting.Testing" Version="9.3.0" />
     <PackageVersion Include="Aspire.Microsoft.EntityFrameworkCore.SqlServer" Version="9.3.0" />
     <PackageVersion Include="Azure.AI.ContentSafety" Version="1.0.0" />
     <PackageVersion Include="Azure.AI.Vision.ImageAnalysis" Version="1.0.0" />
