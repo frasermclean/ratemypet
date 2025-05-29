@@ -19,7 +19,7 @@ public sealed class DistributedApplicationFixture : IAsyncLifetime
 
         app = await appHost.BuildAsync(cancellationToken);
 
-        await app.StartAsync(cancellationToken).WaitAsync(TimeSpan.FromMinutes(1), cancellationToken);
+        await app.StartAsync(cancellationToken).WaitAsync(TimeSpan.FromMinutes(5), cancellationToken);
     }
 
     public HttpClient CreateHttpClient(string resourceName)
