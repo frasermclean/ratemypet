@@ -9,6 +9,7 @@
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="tests\Api.Tests\Api.Tests.csproj" Type="Classic C#" />
+    <Project Path="tests\AppHost.Tests\AppHost.Tests.csproj" Type="Classic C#" />
     <Project Path="tests\Core.Tests\Core.Tests.csproj" Type="Classic C#" />
     <Project Path="tests\Infrastructure.Tests\Infrastructure.Tests.csproj" Type="Classic C#" />
   </Folder>
