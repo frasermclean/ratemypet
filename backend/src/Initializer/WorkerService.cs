@@ -10,10 +10,9 @@ public class WorkerService(
 {
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        using var span = tracer.StartActiveSpan("Initialize systems");
-
         await using var scope = serviceScopeFactory.CreateAsyncScope();
 
+        using var span = tracer.StartActiveSpan("Initialize systems");
         var databaseInitializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
         var storageInitializer = scope.ServiceProvider.GetRequiredService<StorageInitializer>();
 
