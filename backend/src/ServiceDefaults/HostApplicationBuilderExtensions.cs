@@ -48,6 +48,9 @@ public static class HostApplicationBuilderExtensions
             logging.IncludeScopes = true;
         });
 
+        // register default tracer
+        builder.Services.AddSingleton(TracerProvider.Default.GetTracer(builder.Environment.ApplicationName));
+
         builder.Services.AddOpenTelemetry()
             .WithMetrics(metrics =>
             {

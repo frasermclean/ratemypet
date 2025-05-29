@@ -23,7 +23,8 @@ public static class Program
             .WithReference(database)
             .WithReference(blobs)
             .WithReference(queues)
-            .WithExternalHttpEndpoints();
+            .WithExternalHttpEndpoints()
+            .WithHttpHealthCheck("/health");
 
         builder.AddAzureFunctionsProject<Projects.Jobs>("jobs")
             .WaitForCompletion(initializer)

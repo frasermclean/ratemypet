@@ -1,18 +1,16 @@
-﻿using System.Diagnostics;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using OpenTelemetry.Trace;
 using RateMyPet.Database;
 
 namespace RateMyPet.Initializer;
 
-public class DatabaseInitializer(ApplicationDbContext dbContext, ILogger<DatabaseInitializer> logger)
+public class DatabaseInitializer(ApplicationDbContext dbContext, ILogger<DatabaseInitializer> logger, Tracer tracer)
 {
-    private static readonly ActivitySource ActivitySource = new(nameof(DatabaseInitializer));
-
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
-        using var activity = ActivitySource.StartActivity(nameof(InitializeAsync), ActivityKind.Client);
+        using var span = tracer.StartActiveSpan("Initialize database");
 
         try
         {
@@ -21,7 +19,8 @@ public class DatabaseInitializer(ApplicationDbContext dbContext, ILogger<Databas
         }
         catch (Exception exception)
         {
-            activity?.AddException(exception);
+            span.RecordException(exception);
+            throw;
         }
     }
 

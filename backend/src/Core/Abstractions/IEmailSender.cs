@@ -2,6 +2,9 @@
 
 public interface IEmailSender
 {
-    Task SendEmailAsync(string recipientAddress, string subject, string htmlMessage,
+    Task SendConfirmationEmailAsync(string emailAddress, Guid userId, string confirmationToken,
+        CancellationToken cancellationToken = default);
+
+    Task SendPasswordResetEmailAsync(string emailAddress, string resetCode,
         CancellationToken cancellationToken = default);
 }

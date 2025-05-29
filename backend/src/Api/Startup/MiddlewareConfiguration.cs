@@ -16,6 +16,8 @@ public static class MiddlewareConfiguration
         });
 
         app.MapHealthEndpoints();
+        app.MapStaticAssets();
+        app.MapFallbackToFile("index.html");
 
         return app;
     }
