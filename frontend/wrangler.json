@@ -1,4 +1,5 @@
 {
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ratemypet-web",
   "pages_build_output_dir": "./dist/browser",
   "compatibility_date": "2025-05-01",
