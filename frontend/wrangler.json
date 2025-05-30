@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "ratemypet-web",
+  "name": "ratemypet",
   "pages_build_output_dir": "./dist/browser",
   "compatibility_date": "2025-05-01",
   "compatibility_flags": [
@@ -13,13 +13,13 @@
     "preview": {
       "vars": {
         "NODE_VERSION": "v22.15.1",
-        "API_BASE_URL": "https://ratemypet-test-api-ca.redmushroom-185c8742.australiaeast.azurecontainerapps.io"
+        "API_BASE_URL": "https://api.ratemy.pet"
       }
     },
     "production": {
       "vars": {
         "NODE_VERSION": "v22.15.1",
-        "API_BASE_URL": "https://ratemypet-prod-api-ca.blacksand-5b338fab.australiaeast.azurecontainerapps.io"
+        "API_BASE_URL": "https://api.ratemy.pet"
       }
     }
   }
