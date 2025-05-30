@@ -6,9 +6,12 @@
     "start": "run-script-os",
     "start:windows": "ng serve --port %PORT%",
     "start:default": "ng serve --port $PORT",
-    "build": "ng build",
+    "build": "ng build && npm run process",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "serve:ssr": "node dist/server/server.mjs",
+    "process": "node ./tools/cf-process.mjs",
+    "deploy": "npm run build && wrangler pages deploy"
   },
   "private": true,
   "dependencies": {
@@ -21,7 +24,9 @@
     "@angular/material": "^19.2.18",
     "@angular/platform-browser": "^19.2.14",
     "@angular/platform-browser-dynamic": "^19.2.14",
+    "@angular/platform-server": "^19.2.14",
     "@angular/router": "^19.2.14",
+    "@angular/ssr": "^19.2.14",
     "@cloudinary/url-gen": "^1.21.0",
     "@microsoft/applicationinsights-angularplugin-js": "^15.3.6",
     "@microsoft/applicationinsights-web": "^3.3.8",
