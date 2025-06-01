@@ -30,7 +30,6 @@
     "@cloudinary/url-gen": "^1.21.0",
     "@microsoft/applicationinsights-angularplugin-js": "^15.3.6",
     "@microsoft/applicationinsights-web": "^3.3.8",
-    "@ngxs/logger-plugin": "^19.0.0",
     "@ngxs/router-plugin": "^19.0.0",
     "@ngxs/store": "^19.0.0",
     "gridify-client": "^2.0.2",
