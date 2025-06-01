@@ -13,6 +13,6 @@ import { UserMenuComponent } from './user-menu/user-menu.component';
   styleUrl: './toolbar.component.scss'
 })
 export class ToolbarComponent {
-  protected readonly title = input.required<string>();
+  public readonly title = input.required<string>();
   protected readonly menuClicked = output<void>();
 }
