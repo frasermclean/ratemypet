@@ -101,6 +101,7 @@ module containerAppsModule 'containerApps.bicep' = {
     appEnv: appEnv
     location: location
     tags: tags
+    domainName: domainName
     sharedResourceGroup: sharedResourceGroup
     logAnalyticsWorkspaceId: appInsightsModule.outputs.logAnalyticsWorkspaceId
     applicationInsightsConnectionString: appInsightsModule.outputs.connectionString

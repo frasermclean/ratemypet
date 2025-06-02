@@ -9,6 +9,9 @@ param appEnv string
 @description('Azure region for the non-global resources')
 param location string = resourceGroup().location
 
+@description('Domain name')
+param domainName string
+
 @description('Name of the shared resource group')
 param sharedResourceGroup string
 
@@ -71,6 +74,19 @@ resource appsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
     appLogsConfiguration: {
       destination: 'azure-monitor'
     }
+  }
+}
+
+// dns records (for custom domains)
+module dnsRecordsModule 'dnsRecords.bicep' = {
+  name: 'dnsRecords-${appEnv}-containerApps'
+  scope: resourceGroup(sharedResourceGroup)
+  params: {
+    appEnv: appEnv
+    domainName: domainName
+    appEnvironmentIpAddress: appsEnvironment.properties.staticIp
+    webAppDefaultHostname: '${webContainerAppName}.${appsEnvironment.properties.defaultDomain}'
+    customDomainVerificationId: appsEnvironment.properties.customDomainConfiguration.customDomainVerificationId
   }
 }
 
