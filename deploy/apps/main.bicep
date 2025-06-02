@@ -36,6 +36,12 @@ param apiImageRepository string = 'frasermclean/ratemypet-api'
 @description('Tag of the API container image')
 param apiImageTag string = 'latest'
 
+@description('Repository of the Web container image')
+param webImageRepository string = 'frasermclean/ratemypet-web'
+
+@description('Tag of the Web container image')
+param webImageTag string = 'latest'
+
 @description('Container registry login server')
 param containerRegistryName string = 'ghcr.io'
 
@@ -101,6 +107,8 @@ module containerAppsModule 'containerApps.bicep' = {
     appConfigurationName: appConfigurationName
     apiImageRepository: apiImageRepository
     apiImageTag: apiImageTag
+    webImageRepository: webImageRepository
+    webImageTag: webImageTag
     containerRegistryName: containerRegistryName
     containerRegistryUsername: containerRegistryUsername
     keyVaultName: keyVaultName

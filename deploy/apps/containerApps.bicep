@@ -42,7 +42,14 @@ param apiImageRepository string
 @description('Tag of the API container image')
 param apiImageTag string
 
+@description('Repository of the Web container image')
+param webImageRepository string
+
+@description('Tag of the Web container image')
+param webImageTag string
+
 var apiContainerAppName = '${workload}-${appEnv}-api-ca'
+var webContainerAppName = '${workload}-${appEnv}-web-ca'
 
 // shared managed identity
 resource sharedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
@@ -99,7 +106,7 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
       activeRevisionsMode: 'Single'
       maxInactiveRevisions: 3
       ingress: {
-        external: true
+        external: false
         targetPort: 8080
         allowInsecure: false
         traffic: [
@@ -149,6 +156,83 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
             {
               name: 'OTEL_SERVICE_NAME'
               value: apiContainerAppName
+            }
+          ]
+        }
+      ]
+      scale: {
+        minReplicas: appEnv == 'prod' ? 1 : 0
+        maxReplicas: appEnv == 'prod' ? 3 : 1
+        rules: [
+          {
+            name: 'http-scale-rule'
+            http: {
+              metadata: {
+                concurrentRequests: '20'
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+
+// web container app
+resource webContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
+  name: webContainerAppName
+  location: location
+  tags: union(tags, { appName: 'web' })
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${sharedIdentity.id}': {}
+    }
+  }
+  properties: {
+    environmentId: appsEnvironment.id
+    configuration: {
+      activeRevisionsMode: 'Single'
+      maxInactiveRevisions: 3
+      ingress: {
+        external: true
+        targetPort: 8080
+        allowInsecure: false
+        traffic: [
+          {
+            latestRevision: true
+            weight: 100
+          }
+        ]
+      }
+      registries: [
+        {
+          server: containerRegistryName
+          username: containerRegistryUsername
+          passwordSecretRef: 'container-registry-password'
+        }
+      ]
+      secrets: [
+        {
+          name: 'container-registry-password'
+          identity: sharedIdentity.id
+          keyVaultUrl: 'https://${keyVaultName}${environment().suffixes.keyvaultDns}/secrets/container-registry-password'
+        }
+      ]
+    }
+    template: {
+      containers: [
+        {
+          name: '${workload}-web'
+          image: '${containerRegistryName}/${webImageRepository}:${webImageTag}'
+          resources: {
+            cpu: json('0.25')
+            memory: '0.5Gi'
+          }
+          env: [
+            {
+              name: 'API_BASE_URL'
+              value: 'https://${apiContainerApp.properties.configuration.ingress.fqdn}/api'
             }
           ]
         }

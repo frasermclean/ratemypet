@@ -10,5 +10,6 @@ param allowedExternalIpAddresses = [
 ]
 
 param apiImageTag = readEnvironmentVariable('RMP_API_IMAGE_TAG', 'latest')
+param webImageTag = readEnvironmentVariable('RMP_WEB_IMAGE_TAG', 'latest')
 
 param cloudinaryApiKey = '415326786129473'
