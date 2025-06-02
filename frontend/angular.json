@@ -40,12 +40,8 @@
               ]
             },
             "scripts": [],
-            "allowedCommonJsDependencies": [
-              "gridify-client"
-            ],
             "ssr": {
-              "entry": "src/server.ts",
-              "experimentalPlatform": "neutral"
+              "entry": "src/server.ts"
             }
           },
           "configurations": {
