@@ -7,6 +7,8 @@ public static class MiddlewareConfiguration
 {
     public static WebApplication ConfigureMiddleware(this WebApplication app)
     {
+        app.UseForwardedHeaders();
+
         app.UseAuthorization();
 
         app.UseFastEndpoints(config =>
