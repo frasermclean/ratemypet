@@ -37,8 +37,8 @@ var tags = {
   category: category
 }
 
-// root DNS zone
-resource rootDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
+// DNS zone
+resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
   name: dnsZoneName
   location: 'global'
   tags: tags
@@ -46,34 +46,11 @@ resource rootDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
     zoneType: 'Public'
   }
 
-  resource notifyNameserverRecords 'NS' = {
+  // notify subdomain verification and spf records
+  resource notifyDomainVerification 'TXT' = {
     name: 'notify'
     properties: {
-      TTL: 3600
-      NSRecords: [
-        { nsdname: notifyDnsZone.properties.nameServers[0] }
-        { nsdname: notifyDnsZone.properties.nameServers[1] }
-        { nsdname: notifyDnsZone.properties.nameServers[2] }
-        { nsdname: notifyDnsZone.properties.nameServers[3] }
-      ]
-    }
-  }
-}
-
-// notify subdomain
-resource notifyDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
-  name: 'notify.${dnsZoneName}'
-  location: 'global'
-  tags: tags
-  properties: {
-    zoneType: 'Public'
-  }
-
-  // notify domain verification and spf records
-  resource notifyDomainVerification 'TXT' = {
-    name: '@'
-    properties: {
-      TTL: 3600
+      TTL: emailCommunicationServices::notifyDomain.properties.verificationRecords.Domain.ttl
       TXTRecords: [
         { value: [emailCommunicationServices::notifyDomain.properties.verificationRecords.Domain.value] }
         { value: [emailCommunicationServices::notifyDomain.properties.verificationRecords.SPF.value] }
@@ -81,22 +58,22 @@ resource notifyDnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
     }
   }
 
-  // dkim 1 record
+  // notify subdomain dkim 1 record
   resource dkim1Record 'CNAME' = {
-    name: 'selector1-azurecomm-prod-net._domainkey'
+    name: 'selector1-azurecomm-prod-net._domainkey.notify'
     properties: {
-      TTL: 3600
+      TTL: emailCommunicationServices::notifyDomain.properties.verificationRecords.DKIM.ttl
       CNAMERecord: {
         cname: emailCommunicationServices::notifyDomain.properties.verificationRecords.DKIM.value
       }
     }
   }
 
-  // dkim 2 record
+  // notify subdomain dkim 2 record
   resource dkim2Record 'CNAME' = {
-    name: 'selector2-azurecomm-prod-net._domainkey'
+    name: 'selector2-azurecomm-prod-net._domainkey.notify'
     properties: {
-      TTL: 3600
+      TTL: emailCommunicationServices::notifyDomain.properties.verificationRecords.DKIM2.ttl
       CNAMERecord: {
         cname: emailCommunicationServices::notifyDomain.properties.verificationRecords.DKIM2.value
       }
