@@ -43,10 +43,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Set up QEMU
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       # Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -67,7 +63,6 @@ jobs:
         with:
           context: "{{defaultContext}}:frontend"
           push: true
-          platforms: linux/amd64,linux/arm64
           build-args: CONFIGURATION=${{ env.BUILD_CONFIGURATION }}
           tags: |
             ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:latest
