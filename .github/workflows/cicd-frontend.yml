@@ -23,6 +23,7 @@ jobs:
     name: Build and deploy
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       packages: write
     strategy:
       matrix:
