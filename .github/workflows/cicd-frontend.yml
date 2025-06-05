@@ -84,6 +84,6 @@ jobs:
       - name: Deploy Container App
         uses: azure/container-apps-deploy-action@v2
         with:
-          imageToDeploy: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:${{ github.sha }}
+          imageToDeploy: ${{ fromJson(steps.extract_metadata.outputs.json)[0] }}
           containerAppName: ratemypet-${{ matrix.environment }}-web-ca
           resourceGroup: ratemypet-${{ matrix.environment }}-rg
