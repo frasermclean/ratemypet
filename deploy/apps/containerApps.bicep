@@ -51,6 +51,9 @@ param webImageRepository string
 @description('Tag of the Web container image')
 param webImageTag string
 
+@description('Attempt to bind to a managed certificate for the web app. Set to false on first deployment.')
+param shouldBindManagedCertificate bool = true
+
 var apiContainerAppName = '${workload}-${appEnv}-api-ca'
 var webContainerAppName = '${workload}-${appEnv}-web-ca'
 
@@ -60,19 +63,36 @@ resource sharedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-0
   scope: resourceGroup(sharedResourceGroup)
 }
 
-resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-05-01' existing = {
-  name: appConfigurationName
-  scope: resourceGroup(sharedResourceGroup)
-}
-
 // container apps environment
-resource appsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
+resource appsEnvironment 'Microsoft.App/managedEnvironments@2025-01-01' = {
   name: '${workload}-${appEnv}-cae'
   location: location
   tags: tags
   properties: {
     appLogsConfiguration: {
       destination: 'azure-monitor'
+    }
+  }
+
+  // managed certificate for subdomain (web app)
+  resource subdomainCertificate 'managedCertificates' = if (shouldBindManagedCertificate) {
+    name: appEnv == 'prod' ? 'web-www-cert' : 'web-${appEnv}-cert'
+    location: location
+    tags: tags
+    properties: {
+      subjectName: dnsRecordsModule.outputs.webAppHostnames[0]
+      domainControlValidation: 'CNAME'
+    }
+  }
+
+  // managed certificate for apex domain (prod only)
+  resource apexCertificate 'managedCertificates' = if (appEnv == 'prod' && shouldBindManagedCertificate) {
+    name: 'web-apex-cert'
+    location: location
+    tags: tags
+    properties: {
+      subjectName: dnsRecordsModule.outputs.webAppHostnames[1]
+      domainControlValidation: 'TXT'
     }
   }
 }
@@ -163,7 +183,7 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
             }
             {
               name: 'APP_CONFIG_ENDPOINT'
-              value: appConfiguration.properties.endpoint
+              value: 'https://${appConfigurationName}.azconfig.io'
             }
             {
               name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
@@ -220,6 +240,26 @@ resource webContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
             weight: 100
           }
         ]
+        customDomains: appEnv == 'prod'
+          ? [
+              {
+                name: dnsRecordsModule.outputs.webAppHostnames[0]
+                bindingType: shouldBindManagedCertificate ? 'SniEnabled' : 'Disabled'
+                certificateId: shouldBindManagedCertificate ? appsEnvironment::subdomainCertificate.id : null
+              }
+              {
+                name: dnsRecordsModule.outputs.webAppHostnames[1]
+                bindingType: shouldBindManagedCertificate ? 'SniEnabled' : 'Disabled'
+                certificateId: shouldBindManagedCertificate ? appsEnvironment::apexCertificate.id : null
+              }
+            ]
+          : [
+              {
+                name: dnsRecordsModule.outputs.webAppHostnames[0]
+                bindingType: shouldBindManagedCertificate ? 'SniEnabled' : 'Disabled'
+                certificateId: shouldBindManagedCertificate ? appsEnvironment::subdomainCertificate.id : null
+              }
+            ]
       }
       registries: [
         {

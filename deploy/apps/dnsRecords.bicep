@@ -47,9 +47,20 @@ resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' existing = {
     }
   }
 
-  // web app TXT verification record
-  resource webAppTxtRecord 'TXT' = if (!empty(customDomainVerificationId)) {
-    name: appEnv == 'prod' ? 'asuid' : 'asuid.${appEnv}'
+  // web app subdomain TXT verification record
+  resource webAppSubdomainTxtRecord 'TXT' = if (!empty(customDomainVerificationId)) {
+    name: 'asuid.${webAppCnameRecord.name}'
+    properties: {
+      TTL: ttl
+      TXTRecords: [
+        { value: [customDomainVerificationId] }
+      ]
+    }
+  }
+
+  // web app apex domain TXT verification record (prod only)
+  resource webAppApexTxtRecord 'TXT' = if (appEnv == 'prod' && !empty(customDomainVerificationId)) {
+    name: 'asuid'
     properties: {
       TTL: ttl
       TXTRecords: [
@@ -82,4 +93,4 @@ resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' existing = {
 }
 
 @description('Fully qualified domain name of the web application')
-output webAppFqdn string = '${dnsZone::webAppCnameRecord.name}.${domainName}'
+output webAppHostnames array = appEnv == 'prod' ? ['www.${domainName}', domainName] : ['${appEnv}.${domainName}']
