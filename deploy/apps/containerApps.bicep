@@ -92,7 +92,7 @@ resource appsEnvironment 'Microsoft.App/managedEnvironments@2025-01-01' = {
     tags: tags
     properties: {
       subjectName: dnsRecordsModule.outputs.webAppHostnames[1]
-      domainControlValidation: 'TXT'
+      domainControlValidation: 'HTTP'
     }
   }
 }
