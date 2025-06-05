@@ -31,16 +31,13 @@ jobs:
     environment:
       name: ${{ matrix.environment }}
       url: ${{ matrix.environment == 'prod' && 'https://ratemy.pet' || 'https://test.ratemy.pet' }}
-    env:
-      IMAGE_REGISTRY: ghcr.io
-      IMAGE_REPOSITORY: ${{ github.repository_owner }}/ratemypet-web
 
     steps:
       # Login to container registry
       - name: Login to container registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.IMAGE_REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -53,10 +50,10 @@ jobs:
         id: extract_metadata
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}
+          images: ghcr.io/${{ github.repository_owner }}/ratemypet-web
           tags: |
-            type=sha
-            type=ref,event=pr
+            type=sha,priority=200
+            type=raw,value=latest,priority=100,enable={{is_default_branch}}
           annotations: |
             org.opencontainers.image.title=ratemypet-web
             org.opencontainers.image.authors=Fraser McLean
