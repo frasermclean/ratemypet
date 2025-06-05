@@ -30,13 +30,16 @@ jobs:
     environment:
       name: ${{ matrix.environment }}
       url: ${{ matrix.environment == 'prod' && 'https://ratemy.pet' || 'https://test.ratemy.pet' }}
+    env:
+      IMAGE_REGISTRY: ghcr.io
+      IMAGE_REPOSITORY: ${{ github.repository_owner }}/ratemypet-web
 
     steps:
       # Login to container registry
       - name: Login to container registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.IMAGE_REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -59,5 +62,5 @@ jobs:
           push: true
           build-args: CONFIGURATION=${{ env.BUILD_CONFIGURATION }}
           tags: |
-            ghcr.io/${{ github.repository_owner }}/ratemypet-web:latest
-            ghcr.io/${{ github.repository_owner }}/ratemypet-web:${{ github.sha }}
+            ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:latest
+            ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:${{ github.sha }}
