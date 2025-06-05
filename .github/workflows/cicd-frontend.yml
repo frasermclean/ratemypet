@@ -54,6 +54,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}
+          labels: |
+            org.opencontainers.image.authors="Fraser McLean"
+            org.opencontainers.image.description="Rate My Pet - Frontend Angular SSR application"
 
       # Build and push image
       - name: Build and push image
@@ -65,9 +68,7 @@ jobs:
           context: "{{defaultContext}}:frontend"
           push: true
           build-args: CONFIGURATION=${{ env.BUILD_CONFIGURATION }}
-          tags: |
-            ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:latest
-            ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}:${{ github.sha }}
+          tags: ${{ steps.extract_metadata.outputs.tags}}
           annotations: ${{ steps.extract_metadata.outputs.annotations}}
 
       # Login to Azure
