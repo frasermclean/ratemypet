@@ -54,7 +54,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}
-          labels: |
+          annotations: |
             org.opencontainers.image.title=ratemypet-web
             org.opencontainers.image.authors=Fraser McLean
             org.opencontainers.image.description=Rate My Pet - Frontend Angular SSR application
@@ -84,6 +84,6 @@ jobs:
       - name: Deploy Container App
         uses: azure/container-apps-deploy-action@v2
         with:
-          imageToDeploy: ${{ fromJson(steps.extract_metadata.outputs.json)[0] }}
+          imageToDeploy: ${{ fromJson(steps.extract_metadata.outputs.json).tags[0] }}
           containerAppName: ratemypet-${{ matrix.environment }}-web-ca
           resourceGroup: ratemypet-${{ matrix.environment }}-rg
