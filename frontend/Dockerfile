@@ -16,3 +16,6 @@ CMD ["node", "server/server.mjs"]
 ENV PORT=$PORT
 ENV API_BASE_URL=http://localhost:5080/api
 EXPOSE $PORT
+LABEL org.opencontainers.image.source=https://github.com/frasermclean/ratemypet
+LABEL org.opencontainers.image.authors="Fraser McLean"
+LABEL org.opencontainers.image.description="Rate My Pet - Frontend Angular SSR application"
