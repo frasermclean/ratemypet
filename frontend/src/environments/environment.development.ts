@@ -1,4 +1,3 @@
-import { withNgxsLoggerPlugin } from '@ngxs/logger-plugin';
 import { withNgxsDevelopmentOptions } from '@ngxs/store';
 import { Environment } from './environment.interface';
 
@@ -11,7 +10,6 @@ export const environment: Environment = {
   ngxsPlugins: [
     withNgxsDevelopmentOptions({
       warnOnUnhandledActions: true
-    }),
-    withNgxsLoggerPlugin()
+    })
   ]
 };

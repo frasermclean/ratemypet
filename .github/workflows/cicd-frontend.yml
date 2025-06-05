@@ -17,82 +17,73 @@ on:
       - opened
       - synchronize
       - reopened
-      - closed
 
 jobs:
-  build:
-    name: Build application
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+  build_deploy:
+    name: Build and deploy
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      packages: write
     strategy:
       matrix:
-        environment: [prod, test]
-    defaults:
-      run:
-        working-directory: ${{ github.workspace }}/frontend
+        environment: ${{ github.ref_name == 'main' && fromJson('["prod", "test"]') || fromJson('["test"]') }}
+    environment:
+      name: ${{ matrix.environment }}
+      url: ${{ matrix.environment == 'prod' && 'https://ratemy.pet' || 'https://test.ratemy.pet' }}
 
     steps:
-      # Checkout the repository
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # Login to container registry
+      - name: Login to container registry
+        uses: docker/login-action@v3
         with:
-          node-version: 20.x
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Install dependencies
-      - name: Install dependencies
-        run: npm ci
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      # Build application
-      - name: Build application
-        run: npx ng build --configuration ${{ matrix.environment == 'prod' && 'production' || 'testing' }}
-
-      # Upload artifact
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      # Extract metadata
+      - name: Extract metadata
+        id: extract_metadata
+        uses: docker/metadata-action@v5
         with:
-          name: app-${{ matrix.environment }}
-          path: ${{ github.workspace }}/frontend/dist/browser
+          images: ghcr.io/${{ github.repository_owner }}/ratemypet-web
+          tags: |
+            type=sha,priority=200
+            type=raw,value=latest,priority=100,enable={{is_default_branch}}
+          annotations: |
+            org.opencontainers.image.title=ratemypet-web
+            org.opencontainers.image.authors=Fraser McLean
+            org.opencontainers.image.description=Rate My Pet - Frontend Angular SSR application
 
-  deploy:
-    name: Deploy application
-    runs-on: ubuntu-latest
-    needs: build
-    strategy:
-      matrix:
-        environment: ${{ github.event_name == 'push' && fromJson('["prod", "test"]') || fromJson('["test"]') }}
-    environment: ${{ matrix.environment }}
-    steps:
-      # Download artifact
-      - name: Download artifact
-        id: download-artifact
-        uses: actions/download-artifact@v4
+      # Build and push image
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
+          BUILD_CONFIGURATION: ${{ matrix.environment == 'prod' && 'production' || 'testing' }}
         with:
-          name: app-${{ matrix.environment }}
+          context: "{{defaultContext}}:frontend"
+          push: true
+          build-args: CONFIGURATION=${{ env.BUILD_CONFIGURATION }}
+          tags: ${{ steps.extract_metadata.outputs.tags }}
+          annotations: ${{ steps.extract_metadata.outputs.annotations }}
 
-      # Deploy to Azure Static Web App
-      - name: Deploy to Azure Static Web App
-        uses: Azure/static-web-apps-deploy@v1
+      # Login to Azure
+      - name: Login to Azure
+        uses: azure/login@v2
         with:
-          action: upload
-          azure_static_web_apps_api_token: ${{ secrets.SWA_DEPLOYMENT_TOKEN }}
-          app_location: ${{ steps.download-artifact.outputs.download-path }}
-          skip_app_build: true
-          skip_api_build: true
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-  close_pr:
-    name: Close pull request
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged
-    runs-on: ubuntu-latest
-    environment: test
-    steps:
-      # Remove preview environment
-      - name: Remove preview environment
-        uses: Azure/static-web-apps-deploy@v1
+      # Deploy Container App
+      - name: Deploy Container App
+        uses: azure/container-apps-deploy-action@v2
         with:
-          action: close
-          azure_static_web_apps_api_token: ${{ secrets.SWA_DEPLOYMENT_TOKEN }}
-          app_location: null
+          imageToDeploy: ${{ fromJson(steps.extract_metadata.outputs.json).tags[0] }}
+          containerAppName: ratemypet-${{ matrix.environment }}-web-ca
+          resourceGroup: ratemypet-${{ matrix.environment }}-rg

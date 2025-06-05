@@ -1,5 +1,5 @@
 import { RouterStateSerializer, withNgxsRouterPlugin } from '@ngxs/router-plugin';
-import { provideStore } from '@ngxs/store';
+import { provideStore, withNgxsPendingTasks } from '@ngxs/store';
 import { AppRouterStateSerializer } from '@shared/router-state-serializer';
 import { SharedState } from '@shared/shared.state';
 import { environment } from '../../environments/environment';
@@ -10,8 +10,9 @@ export function provideNgxsStore() {
   return [
     provideStore(
       [AuthState, SharedState, SpeciesState],
+
       { developmentMode: environment.name === 'development' },
-      ...[withNgxsRouterPlugin(), ...environment.ngxsPlugins]
+      ...[withNgxsPendingTasks(), withNgxsRouterPlugin(), ...environment.ngxsPlugins]
     ),
     {
       provide: RouterStateSerializer,
