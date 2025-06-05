@@ -8,7 +8,6 @@ public static class MiddlewareConfiguration
     public static WebApplication ConfigureMiddleware(this WebApplication app)
     {
         app.UseForwardedHeaders();
-
         app.UseAuthorization();
 
         app.UseFastEndpoints(config =>
@@ -18,8 +17,6 @@ public static class MiddlewareConfiguration
         });
 
         app.MapHealthEndpoints();
-        app.MapStaticAssets();
-        app.MapFallbackToFile("index.html");
 
         return app;
     }
