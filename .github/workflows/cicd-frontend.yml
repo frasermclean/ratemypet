@@ -54,6 +54,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}
+          tags: |
+            type=sha
+            type=ref,event=pr
           annotations: |
             org.opencontainers.image.title=ratemypet-web
             org.opencontainers.image.authors=Fraser McLean
