@@ -17,7 +17,7 @@ public class LogoutEndpoint(SignInManager<User> signInManager, ApplicationDbCont
     {
         await signInManager.SignOutAsync();
 
-        dbContext.UserActivities.Add(new UserActivity((Guid)User.GetUserId()!, Activity.Logout));
+        dbContext.UserActivities.Add(UserActivity.Logout(User.GetUserId()!.Value));
         await dbContext.SaveChangesAsync(cancellationToken);
 
         Logger.LogInformation("User {UserName} logged out", User.Identity!.Name);
