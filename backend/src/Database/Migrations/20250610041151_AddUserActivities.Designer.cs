@@ -12,7 +12,7 @@ using RateMyPet.Database;
 namespace RateMyPet.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250610034504_AddUserActivities")]
+    [Migration("20250610041151_AddUserActivities")]
     partial class AddUserActivities
     {
         /// <inheritdoc />
@@ -618,7 +618,7 @@ namespace RateMyPet.Database.Migrations
             modelBuilder.Entity("RateMyPet.Core.UserActivity", b =>
                 {
                     b.HasOne("RateMyPet.Core.User", "User")
-                        .WithMany()
+                        .WithMany("Activities")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -678,6 +678,11 @@ namespace RateMyPet.Database.Migrations
             modelBuilder.Entity("RateMyPet.Core.Species", b =>
                 {
                     b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("RateMyPet.Core.User", b =>
+                {
+                    b.Navigation("Activities");
                 });
 #pragma warning restore 612, 618
         }

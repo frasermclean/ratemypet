@@ -1,12 +1,10 @@
-﻿using System.Text.Json.Nodes;
+﻿namespace RateMyPet.Core;
 
-namespace RateMyPet.Core;
-
-public class UserActivity
+public class UserActivity(Guid userId, Activity activity)
 {
     public uint Id { get; init; }
-    public required User User { get; init; }
-    public Guid UserId { get; init; }
-    public Activity Activity { get; init; }
+    public Guid UserId { get; private init; } = userId;
+    public User? User { get; init; }
+    public Activity Activity { get; private init; } = activity;
     public DateTime Timestamp { get; init; }
 }

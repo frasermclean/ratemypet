@@ -39,6 +39,8 @@ public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> 
         Logger.LogInformation("User {UserName} logged in", user.UserName);
 
         user.LastSeen = timeProvider.GetUtcNow().DateTime;
+        user.Activities.Add(new UserActivity(user.Id, Activity.Login));
+
         await userManager.UpdateAsync(user);
 
         return TypedResults.Ok(new LoginResponse
