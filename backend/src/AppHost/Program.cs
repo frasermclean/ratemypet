@@ -50,7 +50,8 @@ public static class Program
         var sqlServer = builder.AddSqlServer("sql-server", saPassword)
             .WithContainerName("ratemypet-sql-server")
             .WithLifetime(ContainerLifetime.Persistent)
-            .WithDataVolume("ratemypet-sql-server");
+            .WithDataVolume("ratemypet-sql-server")
+            .WithEndpoint(port: 1433, targetPort: 1433, name: "direct", isProxied: false);
 
         database = sqlServer.AddDatabase("database", "RateMyPet");
 
