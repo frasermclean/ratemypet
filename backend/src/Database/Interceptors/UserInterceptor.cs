@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using RateMyPet.Core;
 
@@ -6,12 +7,26 @@ namespace RateMyPet.Database.Interceptors;
 
 public class UserInterceptor : SaveChangesInterceptor
 {
+    public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
+    {
+        UpdateAddedOrModifiedUsers(eventData);
+        return result;
+    }
+
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
         DbContextEventData eventData,
         InterceptionResult<int> result,
         CancellationToken cancellationToken = default)
     {
-        foreach (var userEntry in eventData.Context!.ChangeTracker.Entries<User>()
+        UpdateAddedOrModifiedUsers(eventData);
+        return ValueTask.FromResult(result);
+    }
+
+    private static void UpdateAddedOrModifiedUsers(DbContextEventData eventData)
+    {
+        Debug.Assert(eventData.Context is not null);
+
+        foreach (var userEntry in eventData.Context.ChangeTracker.Entries<User>()
                      .Where(userEntry => userEntry is { State: EntityState.Added or EntityState.Modified }))
         {
             userEntry.Property(user => user.LastActivity).CurrentValue = DateTime.UtcNow;
@@ -21,7 +36,5 @@ public class UserInterceptor : SaveChangesInterceptor
                 userEntry.Entity.Activities.Add(UserActivity.Register(userEntry.Entity));
             }
         }
-
-        return new ValueTask<InterceptionResult<int>>(result);
     }
 }
