@@ -11,6 +11,11 @@ namespace RateMyPet.Database.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.RenameColumn(
+                name: "LastSeenUtc",
+                table: "Users",
+                newName: "LastActivityUtc");
+
             migrationBuilder.CreateTable(
                 name: "UserActivities",
                 columns: table => new
@@ -43,6 +48,11 @@ namespace RateMyPet.Database.Migrations
         {
             migrationBuilder.DropTable(
                 name: "UserActivities");
+
+            migrationBuilder.RenameColumn(
+                name: "LastActivityUtc",
+                table: "Users",
+                newName: "LastSeenUtc");
         }
     }
 }

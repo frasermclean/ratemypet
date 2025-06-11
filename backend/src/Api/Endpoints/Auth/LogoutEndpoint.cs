@@ -6,7 +6,7 @@ using RateMyPet.Database;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
-public class LogoutEndpoint(SignInManager<User> signInManager, ApplicationDbContext dbContext) : EndpointWithoutRequest
+public class LogoutEndpoint(SignInManager<User> signInManager) : EndpointWithoutRequest
 {
     public override void Configure()
     {
@@ -16,9 +16,6 @@ public class LogoutEndpoint(SignInManager<User> signInManager, ApplicationDbCont
     public override async Task HandleAsync(CancellationToken cancellationToken)
     {
         await signInManager.SignOutAsync();
-
-        dbContext.UserActivities.Add(UserActivity.Logout(User.GetUserId()!.Value));
-        await dbContext.SaveChangesAsync(cancellationToken);
 
         Logger.LogInformation("User {UserName} logged out", User.Identity!.Name);
     }

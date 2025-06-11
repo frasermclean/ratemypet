@@ -24,9 +24,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(user => user.NormalizedEmail)
             .IsRequired();
 
-        builder.Property(user => user.LastSeen)
+        builder.Property(user => user.LastActivity)
             .HasPrecision(2)
-            .HasColumnName("LastSeenUtc");
+            .HasColumnName("LastActivityUtc");
 
         builder.Property(user => user.RowVersion)
             .IsRowVersion()
@@ -35,6 +35,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasMany(user => user.Roles)
             .WithMany(role => role.Users)
             .UsingEntity<UserRole>();
+
+        builder.HasMany(user => user.Activities)
+            .WithOne(activity => activity.User)
+            .HasForeignKey(activity => activity.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(user => user.NormalizedUserName)
             .HasDatabaseName("IX_Users_NormalizedUserName")

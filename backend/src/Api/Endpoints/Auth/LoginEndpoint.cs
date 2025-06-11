@@ -6,7 +6,7 @@ using RateMyPet.Core;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
-public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> userManager, TimeProvider timeProvider)
+public class LoginEndpoint(SignInManager<User> signInManager)
     : Endpoint<LoginRequest, Results<Ok<LoginResponse>, UnauthorizedHttpResult>>
 {
     public override void Configure()
@@ -18,7 +18,9 @@ public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> 
     public override async Task<Results<Ok<LoginResponse>, UnauthorizedHttpResult>> ExecuteAsync(
         LoginRequest request, CancellationToken cancellationToken)
     {
+        var userManager = signInManager.UserManager;
         var isEmailAddress = request.EmailOrUserName.IsEmailAddress();
+
         var user = isEmailAddress
             ? await userManager.FindByEmailAsync(request.EmailOrUserName)
             : await userManager.FindByNameAsync(request.EmailOrUserName);
@@ -37,11 +39,6 @@ public class LoginEndpoint(SignInManager<User> signInManager, UserManager<User> 
         }
 
         Logger.LogInformation("User {UserName} logged in", user.UserName);
-
-        user.LastSeen = timeProvider.GetUtcNow().DateTime;
-        user.Activities.Add(UserActivity.Login(user.Id));
-
-        await userManager.UpdateAsync(user);
 
         return TypedResults.Ok(new LoginResponse
         {

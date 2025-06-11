@@ -12,7 +12,7 @@ using RateMyPet.Database;
 namespace RateMyPet.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250610041151_AddUserActivities")]
+    [Migration("20250611030809_AddUserActivities")]
     partial class AddUserActivities
     {
         /// <inheritdoc />
@@ -306,10 +306,10 @@ namespace RateMyPet.Database.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastSeen")
+                    b.Property<DateTime?>("LastActivity")
                         .HasPrecision(2)
                         .HasColumnType("datetime2(2)")
-                        .HasColumnName("LastSeenUtc");
+                        .HasColumnName("LastActivityUtc");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");

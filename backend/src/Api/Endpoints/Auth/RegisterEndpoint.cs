@@ -26,8 +26,6 @@ public class RegisterEndpoint(UserManager<User> userManager, IMessagePublisher m
             Email = request.EmailAddress
         };
 
-        user.Activities.Add(UserActivity.Register(user));
-
         var result = await userManager.CreateAsync(user, request.Password);
 
         foreach (var error in result.Errors)

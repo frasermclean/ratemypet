@@ -24,7 +24,7 @@ public class SearchUsersEndpoint(UserManager<User> userManager) : Endpoint<Gridi
                 UserName = user.UserName!,
                 EmailAddress = user.Email!,
                 IsEmailConfirmed = user.EmailConfirmed,
-                LastSeen = user.LastSeen,
+                LastSeen = user.LastActivity,
                 Roles = user.Roles.Select(role => role.Name!)
             })
             .GridifyAsync(query, cancellationToken);

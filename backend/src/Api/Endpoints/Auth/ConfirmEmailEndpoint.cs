@@ -28,7 +28,6 @@ public class ConfirmEmailEndpoint(UserManager<User> userManager)
         }
 
         var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Token));
-        user.Activities.Add(UserActivity.ConfirmEmail(user.Id));
         var result = await userManager.ConfirmEmailAsync(user, decodedToken);
 
         foreach (var error in result.Errors)
@@ -39,6 +38,7 @@ public class ConfirmEmailEndpoint(UserManager<User> userManager)
         ThrowIfAnyErrors();
 
         // assign default roles
+        user.Activities.Add(UserActivity.ConfirmEmail(user.Id));
         await userManager.AddToRoleAsync(user, Role.Contributor);
 
         return TypedResults.NoContent();

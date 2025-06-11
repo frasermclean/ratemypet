@@ -19,16 +19,4 @@ public class UserActivity
         UserId = userId,
         Activity = Activity.ConfirmEmail
     };
-
-    public static UserActivity Login(Guid userId) => new()
-    {
-        UserId = userId,
-        Activity = Activity.Login
-    };
-
-    public static UserActivity Logout(Guid userId) => new()
-    {
-        UserId = userId,
-        Activity = Activity.Logout
-    };
 }
