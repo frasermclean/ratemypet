@@ -14,9 +14,9 @@ public class UserActivity
         Activity = Activity.Register
     };
 
-    public static UserActivity ConfirmEmail(Guid userId) => new()
+    public static UserActivity ConfirmEmail(User user) => new()
     {
-        UserId = userId,
+        User = user,
         Activity = Activity.ConfirmEmail
     };
 

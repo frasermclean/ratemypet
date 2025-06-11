@@ -38,7 +38,6 @@ public class ConfirmEmailEndpoint(UserManager<User> userManager)
         ThrowIfAnyErrors();
 
         // assign default roles
-        user.Activities.Add(UserActivity.ConfirmEmail(user.Id));
         await userManager.AddToRoleAsync(user, Role.Contributor);
 
         return TypedResults.NoContent();

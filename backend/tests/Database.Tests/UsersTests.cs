@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Bogus;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RateMyPet.Core;
 
@@ -8,32 +9,61 @@ namespace RateMyPet.Database.Tests;
 public class UsersTests(DatabaseFixture fixture)
 {
     [Fact]
-    public async Task AddUser_WithValidUser_ShouldExecuteInterceptor()
+    public void AddUser_WithValidUser_ShouldAddUserAndRegisterActivity()
+    {
+        // arrange
+        using var scope = fixture.ServiceProvider.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var user = CreateFakeUser();
+
+        // act
+        dbContext.Users.Add(user);
+        dbContext.SaveChanges();
+        var addedUser = dbContext.Users.Where(u => u.Id == user.Id)
+            .Include(u => u.Activities)
+            .FirstOrDefault();
+
+        // assert
+        addedUser.ShouldNotBeNull();
+        addedUser.Activities.ShouldHaveSingleItem()
+            .ShouldSatisfyAllConditions(activity => activity.Activity.ShouldBe(Activity.Register));
+    }
+
+    [Fact]
+    public async Task UpdateUser_WithConfirmedEmail_ShouldAddConfirmEmailActivity()
     {
         // arrange
         await using var scope = fixture.ServiceProvider.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var user = CreateUser();
+        var user = CreateFakeUser();
 
         // act
         dbContext.Users.Add(user);
         await dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
-        var addedUser = await dbContext.Users.Where(u => u.Id == user.Id)
+        user.EmailConfirmed = true;
+        await dbContext.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var updatedUser = await dbContext.Users.Where(u => u.Id == user.Id)
             .Include(u => u.Activities)
             .FirstOrDefaultAsync(TestContext.Current.CancellationToken);
 
         // assert
-        addedUser.ShouldNotBeNull();
-        addedUser.Activities.First()
-            .ShouldSatisfyAllConditions(activity => activity.Activity.ShouldBe(Activity.Register));
+        updatedUser.ShouldNotBeNull();
+        updatedUser.Activities.ShouldContain(activity => activity.Activity == Activity.ConfirmEmail);
     }
 
-    private static User CreateUser(string userName = "bob.smith", string email = "bob.smith@example.com") => new()
+    private static User CreateFakeUser(bool emailConfirmed = false)
     {
-        Id = Guid.NewGuid(),
-        UserName = userName,
-        NormalizedUserName = userName.ToUpperInvariant(),
-        Email = email,
-        NormalizedEmail = email.ToUpperInvariant(),
-    };
+        var userFaker = new Faker<User>()
+            .RuleFor(user => user.Id, faker => faker.Random.Guid())
+            .RuleFor(user => user.UserName, faker => faker.Internet.UserName())
+            .RuleFor(user => user.Email, faker => faker.Internet.Email())
+            .RuleFor(user => user.EmailConfirmed, emailConfirmed)
+            .FinishWith((_, user) =>
+            {
+                user.NormalizedUserName = user.UserName!.ToUpperInvariant();
+                user.NormalizedEmail = user.Email!.ToUpperInvariant();
+            });
+
+        return userFaker.Generate();
+    }
 }
