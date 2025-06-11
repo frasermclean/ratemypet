@@ -1,8 +1,6 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
-using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
-using RateMyPet.Database;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
