@@ -11,13 +11,7 @@ public class UserInterceptor : SaveChangesInterceptor
         InterceptionResult<int> result,
         CancellationToken cancellationToken = default)
     {
-        var dbContext = eventData.Context;
-        if (dbContext is null)
-        {
-            return new ValueTask<InterceptionResult<int>>(result);
-        }
-
-        foreach (var userEntry in dbContext.ChangeTracker.Entries<User>()
+        foreach (var userEntry in eventData.Context!.ChangeTracker.Entries<User>()
                      .Where(userEntry => userEntry is { State: EntityState.Added or EntityState.Modified }))
         {
             userEntry.Property(user => user.LastActivity).CurrentValue = DateTime.UtcNow;
