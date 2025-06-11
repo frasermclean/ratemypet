@@ -10,6 +10,10 @@ public class UserActivityConfiguration : IEntityTypeConfiguration<UserActivity>
     {
         builder.ToTable("UserActivities");
 
+        builder.HasDiscriminator<string>("Discriminator")
+            .HasValue<UserActivity>("Base")
+            .HasValue<PostUserActivity>("Post");
+
         builder.Property(activity => activity.Timestamp)
             .HasColumnName("TimestampUtc")
             .HasPrecision(2)

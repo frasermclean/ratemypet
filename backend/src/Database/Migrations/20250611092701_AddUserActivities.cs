@@ -23,12 +23,19 @@ namespace RateMyPet.Database.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Activity = table.Column<int>(type: "int", nullable: false),
-                    TimestampUtc = table.Column<DateTime>(type: "datetime2(2)", precision: 2, nullable: false, defaultValueSql: "getutcdate()")
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    TimestampUtc = table.Column<DateTime>(type: "datetime2(2)", precision: 2, nullable: false, defaultValueSql: "getutcdate()"),
+                    Discriminator = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: false),
+                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserActivities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserActivities_Posts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Posts",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserActivities_Users_UserId",
                         column: x => x.UserId,
@@ -36,6 +43,11 @@ namespace RateMyPet.Database.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserActivities_PostId",
+                table: "UserActivities",
+                column: "PostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserActivities_UserId",

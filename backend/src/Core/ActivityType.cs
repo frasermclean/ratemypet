@@ -6,4 +6,5 @@ public enum ActivityType : ushort
     ConfirmEmail,
     ForgotPassword,
     ResetPassword,
+    AddPost,
 }

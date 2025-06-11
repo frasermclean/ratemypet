@@ -32,12 +32,13 @@ public class AddPostEndpoint(
         }
 
         // create new post
+        var user = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken);
         var post = new Post
         {
             Slug = Core.Post.CreateSlug(request.Title),
             Title = request.Title,
             Description = request.Description,
-            User = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken),
+            User = user,
             Species = species,
             Tags = request.Tags.Distinct().ToList(),
         };
@@ -55,6 +56,7 @@ public class AddPostEndpoint(
 
         // save the post entity
         dbContext.Posts.Add(post);
+        dbContext.UserActivities.Add(PostUserActivity.AddPost(user, post));
         await dbContext.SaveChangesAsync(cancellationToken);
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
 
