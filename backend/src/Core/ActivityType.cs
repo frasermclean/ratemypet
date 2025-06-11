@@ -1,6 +1,6 @@
 ﻿namespace RateMyPet.Core;
 
-public enum Activity : ushort
+public enum ActivityType : ushort
 {
     Register,
     ConfirmEmail,

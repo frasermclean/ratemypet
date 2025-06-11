@@ -26,7 +26,7 @@ public class UsersTests(DatabaseFixture fixture)
         // assert
         addedUser.ShouldNotBeNull();
         addedUser.Activities.ShouldHaveSingleItem()
-            .ShouldSatisfyAllConditions(activity => activity.Activity.ShouldBe(Activity.Register));
+            .ShouldSatisfyAllConditions(activity => activity.Type.ShouldBe(ActivityType.Register));
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class UsersTests(DatabaseFixture fixture)
 
         // assert
         updatedUser.ShouldNotBeNull();
-        updatedUser.Activities.ShouldContain(activity => activity.Activity == Activity.ConfirmEmail);
+        updatedUser.Activities.ShouldContain(activity => activity.Type == ActivityType.ConfirmEmail);
     }
 
     private static User CreateFakeUser(bool emailConfirmed = false)
