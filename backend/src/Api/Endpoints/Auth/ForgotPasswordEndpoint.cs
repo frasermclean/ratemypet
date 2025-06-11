@@ -40,6 +40,7 @@ public class ForgotPasswordEndpoint(UserManager<User> userManager, IMessagePubli
 
         await messagePublisher.PublishAsync(new ForgottenPasswordMessage
         {
+            UserId = user.Id,
             EmailAddress = request.EmailAddress,
             ResetCode = resetCode
         }, cancellationToken);

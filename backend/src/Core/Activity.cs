@@ -3,5 +3,7 @@
 public enum Activity : ushort
 {
     Register,
-    ConfirmEmail
+    ConfirmEmail,
+    ForgotPassword,
+    ResetPassword,
 }

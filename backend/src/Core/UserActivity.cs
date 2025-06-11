@@ -19,4 +19,16 @@ public class UserActivity
         UserId = userId,
         Activity = Activity.ConfirmEmail
     };
+
+    public static UserActivity ForgotPassword(Guid userId) => new()
+    {
+        UserId = userId,
+        Activity = Activity.ForgotPassword
+    };
+
+    public static UserActivity ResetPassword(Guid userId) => new()
+    {
+        UserId = userId,
+        Activity = Activity.ResetPassword
+    };
 }
