@@ -1,4 +1,5 @@
-﻿using FastEndpoints;
+﻿using EntityFramework.Exceptions.Common;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
@@ -25,15 +26,13 @@ public class AddPostEndpoint(
     public override async Task<Created<PostResponse>> ExecuteAsync(AddPostRequest request,
         CancellationToken cancellationToken)
     {
-        var userId = User.GetUserId() ?? throw new InvalidOperationException("User ID is not available");
-
         // create new post
         var post = new Post
         {
             Slug = Core.Post.CreateSlug(request.Title),
             Title = request.Title,
             Description = request.Description,
-            UserId = userId,
+            UserId = User.GetUserId()!.Value,
             SpeciesId = request.SpeciesId,
             Tags = request.Tags.Distinct().ToList(),
         };
@@ -49,10 +48,17 @@ public class AddPostEndpoint(
 
         post.Image = imageUploadResult.Value;
 
-        // save the post entity
         dbContext.Posts.Add(post);
-        dbContext.UserActivities.Add(PostUserActivity.AddPost(userId, post.Id));
-        await dbContext.SaveChangesAsync(cancellationToken);
+        dbContext.UserActivities.Add(PostUserActivity.AddPost(post.UserId, post.Id));
+
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (ReferenceConstraintException exception) when (exception.ConstraintProperties.Contains("SpeciesId"))
+        {
+            ThrowError(r => r.SpeciesId, "Invalid species ID");
+        }
 
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
 

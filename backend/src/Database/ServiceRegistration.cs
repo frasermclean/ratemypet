@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using EntityFramework.Exceptions.SqlServer;
+using Microsoft.Extensions.Hosting;
 using RateMyPet.Database.Interceptors;
 
 namespace RateMyPet.Database;
@@ -10,7 +11,8 @@ public static class ServiceRegistration
         builder.AddSqlServerDbContext<ApplicationDbContext>("Database",
             configureDbContextOptions: optionsBuilder =>
             {
-                optionsBuilder.AddInterceptors(new UserInterceptor());
+                optionsBuilder.AddInterceptors(new UserInterceptor())
+                    .UseExceptionProcessor();
             });
 
         return builder;
