@@ -6,12 +6,14 @@ using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Messages;
 using RateMyPet.Database;
+using RateMyPet.Storage;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
 public class AddPostEndpoint(
     ApplicationDbContext dbContext,
-    IImageHostingService imageHostingService,
+    [FromKeyedServices(BlobContainerNames.PostImages)]
+    IBlobContainerManager blobContainerManager,
     IMessagePublisher messagePublisher)
     : Endpoint<AddPostRequest, Created<PostResponse>, PostResponseMapper>
 {
@@ -37,17 +39,6 @@ public class AddPostEndpoint(
             Tags = request.Tags.Distinct().ToList(),
         };
 
-        // upload image to cloudinary
-        var imageUploadResult = await imageHostingService.UploadAsync(request.Image.FileName,
-            request.Image.OpenReadStream(), post, cancellationToken);
-
-        if (imageUploadResult.IsFailed)
-        {
-            ThrowError(r => r.Image, "Error processing image upload");
-        }
-
-        post.Image = imageUploadResult.Value;
-
         dbContext.Posts.Add(post);
         dbContext.UserActivities.Add(PostUserActivity.AddPost(post.UserId, post.Id));
 
@@ -60,10 +51,14 @@ public class AddPostEndpoint(
             ThrowError(r => r.SpeciesId, "Invalid species ID");
         }
 
+        // upload image to blob storage
+        await blobContainerManager.CreateBlobAsync(post.Slug, request.Image.OpenReadStream(),
+            request.Image.ContentType, cancellationToken);
+
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
 
         // publish message
-        await messagePublisher.PublishAsync(new PostAddedMessage(post.Id), cancellationToken);
+        await messagePublisher.PublishAsync(new PostAddedMessage(post.Id, post.Slug), cancellationToken);
 
         var response = Map.FromEntity(post);
         return TypedResults.Created($"/posts/{response.Id}", response);
