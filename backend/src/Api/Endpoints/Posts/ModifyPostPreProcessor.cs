@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using FastEndpoints;
-using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
 using RateMyPet.Database;
 

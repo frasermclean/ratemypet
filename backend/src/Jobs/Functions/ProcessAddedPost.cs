@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
-using RateMyPet.Core.Messages;
 using RateMyPet.Database;
 using RateMyPet.Storage;
+using RateMyPet.Storage.Messaging;
 
 namespace RateMyPet.Jobs.Functions;
 

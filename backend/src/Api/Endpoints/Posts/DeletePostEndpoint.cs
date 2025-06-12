@@ -1,16 +1,16 @@
 ﻿using System.Diagnostics;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Database;
+using RateMyPet.Storage.Messaging;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
 public class DeletePostEndpoint(
     ApplicationDbContext dbContext,
-    IImageHostingService imageHostingService) : Endpoint<DeletePostRequest, Results<NoContent, NotFound>>
+    IMessagePublisher messagePublisher) : Endpoint<DeletePostRequest, Results<NoContent, NotFound>>
 {
     public override void Configure()
     {
@@ -26,17 +26,13 @@ public class DeletePostEndpoint(
 
         Debug.Assert(post is not null); // pre-processor ensures this
 
-        var result = await imageHostingService.SetAccessControlAsync(post.Image!.PublicId, false, cancellationToken);
-        if (result.IsFailed)
-        {
-            throw new InvalidOperationException("Failed to set access control for post image");
-        }
-
         post.DeletedAtUtc = DateTime.UtcNow;
         post.Activities.Add(PostUserActivity.DeletePost(request.UserId, request.PostId));
         await dbContext.SaveChangesAsync(cancellationToken);
 
         Logger.LogInformation("Marked post ID {PostId} as deleted", request.PostId);
+
+        await messagePublisher.PublishAsync(new PostDeletedMessage(post.Id), cancellationToken);
 
         return TypedResults.NoContent();
     }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
-using RateMyPet.Core.Messages;
+using RateMyPet.Storage.Messaging;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 

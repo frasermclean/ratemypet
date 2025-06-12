@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
-using RateMyPet.Core.Messages;
 using RateMyPet.Database;
 using RateMyPet.Storage;
+using RateMyPet.Storage.Messaging;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
@@ -58,7 +58,7 @@ public class AddPostEndpoint(
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
 
         // publish message
-        await messagePublisher.PublishAsync(new PostAddedMessage(post.Id, post.Slug), cancellationToken);
+        await messagePublisher.PublishAsync(new PostAddedMessage(post.Id), cancellationToken);
 
         var response = Map.FromEntity(post);
         return TypedResults.Created($"/posts/{response.Id}", response);
