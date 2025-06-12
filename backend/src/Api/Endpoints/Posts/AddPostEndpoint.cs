@@ -51,7 +51,7 @@ public class AddPostEndpoint(
 
         // save the post entity
         dbContext.Posts.Add(post);
-        dbContext.UserActivities.Add(PostUserActivity.AddPost(userId, post));
+        dbContext.UserActivities.Add(PostUserActivity.AddPost(userId, post.Id));
         await dbContext.SaveChangesAsync(cancellationToken);
 
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);

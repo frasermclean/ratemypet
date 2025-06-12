@@ -7,4 +7,5 @@ public enum ActivityType : ushort
     ForgotPassword,
     ResetPassword,
     AddPost,
+    UpdatePost,
 }

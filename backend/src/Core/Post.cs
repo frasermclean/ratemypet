@@ -16,7 +16,7 @@ public class Post
     public string? Description { get; set; }
     public required Guid UserId { get; init; }
     public User? User { get; init; }
-    public required int SpeciesId { get; init; }
+    public required int SpeciesId { get; set; }
     public Species? Species { get; set; }
     public PostImage? Image { get; set; }
     public ICollection<PostReaction> Reactions { get; } = [];

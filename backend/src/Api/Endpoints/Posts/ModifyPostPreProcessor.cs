@@ -1,4 +1,5 @@
-﻿using FastEndpoints;
+﻿using System.Diagnostics;
+using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
 using RateMyPet.Database;
@@ -10,19 +11,13 @@ public class ModifyPostPreProcessor : IPreProcessor<IModifyPostRequest>
     public async Task PreProcessAsync(IPreProcessorContext<IModifyPostRequest> context,
         CancellationToken cancellationToken)
     {
-        if (context.Request is null)
-        {
-            return;
-        }
-
         var dbContext = context.HttpContext.Resolve<ApplicationDbContext>();
         var logger = context.HttpContext.Resolve<ILogger<ModifyPostPreProcessor>>();
         var request = context.Request;
 
-        var post = await dbContext.Posts.Where(post => post.Id == request.PostId)
-            .Include(post => post.User)
-            .FirstOrDefaultAsync(cancellationToken);
+        Debug.Assert(request is not null);
 
+        var post = await dbContext.Posts.FirstOrDefaultAsync(post => post.Id == request.PostId, cancellationToken);
         if (post is null)
         {
             await context.HttpContext.Response.SendNotFoundAsync(cancellationToken);
@@ -30,7 +25,7 @@ public class ModifyPostPreProcessor : IPreProcessor<IModifyPostRequest>
         }
 
         var isAdministrator = context.HttpContext.User.IsInRole(Role.Administrator);
-        var isOwner = post.User.Id == request.UserId;
+        var isOwner = post.UserId == request.UserId;
 
         if (!isOwner && !isAdministrator)
         {

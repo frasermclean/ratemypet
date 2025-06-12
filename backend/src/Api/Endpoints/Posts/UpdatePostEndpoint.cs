@@ -24,16 +24,11 @@ public class UpdatePostEndpoint(ApplicationDbContext dbContext)
             .Include(p => p.User)
             .FirstAsync(cancellationToken);
 
-        var species = await dbContext.Species.FirstOrDefaultAsync(s => s.Id == request.SpeciesId, cancellationToken);
-        if (species is null)
-        {
-            ThrowError(r => r.SpeciesId, "Invalid species ID");
-        }
-
         post.Description = request.Description;
-        post.Species = species;
+        post.SpeciesId = request.SpeciesId;
         post.UpdatedAtUtc = DateTime.UtcNow;
         post.Tags = request.Tags.Distinct().ToList();
+        post.Activities.Add(PostUserActivity.UpdatePost(request.UserId, post.Id));
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
