@@ -402,8 +402,10 @@ namespace RateMyPet.Database.Migrations
                         .HasColumnName("TimestampUtc")
                         .HasDefaultValueSql("getutcdate()");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("char(4)")
+                        .HasColumnName("Code");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
