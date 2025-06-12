@@ -33,13 +33,13 @@ public class UserInterceptor : SaveChangesInterceptor
 
             if (userEntry.State == EntityState.Added)
             {
-                userEntry.Entity.Activities.Add(UserActivity.Register(userEntry.Entity));
+                userEntry.Entity.Activities.Add(UserActivity.Register(userEntry.Entity.Id));
                 continue;
             }
 
             if (userEntry.Property(user => user.EmailConfirmed) is { IsModified: true, CurrentValue: true })
             {
-                userEntry.Entity.Activities.Add(UserActivity.ConfirmEmail(userEntry.Entity));
+                userEntry.Entity.Activities.Add(UserActivity.ConfirmEmail(userEntry.Entity.Id));
             }
         }
     }

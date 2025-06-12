@@ -9,13 +9,13 @@ public class PostUserActivity : UserActivity
     {
         UserId = userId,
         PostId = postId,
-        Type = ActivityType.AddPost
+        Code = "ADDP"
     };
 
     public static PostUserActivity UpdatePost(Guid userId, Guid postId) => new()
     {
         UserId = userId,
         PostId = postId,
-        Type = ActivityType.UpdatePost
+        Code = "UPDP"
     };
 }

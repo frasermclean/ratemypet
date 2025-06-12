@@ -390,6 +390,10 @@ namespace RateMyPet.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("char(4)");
+
                     b.Property<string>("Discriminator")
                         .IsRequired()
                         .HasMaxLength(5)
@@ -401,11 +405,6 @@ namespace RateMyPet.Database.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasColumnName("TimestampUtc")
                         .HasDefaultValueSql("getutcdate()");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("char(4)")
-                        .HasColumnName("Code");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");

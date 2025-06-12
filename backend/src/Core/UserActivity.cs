@@ -3,32 +3,32 @@
 public class UserActivity
 {
     public uint Id { get; init; }
-    public Guid UserId { get; init; }
+    public required Guid UserId { get; init; }
     public User? User { get; init; }
-    public ActivityType Type { get; init; }
+    public required string Code { get; init; }
     public DateTime Timestamp { get; init; }
 
-    public static UserActivity Register(User user) => new()
+    public static UserActivity Register(Guid userId) => new()
     {
-        User = user,
-        Type = ActivityType.Register
+        UserId = userId,
+        Code = "REGI"
     };
 
-    public static UserActivity ConfirmEmail(User user) => new()
+    public static UserActivity ConfirmEmail(Guid userId) => new()
     {
-        User = user,
-        Type = ActivityType.ConfirmEmail
+        UserId = userId,
+        Code = "CNFE"
     };
 
     public static UserActivity ForgotPassword(Guid userId) => new()
     {
         UserId = userId,
-        Type = ActivityType.ForgotPassword
+        Code = "FGPW"
     };
 
     public static UserActivity ResetPassword(Guid userId) => new()
     {
         UserId = userId,
-        Type = ActivityType.ResetPassword
+        Code = "RSPW"
     };
 }
