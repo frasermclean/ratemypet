@@ -81,13 +81,13 @@ public class CloudinaryService : IImageHostingService
             File = new FileDescription(fileName, stream),
             DisplayName = post.Title,
             PublicId = post.Slug,
-            AssetFolder = $"{environment}/{post.User.UserName}",
+            AssetFolder = environment == "prod" ? "posts" : $"{environment}/posts",
             UseAssetFolderAsPublicIdPrefix = true,
             Context = new StringDictionary($"caption={post.Description}", $"alt={post.Title}"),
             MetadataFields = new StringDictionary(
                 $"environment={environment}",
-                $"speciesName={post.Species.Name}",
-                $"userName={post.User.UserName}"
+                $"species_id={post.SpeciesId}",
+                $"user_id={post.UserId}"
             )
         };
 
