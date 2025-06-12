@@ -1,6 +1,6 @@
 ﻿namespace RateMyPet.Core;
 
-public class Post
+public class Post : ISoftDeletable
 {
     public const int TitleMaxLength = 50;
     public const int SlugMaxLength = 60;
@@ -26,6 +26,7 @@ public class Post
     public PostStatus Status { get; set; } = PostStatus.Initial;
     public DateTime CreatedAtUtc { get; init; }
     public DateTime? UpdatedAtUtc { get; set; }
+    public DateTime? DeletedAtUtc { get; set; }
     public ulong RowVersion { get; init; }
 
     public static string CreateSlug(string title, TimeProvider? timeProvider = null)

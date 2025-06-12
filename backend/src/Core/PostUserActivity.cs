@@ -18,4 +18,11 @@ public class PostUserActivity : UserActivity
         PostId = postId,
         Code = "UPDP"
     };
+
+    public static PostUserActivity DeletePost(Guid userId, Guid postId) => new()
+    {
+        UserId = userId,
+        PostId = postId,
+        Code = "DELP"
+    };
 }

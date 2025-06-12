@@ -1,4 +1,5 @@
-﻿using FastEndpoints;
+﻿using System.Diagnostics;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
@@ -9,7 +10,7 @@ namespace RateMyPet.Api.Endpoints.Posts;
 
 public class DeletePostEndpoint(
     ApplicationDbContext dbContext,
-    IImageHostingService imageHostingService) : Endpoint<DeletePostRequest, NoContent>
+    IImageHostingService imageHostingService) : Endpoint<DeletePostRequest, Results<NoContent, NotFound>>
 {
     public override void Configure()
     {
@@ -18,19 +19,24 @@ public class DeletePostEndpoint(
         PreProcessor<ModifyPostPreProcessor>();
     }
 
-    public override async Task<NoContent> ExecuteAsync(DeletePostRequest request,
+    public override async Task<Results<NoContent, NotFound>> ExecuteAsync(DeletePostRequest request,
         CancellationToken cancellationToken)
     {
-        var post = await dbContext.Posts.FirstAsync(post => post.Id == request.PostId, cancellationToken);
+        var post = await dbContext.Posts.FindAsync([request.PostId], cancellationToken);
 
-        dbContext.Posts.Remove(post);
-        await dbContext.SaveChangesAsync(cancellationToken);
-        Logger.LogInformation("Deleted post {PostId}", post.Id);
+        Debug.Assert(post is not null); // pre-processor ensures this
 
-        if (post.Image?.PublicId is not null)
+        var result = await imageHostingService.SetAccessControlAsync(post.Image!.PublicId, false, cancellationToken);
+        if (result.IsFailed)
         {
-            await imageHostingService.DeleteAsync([post.Image.PublicId], cancellationToken);
+            throw new InvalidOperationException("Failed to set access control for post image");
         }
+
+        post.DeletedAtUtc = DateTime.UtcNow;
+        post.Activities.Add(PostUserActivity.DeletePost(request.UserId, request.PostId));
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        Logger.LogInformation("Marked post ID {PostId} as deleted", request.PostId);
 
         return TypedResults.NoContent();
     }

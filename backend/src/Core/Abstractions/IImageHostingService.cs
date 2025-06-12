@@ -12,4 +12,7 @@ public interface IImageHostingService
         CancellationToken cancellationToken = default);
 
     Task<Result> DeleteAsync(List<string> publicIds, CancellationToken cancellationToken = default);
+
+    Task<Result> SetAccessControlAsync(string publicId, bool isPublic,
+        CancellationToken cancellationToken = default);
 }

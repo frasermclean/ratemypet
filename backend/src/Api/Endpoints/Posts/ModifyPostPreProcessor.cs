@@ -17,7 +17,7 @@ public class ModifyPostPreProcessor : IPreProcessor<IModifyPostRequest>
 
         Debug.Assert(request is not null);
 
-        var post = await dbContext.Posts.FirstOrDefaultAsync(post => post.Id == request.PostId, cancellationToken);
+        var post = await dbContext.Posts.FindAsync([request.PostId], cancellationToken);
         if (post is null)
         {
             await context.HttpContext.Response.SendNotFoundAsync(cancellationToken);

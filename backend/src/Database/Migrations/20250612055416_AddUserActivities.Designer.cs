@@ -12,7 +12,7 @@ using RateMyPet.Database;
 namespace RateMyPet.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250612044222_AddUserActivities")]
+    [Migration("20250612055416_AddUserActivities")]
     partial class AddUserActivities
     {
         /// <inheritdoc />
@@ -36,6 +36,10 @@ namespace RateMyPet.Database.Migrations
                         .HasPrecision(2)
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasPrecision(2)
+                        .HasColumnType("datetime2(2)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)

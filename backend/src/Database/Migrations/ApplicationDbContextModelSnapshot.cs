@@ -34,6 +34,10 @@ namespace RateMyPet.Database.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("getutcdate()");
 
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasPrecision(2)
+                        .HasColumnType("datetime2(2)");
+
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");

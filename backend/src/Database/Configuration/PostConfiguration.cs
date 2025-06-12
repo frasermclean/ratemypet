@@ -49,9 +49,14 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(post => post.UpdatedAtUtc)
             .HasPrecision(2);
 
+        builder.Property(post => post.DeletedAtUtc)
+            .HasPrecision(2);
+
         builder.Property(post => post.RowVersion)
             .IsRowVersion()
             .HasConversion<byte[]>();
+
+        builder.HasQueryFilter(post => post.DeletedAtUtc == null);
 
         builder.HasIndex(post => post.Slug);
         builder.HasIndex(post => post.Status);

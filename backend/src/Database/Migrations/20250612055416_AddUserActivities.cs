@@ -16,6 +16,13 @@ namespace RateMyPet.Database.Migrations
                 table: "Users",
                 newName: "LastActivityUtc");
 
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DeletedAtUtc",
+                table: "Posts",
+                type: "datetime2(2)",
+                precision: 2,
+                nullable: true);
+
             migrationBuilder.CreateTable(
                 name: "UserActivities",
                 columns: table => new
@@ -60,6 +67,10 @@ namespace RateMyPet.Database.Migrations
         {
             migrationBuilder.DropTable(
                 name: "UserActivities");
+
+            migrationBuilder.DropColumn(
+                name: "DeletedAtUtc",
+                table: "Posts");
 
             migrationBuilder.RenameColumn(
                 name: "LastActivityUtc",

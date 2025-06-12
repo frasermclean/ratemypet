@@ -132,4 +132,31 @@ public class CloudinaryService : IImageHostingService
 
         return Result.Ok();
     }
+
+    public async Task<Result> SetAccessControlAsync(string publicId, bool isPublic,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(publicId);
+
+        var parameters = new UpdateParams(publicId)
+        {
+            AccessControl =
+            [
+                new AccessControlRule { AccessType = isPublic ? AccessType.Anonymous : AccessType.Token }
+            ]
+        };
+
+        var result = await cloudinary.UpdateResourceAsync(parameters, cancellationToken);
+
+        if (result.Error is not null)
+        {
+            logger.LogError("Failed to set public access for images: {Error}", result.Error.Message);
+            return Result.Fail(result.Error.Message);
+        }
+
+        logger.LogInformation("Set {AccessType} access for image with public ID: {PublicId}",
+            isPublic ? "public" : "restricted", publicId);
+
+        return Result.Ok();
+    }
 }
