@@ -14,12 +14,15 @@ public class Post
     public required string? Slug { get; init; }
     public required string Title { get; init; }
     public string? Description { get; set; }
-    public required User User { get; init; }
-    public required Species Species { get; set; }
+    public required Guid UserId { get; init; }
+    public User? User { get; init; }
+    public required int SpeciesId { get; init; }
+    public Species? Species { get; set; }
     public PostImage? Image { get; set; }
     public ICollection<PostReaction> Reactions { get; } = [];
     public ICollection<PostComment> Comments { get; } = [];
     public ICollection<string> Tags { get; set; } = [];
+    public ICollection<PostUserActivity> Activities { get; } = [];
     public PostStatus Status { get; set; } = PostStatus.Initial;
     public DateTime CreatedAtUtc { get; init; }
     public DateTime? UpdatedAtUtc { get; set; }

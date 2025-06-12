@@ -1,6 +1,6 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
+using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Core.Messages;
@@ -25,21 +25,16 @@ public class AddPostEndpoint(
     public override async Task<Created<PostResponse>> ExecuteAsync(AddPostRequest request,
         CancellationToken cancellationToken)
     {
-        var species = await dbContext.Species.FirstOrDefaultAsync(s => s.Id == request.SpeciesId, cancellationToken);
-        if (species is null)
-        {
-            ThrowError(r => r.SpeciesId, "Invalid species ID");
-        }
+        var userId = User.GetUserId() ?? throw new InvalidOperationException("User ID is not available");
 
         // create new post
-        var user = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken);
         var post = new Post
         {
             Slug = Core.Post.CreateSlug(request.Title),
             Title = request.Title,
             Description = request.Description,
-            User = user,
-            Species = species,
+            UserId = userId,
+            SpeciesId = request.SpeciesId,
             Tags = request.Tags.Distinct().ToList(),
         };
 
@@ -56,8 +51,9 @@ public class AddPostEndpoint(
 
         // save the post entity
         dbContext.Posts.Add(post);
-        dbContext.UserActivities.Add(PostUserActivity.AddPost(user, post));
+        dbContext.UserActivities.Add(PostUserActivity.AddPost(userId, post));
         await dbContext.SaveChangesAsync(cancellationToken);
+
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
 
         // publish message

@@ -514,7 +514,7 @@ namespace RateMyPet.Database.Migrations
                 {
                     b.HasBaseType("RateMyPet.Core.UserActivity");
 
-                    b.Property<Guid?>("PostId")
+                    b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasIndex("PostId");
@@ -531,7 +531,7 @@ namespace RateMyPet.Database.Migrations
                         .IsRequired();
 
                     b.HasOne("RateMyPet.Core.User", "User")
-                        .WithMany()
+                        .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -638,7 +638,7 @@ namespace RateMyPet.Database.Migrations
                     b.HasOne("RateMyPet.Core.User", "User")
                         .WithMany("Activities")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -689,14 +689,18 @@ namespace RateMyPet.Database.Migrations
             modelBuilder.Entity("RateMyPet.Core.PostUserActivity", b =>
                 {
                     b.HasOne("RateMyPet.Core.Post", "Post")
-                        .WithMany()
-                        .HasForeignKey("PostId");
+                        .WithMany("Activities")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Post");
                 });
 
             modelBuilder.Entity("RateMyPet.Core.Post", b =>
                 {
+                    b.Navigation("Activities");
+
                     b.Navigation("Comments");
 
                     b.Navigation("Reactions");
@@ -710,6 +714,8 @@ namespace RateMyPet.Database.Migrations
             modelBuilder.Entity("RateMyPet.Core.User", b =>
                 {
                     b.Navigation("Activities");
+
+                    b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
         }

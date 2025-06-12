@@ -8,6 +8,7 @@ public class User : IdentityUser<Guid>
 
     public DateTime? LastActivity { get; set; }
     public ICollection<Role> Roles { get; } = [];
-    public ulong RowVersion { get; init; }
+    public ICollection<Post> Posts { get; } = [];
     public ICollection<UserActivity> Activities { get; } = [];
+    public ulong RowVersion { get; init; }
 }

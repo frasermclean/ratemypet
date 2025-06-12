@@ -17,6 +17,16 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(post => post.Description)
             .HasMaxLength(Post.DescriptionMaxLength);
 
+        builder.HasOne(post => post.Species)
+            .WithMany(species => species.Posts)
+            .HasForeignKey(post => post.SpeciesId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(post => post.Activities)
+            .WithOne(activity => activity.Post)
+            .HasForeignKey(activity => activity.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         builder.OwnsOne(post => post.Image, imageBuilder =>
         {
             imageBuilder.Property(image => image.AssetId)

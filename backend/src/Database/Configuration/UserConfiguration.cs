@@ -36,10 +36,15 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .WithMany(role => role.Users)
             .UsingEntity<UserRole>();
 
+        builder.HasMany(user => user.Posts)
+            .WithOne(post => post.User)
+            .HasForeignKey(post => post.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         builder.HasMany(user => user.Activities)
             .WithOne(activity => activity.User)
             .HasForeignKey(activity => activity.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasIndex(user => user.NormalizedUserName)
             .HasDatabaseName("IX_Users_NormalizedUserName")
