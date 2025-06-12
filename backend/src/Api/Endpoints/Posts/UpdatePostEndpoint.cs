@@ -1,4 +1,5 @@
-﻿using FastEndpoints;
+﻿using EntityFramework.Exceptions.Common;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
@@ -30,7 +31,14 @@ public class UpdatePostEndpoint(ApplicationDbContext dbContext)
         post.Tags = request.Tags.Distinct().ToList();
         post.Activities.Add(PostUserActivity.UpdatePost(request.UserId, post.Id));
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (ReferenceConstraintException exception) when (exception.ConstraintProperties.Contains("SpeciesId"))
+        {
+            ThrowError(r => r.SpeciesId, "Invalid species ID");
+        }
 
         var response = Map.FromEntity(post);
         return TypedResults.Ok(response);
