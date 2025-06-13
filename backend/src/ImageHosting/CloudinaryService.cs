@@ -5,7 +5,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RateMyPet.Core;
-using RateMyPet.Core.Abstractions;
 
 namespace RateMyPet.ImageHosting;
 
@@ -73,25 +72,25 @@ public class CloudinaryService : IImageHostingService
         return new Uri(url);
     }
 
-    public async Task<PostImage> UploadAsync(string fileName, Stream stream, Post post,
+    public async Task<PostImage> UploadAsync(UploadParameters parameters, Stream stream,
         CancellationToken cancellationToken = default)
     {
-        var parameters = new ImageUploadParams
+        var result = await cloudinary.UploadAsync(new ImageUploadParams
         {
-            File = new FileDescription(fileName, stream),
-            DisplayName = post.Title,
-            PublicId = post.Slug,
-            AssetFolder = environment == "prod" ? "posts" : $"{environment}/posts",
+            File = new FileDescription(parameters.FileName, stream),
+            DisplayName = parameters.Title,
+            PublicId = parameters.Slug,
+            AssetFolder = parameters.Environment.Equals("prod", StringComparison.InvariantCultureIgnoreCase)
+                ? "posts"
+                : $"{environment}/posts",
             UseAssetFolderAsPublicIdPrefix = true,
-            Context = new StringDictionary($"caption={post.Description}", $"alt={post.Title}"),
+            Context = new StringDictionary($"caption={parameters.Description}", $"alt={parameters.Title}"),
             MetadataFields = new StringDictionary(
-                $"environment={environment}",
-                $"species_id={post.SpeciesId}",
-                $"user_id={post.UserId}"
+                $"environment={parameters.Environment.ToLowerInvariant()}",
+                $"species_id={parameters.SpeciesId}",
+                $"user_id={parameters.UserId}"
             )
-        };
-
-        var result = await cloudinary.UploadAsync(parameters, cancellationToken);
+        }, cancellationToken);
 
         if (result.Error is not null)
         {

@@ -1,6 +1,7 @@
 using FluentResults;
+using RateMyPet.Core;
 
-namespace RateMyPet.Core.Abstractions;
+namespace RateMyPet.ImageHosting;
 
 public interface IImageHostingService
 {
@@ -8,7 +9,7 @@ public interface IImageHostingService
 
     Uri GetPublicUri(string publicId, int width = 1024, int height = 1024, string crop = "fill");
 
-    Task<PostImage> UploadAsync(string fileName, Stream stream, Post post,
+    Task<PostImage> UploadAsync(UploadParameters parameters, Stream stream,
         CancellationToken cancellationToken = default);
 
     Task<Result> DeleteAsync(List<string> publicIds, CancellationToken cancellationToken = default);

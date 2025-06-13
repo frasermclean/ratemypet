@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Database;
+using RateMyPet.ImageHosting;
 using RateMyPet.Storage;
 using RateMyPet.Storage.Messaging;
 
@@ -35,13 +36,15 @@ public class ProcessAddedPost(
         {
             logger.LogInformation("Post {PostId} passed all moderation checks", post.Id);
 
-            var tags = await analysisService.GetTagsAsync(imageData, cancellationToken);
-
-            stream.Position = 0; // reset stream position after reading
-
             post.Status = PostStatus.Approved;
+
+            var tags = await analysisService.GetTagsAsync(imageData, cancellationToken);
             post.Tags = [.. post.Tags.Concat(tags).Distinct().Order()];
-            post.Image = await imageHostingService.UploadAsync(message.ImageFileName, stream, post, cancellationToken);
+
+            // upload image to image hosting service
+            var uploadParameters = MapToUploadParameters(message, post);
+            stream.Position = 0;
+            post.Image = await imageHostingService.UploadAsync(uploadParameters, stream, cancellationToken);
         }
         else
         {
@@ -63,4 +66,15 @@ public class ProcessAddedPost(
 
         return results.All(result => result.IsSafe);
     }
+
+    private static UploadParameters MapToUploadParameters(PostAddedMessage message, Post post) => new()
+    {
+        FileName = message.ImageFileName,
+        Title = post.Title,
+        Description = post.Description,
+        Slug = post.Slug,
+        Environment = message.EnvironmentName,
+        SpeciesId = post.SpeciesId,
+        UserId = post.UserId
+    };
 }
