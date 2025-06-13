@@ -9,7 +9,8 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
     public void Configure(EntityTypeBuilder<Post> builder)
     {
         builder.Property(post => post.Slug)
-            .HasMaxLength(Post.SlugMaxLength);
+            .HasMaxLength(Post.SlugMaxLength)
+            .HasDefaultValueSql("CONCAT('post-', LOWER(CONVERT(varchar(36), NEWID())))");
 
         builder.Property(post => post.Title)
             .HasMaxLength(Post.TitleMaxLength);
@@ -58,7 +59,8 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
 
         builder.HasQueryFilter(post => post.DeletedAtUtc == null);
 
-        builder.HasIndex(post => post.Slug);
+        builder.HasAlternateKey(post => post.Slug);
+
         builder.HasIndex(post => post.Status);
     }
 }

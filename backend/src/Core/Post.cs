@@ -11,7 +11,7 @@ public class Post : ISoftDeletable
     public const string ValidTitlePattern = @"^[a-zA-Z0-9\s!?.-]+$";
 
     public Guid Id { get; init; } = Guid.NewGuid();
-    public required string? Slug { get; init; }
+    public required string Slug { get; init; }
     public required string Title { get; init; }
     public string? Description { get; set; }
     public required Guid UserId { get; init; }

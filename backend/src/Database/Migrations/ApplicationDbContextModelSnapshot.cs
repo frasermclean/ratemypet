@@ -49,8 +49,11 @@ namespace RateMyPet.Database.Migrations
                         .HasColumnType("rowversion");
 
                     b.Property<string>("Slug")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
+                        .HasColumnType("nvarchar(60)")
+                        .HasDefaultValueSql("CONCAT('post-', LOWER(CONVERT(varchar(36), NEWID())))");
 
                     b.Property<int>("SpeciesId")
                         .HasColumnType("int");
@@ -76,7 +79,7 @@ namespace RateMyPet.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Slug");
+                    b.HasAlternateKey("Slug");
 
                     b.HasIndex("SpeciesId");
 

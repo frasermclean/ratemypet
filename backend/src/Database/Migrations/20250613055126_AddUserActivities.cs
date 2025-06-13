@@ -11,10 +11,26 @@ namespace RateMyPet.Database.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropIndex(
+                name: "IX_Posts_Slug",
+                table: "Posts");
+
             migrationBuilder.RenameColumn(
                 name: "LastSeenUtc",
                 table: "Users",
                 newName: "LastActivityUtc");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Slug",
+                table: "Posts",
+                type: "nvarchar(60)",
+                maxLength: 60,
+                nullable: false,
+                defaultValueSql: "CONCAT('post-', LOWER(CONVERT(varchar(36), NEWID())))",
+                oldClrType: typeof(string),
+                oldType: "nvarchar(60)",
+                oldMaxLength: 60,
+                oldNullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "DeletedAtUtc",
@@ -22,6 +38,11 @@ namespace RateMyPet.Database.Migrations
                 type: "datetime2(2)",
                 precision: 2,
                 nullable: true);
+
+            migrationBuilder.AddUniqueConstraint(
+                name: "AK_Posts_Slug",
+                table: "Posts",
+                column: "Slug");
 
             migrationBuilder.CreateTable(
                 name: "UserActivities",
@@ -68,6 +89,10 @@ namespace RateMyPet.Database.Migrations
             migrationBuilder.DropTable(
                 name: "UserActivities");
 
+            migrationBuilder.DropUniqueConstraint(
+                name: "AK_Posts_Slug",
+                table: "Posts");
+
             migrationBuilder.DropColumn(
                 name: "DeletedAtUtc",
                 table: "Posts");
@@ -76,6 +101,22 @@ namespace RateMyPet.Database.Migrations
                 name: "LastActivityUtc",
                 table: "Users",
                 newName: "LastSeenUtc");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Slug",
+                table: "Posts",
+                type: "nvarchar(60)",
+                maxLength: 60,
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(60)",
+                oldMaxLength: 60,
+                oldDefaultValueSql: "CONCAT('post-', LOWER(CONVERT(varchar(36), NEWID())))");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Posts_Slug",
+                table: "Posts",
+                column: "Slug");
         }
     }
 }

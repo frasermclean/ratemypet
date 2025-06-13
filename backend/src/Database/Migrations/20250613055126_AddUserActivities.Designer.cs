@@ -12,7 +12,7 @@ using RateMyPet.Database;
 namespace RateMyPet.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250612055416_AddUserActivities")]
+    [Migration("20250613055126_AddUserActivities")]
     partial class AddUserActivities
     {
         /// <inheritdoc />
@@ -52,8 +52,11 @@ namespace RateMyPet.Database.Migrations
                         .HasColumnType("rowversion");
 
                     b.Property<string>("Slug")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
+                        .HasColumnType("nvarchar(60)")
+                        .HasDefaultValueSql("CONCAT('post-', LOWER(CONVERT(varchar(36), NEWID())))");
 
                     b.Property<int>("SpeciesId")
                         .HasColumnType("int");
@@ -79,7 +82,7 @@ namespace RateMyPet.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Slug");
+                    b.HasAlternateKey("Slug");
 
                     b.HasIndex("SpeciesId");
 
