@@ -8,7 +8,7 @@ public interface IImageHostingService
 
     Uri GetPublicUri(string publicId, int width = 1024, int height = 1024, string crop = "fill");
 
-    Task<Result<PostImage>> UploadAsync(string fileName, Stream stream, Post post,
+    Task<PostImage> UploadAsync(string fileName, Stream stream, Post post,
         CancellationToken cancellationToken = default);
 
     Task<Result> DeleteAsync(List<string> publicIds, CancellationToken cancellationToken = default);

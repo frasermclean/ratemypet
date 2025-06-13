@@ -30,6 +30,7 @@ public static class Program
             .WaitForCompletion(initializer)
             .WithHostStorage(storage)
             .WithReference(database)
+            .WithReference(blobs)
             .WithExternalHttpEndpoints();
 
         builder.AddNpmApp("frontend", "../../../frontend")

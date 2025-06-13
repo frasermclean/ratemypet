@@ -73,7 +73,7 @@ public class CloudinaryService : IImageHostingService
         return new Uri(url);
     }
 
-    public async Task<Result<PostImage>> UploadAsync(string fileName, Stream stream, Post post,
+    public async Task<PostImage> UploadAsync(string fileName, Stream stream, Post post,
         CancellationToken cancellationToken = default)
     {
         var parameters = new ImageUploadParams
@@ -96,7 +96,7 @@ public class CloudinaryService : IImageHostingService
         if (result.Error is not null)
         {
             logger.LogError("Failed to upload image: {Error}", result.Error.Message);
-            return Result.Fail(result.Error.Message);
+            throw new CloudinaryServerException(result.Error);
         }
 
         logger.LogInformation("Uploaded image with public ID: {PublicId}", result.PublicId);

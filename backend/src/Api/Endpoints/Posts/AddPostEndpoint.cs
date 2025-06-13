@@ -58,7 +58,7 @@ public class AddPostEndpoint(
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
 
         // publish message
-        await messagePublisher.PublishAsync(new PostAddedMessage(post.Id), cancellationToken);
+        await messagePublisher.PublishAsync(new PostAddedMessage(post.Id, request.Image.FileName), cancellationToken);
 
         var response = Map.FromEntity(post);
         return TypedResults.Created($"/posts/{response.Id}", response);
