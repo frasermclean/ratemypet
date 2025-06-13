@@ -4,12 +4,12 @@
     "net9.0": {
       "Delta.EF": {
         "type": "Direct",
-        "requested": "[6.4.0, )",
-        "resolved": "6.4.0",
-        "contentHash": "sqCg0m7G2oCpK60EC4RLTWj24WYZbbDKPBzNH4Emw/rYxaLIrhtPqMKjaEwwLWx9L/2hr673+IyaPlXcDhNPRQ==",
+        "requested": "[6.4.2, )",
+        "resolved": "6.4.2",
+        "contentHash": "L+M+D9fyrB+0cKpC6n7/TnWna61xuCrtNQgKgI+A3PiRnDTOQFPsYJEc2hELEc8I35k0VugNutq8+bLCG7QikQ==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore": "9.0.3",
-          "Microsoft.EntityFrameworkCore.Relational": "9.0.3"
+          "Microsoft.EntityFrameworkCore": "9.0.6",
+          "Microsoft.EntityFrameworkCore.Relational": "9.0.6"
         }
       },
       "FastEndpoints": {
@@ -161,15 +161,6 @@
         "contentHash": "nweeiVHx4HbDi6+TqendOe0QmN0a9v0AB5FaL83eToqFFztwGIhOqLfveKqJDYSCU51CJShW8kbU1onZLdZZSg==",
         "dependencies": {
           "Microsoft.EntityFrameworkCore.Relational": "8.0.0"
-        }
-      },
-      "EntityFrameworkCore.Exceptions.SqlServer": {
-        "type": "Transitive",
-        "resolved": "8.1.3",
-        "contentHash": "KvXEU8+SSqwJJtcNjLWusFDDw5Lh04wRJiUFOHcNZIjYPSLiNgHQPGv98r/bDto6hoJOjm99AuLv7lWHdOthhg==",
-        "dependencies": {
-          "EntityFrameworkCore.Exceptions.Common": "8.1.3",
-          "Microsoft.Data.SqlClient": "5.1.4"
         }
       },
       "FastEndpoints.Attributes": {
@@ -1722,6 +1713,16 @@
           "Newtonsoft.Json": "13.0.3",
           "System.Net.Http": "4.3.4",
           "System.Text.RegularExpressions": "4.3.1"
+        }
+      },
+      "EntityFrameworkCore.Exceptions.SqlServer": {
+        "type": "CentralTransitive",
+        "requested": "[8.1.3, )",
+        "resolved": "8.1.3",
+        "contentHash": "KvXEU8+SSqwJJtcNjLWusFDDw5Lh04wRJiUFOHcNZIjYPSLiNgHQPGv98r/bDto6hoJOjm99AuLv7lWHdOthhg==",
+        "dependencies": {
+          "EntityFrameworkCore.Exceptions.Common": "8.1.3",
+          "Microsoft.Data.SqlClient": "5.1.4"
         }
       },
       "FluentResults": {
