@@ -1,5 +1,4 @@
 ﻿using Azure.Storage.Queues;
-using FastEndpoints.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using RateMyPet.Database;

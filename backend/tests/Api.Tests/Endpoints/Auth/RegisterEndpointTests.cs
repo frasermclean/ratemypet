@@ -1,8 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
 using Azure.Storage.Queues;
-using FastEndpoints;
-using FastEndpoints.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using RateMyPet.Storage;
 using RateMyPet.Storage.Messaging;
