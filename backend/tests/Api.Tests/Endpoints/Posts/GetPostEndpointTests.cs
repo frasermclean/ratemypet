@@ -1,0 +1,36 @@
+﻿using System.Net;
+
+namespace RateMyPet.Api.Endpoints.Posts;
+
+[Collection(nameof(ApiCollection))]
+[Trait("Category", "Integration")]
+public class GetPostEndpointTests(ApiFixture fixture) : TestBase<ApiFixture>
+{
+    [Fact]
+    public async Task GetPost_WithUnknownId_ShouldReturnNotFound()
+    {
+        // arrange
+        var httpClient = fixture.Client;
+        var postId = Guid.Empty;
+
+        // act
+        var message = await httpClient.GetAsync($"/api/posts/{postId}", TestContext.Current.CancellationToken);
+
+        // assert
+        message.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task GetPost_WithUnknownSlug_ShouldReturnNotFound()
+    {
+        // arrange
+        var httpClient = fixture.Client;
+        const string postSlug = "unknown-slug";
+
+        // act
+        var message = await httpClient.GetAsync($"/api/posts/{postSlug}", TestContext.Current.CancellationToken);
+
+        // assert
+        message.StatusCode.ShouldBe(HttpStatusCode.NotFound);
+    }
+}
