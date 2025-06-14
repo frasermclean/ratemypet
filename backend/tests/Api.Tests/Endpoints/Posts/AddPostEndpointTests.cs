@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Http;
-using RateMyPet.Core;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
