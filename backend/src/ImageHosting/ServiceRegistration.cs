@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using RateMyPet.Core.Abstractions;
 
 namespace RateMyPet.ImageHosting;
 

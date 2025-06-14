@@ -1,17 +1,21 @@
-﻿using FastEndpoints;
+﻿using EntityFramework.Exceptions.Common;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
+using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
-using RateMyPet.Core.Messages;
 using RateMyPet.Database;
+using RateMyPet.Storage;
+using RateMyPet.Storage.Messaging;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
 public class AddPostEndpoint(
     ApplicationDbContext dbContext,
-    IImageHostingService imageHostingService,
-    IMessagePublisher messagePublisher)
+    [FromKeyedServices(BlobContainerNames.PostImages)]
+    IBlobContainerManager blobContainerManager,
+    IMessagePublisher messagePublisher,
+    IHostEnvironment hostEnvironment)
     : Endpoint<AddPostRequest, Created<PostResponse>, PostResponseMapper>
 {
     public override void Configure()
@@ -25,41 +29,38 @@ public class AddPostEndpoint(
     public override async Task<Created<PostResponse>> ExecuteAsync(AddPostRequest request,
         CancellationToken cancellationToken)
     {
-        var species = await dbContext.Species.FirstOrDefaultAsync(s => s.Id == request.SpeciesId, cancellationToken);
-        if (species is null)
-        {
-            ThrowError(r => r.SpeciesId, "Invalid species ID");
-        }
-
         // create new post
         var post = new Post
         {
             Slug = Core.Post.CreateSlug(request.Title),
             Title = request.Title,
             Description = request.Description,
-            User = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken),
-            Species = species,
+            UserId = User.GetAuthenticatedUserId(),
+            SpeciesId = request.SpeciesId,
             Tags = request.Tags.Distinct().ToList(),
         };
 
-        // upload image to cloudinary
-        var imageUploadResult = await imageHostingService.UploadAsync(request.Image.FileName,
-            request.Image.OpenReadStream(), post, cancellationToken);
+        dbContext.Posts.Add(post);
+        dbContext.UserActivities.Add(PostUserActivity.AddPost(post.UserId, post.Id));
 
-        if (imageUploadResult.IsFailed)
+        try
         {
-            ThrowError(r => r.Image, "Error processing image upload");
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (ReferenceConstraintException exception) when (exception.ConstraintProperties.Contains("SpeciesId"))
+        {
+            ThrowError(r => r.SpeciesId, "Invalid species ID");
         }
 
-        post.Image = imageUploadResult.Value;
+        // upload image to blob storage
+        await blobContainerManager.CreateBlobAsync(post.Slug, request.Image.OpenReadStream(),
+            request.Image.ContentType, cancellationToken);
 
-        // save the post entity
-        dbContext.Posts.Add(post);
-        await dbContext.SaveChangesAsync(cancellationToken);
         Logger.LogInformation("Post with ID {PostId} was added successfully", post.Id);
 
         // publish message
-        await messagePublisher.PublishAsync(new PostAddedMessage(post.Id), cancellationToken);
+        var message = new PostAddedMessage(post.Id, request.Image.FileName, hostEnvironment.EnvironmentName);
+        await messagePublisher.PublishAsync(message, cancellationToken);
 
         var response = Map.FromEntity(post);
         return TypedResults.Created($"/posts/{response.Id}", response);

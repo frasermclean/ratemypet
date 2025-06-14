@@ -1,6 +1,4 @@
 ﻿using System.Net;
-using FastEndpoints;
-using FastEndpoints.Testing;
 
 namespace RateMyPet.Api.Endpoints.Species;
 

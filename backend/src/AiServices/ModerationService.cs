@@ -9,8 +9,7 @@ namespace RateMyPet.AiServices;
 public class ModerationService(
     ILogger<ModerationService> logger,
     IOptions<AiServicesOptions> options,
-    ContentSafetyClient safetyClient,
-    HttpClient httpClient) : IModerationService
+    ContentSafetyClient safetyClient) : IModerationService
 {
     private readonly int hateThreshold = options.Value.HateThreshold;
     private readonly int selfHarmThreshold = options.Value.SelfHarmThreshold;
@@ -35,17 +34,14 @@ public class ModerationService(
         };
     }
 
-    public async Task<ModerationResult> AnalyzeImageAsync(Uri imageUri, CancellationToken cancellationToken)
+    public async Task<ModerationResult> AnalyzeImageAsync(BinaryData binaryData, CancellationToken cancellationToken)
     {
-        var imageBytes = await httpClient.GetByteArrayAsync(imageUri, cancellationToken);
-        var binaryData = new BinaryData(imageBytes);
-
         var response = await safetyClient.AnalyzeImageAsync(binaryData, cancellationToken);
 
         var categories = response.Value.CategoriesAnalysis
             .ToDictionary(analysis => analysis.Category, analysis => analysis.Severity);
 
-        logger.LogInformation("Image {ImageUri} analyzed. Categories: {Categories}", imageUri, categories);
+        logger.LogInformation("Image from stream analyzed. Categories: {Categories}", categories);
 
         return new ModerationResult
         {

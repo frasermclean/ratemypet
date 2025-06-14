@@ -9,7 +9,7 @@ using RateMyPet.Database;
 namespace RateMyPet.Api.Endpoints.Posts;
 
 public class GetPostEndpoint(ApplicationDbContext dbContext)
-    : Endpoint<GetPostRequest, Results<Ok<PostResponse>, NotFound>>
+    : EndpointWithoutRequest<Results<Ok<PostResponse>, NotFound>>
 {
     public override void Configure()
     {
@@ -18,14 +18,15 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok<PostResponse>, NotFound>> ExecuteAsync(GetPostRequest request,
-        CancellationToken cancellationToken)
+    public override async Task<Results<Ok<PostResponse>, NotFound>> ExecuteAsync(CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
+        var postId = Route<Guid?>("postId", false);
+        var postSlug = Route<string?>("postSlug", false);
 
         var response = await dbContext.Posts.AsNoTracking()
-            .Where(post => request.PostId != null && post.Id == request.PostId ||
-                           request.PostSlug != null && post.Slug == request.PostSlug)
+            .Where(post => postId != null && post.Id == postId ||
+                           postSlug != null && post.Slug == postSlug)
             .Select(post => new PostResponse
             {
                 Id = post.Id,
@@ -33,9 +34,9 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
                 Title = post.Title,
                 Description = post.Description,
                 ImageId = post.Image != null ? post.Image.PublicId : null,
-                AuthorUserName = post.User.UserName!,
-                AuthorEmailHash = post.User.Email.ToSha256Hash(),
-                SpeciesId = post.Species.Id,
+                AuthorUserName = post.User!.UserName!,
+                AuthorEmailHash = post.User!.Email!.ToSha256Hash(),
+                SpeciesId = post.SpeciesId,
                 Tags = post.Tags,
                 Status = post.Status,
                 CreatedAt = post.CreatedAtUtc,

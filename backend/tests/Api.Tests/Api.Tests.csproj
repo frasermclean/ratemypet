@@ -25,6 +25,22 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Api\Api.csproj" />
+    <ProjectReference Include="..\..\src\Initializer\Initializer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\Samples\green_256x256.png">
+      <Link>Data\green_256x256.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Samples\random.bin">
+      <Link>Data\random.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Samples\red_1600x1200.png">
+      <Link>Data\red_1600x1200.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

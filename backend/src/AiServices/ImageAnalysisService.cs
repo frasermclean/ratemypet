@@ -12,17 +12,18 @@ public class ImageAnalysisService(
 {
     private readonly float tagConfidenceThreshold = options.Value.TagConfidenceThreshold;
 
-    public async Task<IEnumerable<string>> GetTagsAsync(Uri imageUri, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<string>> GetTagsAsync(BinaryData binaryData,
+        CancellationToken cancellationToken = default)
     {
         var response =
-            await analysisClient.AnalyzeAsync(imageUri, VisualFeatures.Tags, cancellationToken: cancellationToken);
+            await analysisClient.AnalyzeAsync(binaryData, VisualFeatures.Tags, cancellationToken: cancellationToken);
 
         // select tags with single word names and high confidence
         var tags = response.Value.Tags.Values
             .Where(tag => !tag.Name.Contains(' ') && tag.Confidence > tagConfidenceThreshold)
             .Select(tag => tag.Name);
 
-        logger.LogInformation("Image {ImageUri} analyzed. Tags: {Tags}", imageUri, tags);
+        logger.LogInformation("Image analyzed. Tags: {Tags}", tags);
 
         return tags;
     }

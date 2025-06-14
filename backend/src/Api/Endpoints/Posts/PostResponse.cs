@@ -6,7 +6,7 @@ namespace RateMyPet.Api.Endpoints.Posts;
 public class PostResponse
 {
     public required Guid Id { get; init; }
-    public required string? Slug { get; init; }
+    public required string Slug { get; init; }
     public required string Title { get; init; }
     public string? Description { get; init; }
     public string? ImageId { get; init; }

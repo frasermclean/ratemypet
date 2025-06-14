@@ -44,6 +44,30 @@ public class ClaimsPrincipalExtensionsTests
         returnedUserId.ShouldBeNull();
     }
 
+    [Fact]
+    public void GetAuthenticatedUserId_WithValidClaim_ShouldReturnExpectedUserId()
+    {
+        // arrange
+        var expectedUserId = Guid.NewGuid();
+        var principal = CreateClaimsPrincipal(new Claim(ClaimTypes.NameIdentifier, expectedUserId.ToString()));
+
+        // act
+        var returnedUserId = principal.GetAuthenticatedUserId();
+
+        // assert
+        returnedUserId.ShouldBe(expectedUserId);
+    }
+
+    [Fact]
+    public void GetAuthenticatedUserId_WithNoClaim_ShouldThrowInvalidOperationException()
+    {
+        // arrange
+        var principal = CreateClaimsPrincipal();
+
+        // act & assert
+        Should.Throw<InvalidOperationException>(() => principal.GetAuthenticatedUserId());
+    }
+
     private static ClaimsPrincipal CreateClaimsPrincipal(params Claim[] claims)
     {
         var identity = new ClaimsIdentity(claims);

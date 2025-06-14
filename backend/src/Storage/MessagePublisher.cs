@@ -2,7 +2,7 @@
 using Azure.Storage.Queues;
 using Microsoft.Extensions.Logging;
 using RateMyPet.Core.Abstractions;
-using RateMyPet.Core.Messages;
+using RateMyPet.Storage.Messaging;
 
 namespace RateMyPet.Storage;
 
@@ -33,6 +33,7 @@ public class MessagePublisher(ILogger<MessagePublisher> logger, QueueServiceClie
     {
         ForgottenPasswordMessage => serviceClient.GetQueueClient(QueueNames.ForgotPassword),
         PostAddedMessage => serviceClient.GetQueueClient(QueueNames.PostAdded),
+        PostDeletedMessage => serviceClient.GetQueueClient(QueueNames.PostDeleted),
         RegisterConfirmationMessage => serviceClient.GetQueueClient(QueueNames.RegisterConfirmation),
         _ => throw new ArgumentException("Unsupported message type")
     };

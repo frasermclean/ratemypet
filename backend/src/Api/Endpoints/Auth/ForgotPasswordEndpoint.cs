@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
-using RateMyPet.Core.Messages;
+using RateMyPet.Storage.Messaging;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
@@ -40,6 +40,7 @@ public class ForgotPasswordEndpoint(UserManager<User> userManager, IMessagePubli
 
         await messagePublisher.PublishAsync(new ForgottenPasswordMessage
         {
+            UserId = user.Id,
             EmailAddress = request.EmailAddress,
             ResetCode = resetCode
         }, cancellationToken);

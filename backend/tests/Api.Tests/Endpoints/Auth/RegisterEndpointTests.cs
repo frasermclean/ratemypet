@@ -1,11 +1,9 @@
 ﻿using System.Net;
 using System.Text.Json;
 using Azure.Storage.Queues;
-using FastEndpoints;
-using FastEndpoints.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using RateMyPet.Core.Messages;
 using RateMyPet.Storage;
+using RateMyPet.Storage.Messaging;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
