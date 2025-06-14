@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using OpenTelemetry.Trace;
+using RateMyPet.Core;
 using RateMyPet.Database;
 
 namespace RateMyPet.Initializer;
@@ -43,4 +44,14 @@ public class DatabaseInitializer(ApplicationDbContext dbContext, ILogger<Databas
         });
     }
 
+    public static async Task SeedAsync(DbContext dbContext, bool _, CancellationToken cancellationToken = default)
+    {
+        if (await dbContext.Set<Post>().AnyAsync(cancellationToken))
+        {
+            return;
+        }
+
+        dbContext.AddRange(SeedData.Posts);
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

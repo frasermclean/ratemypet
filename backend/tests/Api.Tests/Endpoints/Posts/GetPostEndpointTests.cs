@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using RateMyPet.Initializer;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
@@ -6,6 +7,20 @@ namespace RateMyPet.Api.Endpoints.Posts;
 [Trait("Category", "Integration")]
 public class GetPostEndpointTests(ApiFixture fixture) : TestBase<ApiFixture>
 {
+    [Fact]
+    public async Task GetPost_WithValidId_ShouldReturnOk()
+    {
+        // arrange
+        var httpClient = fixture.Client;
+        var postId = SeedData.Posts[0].Id;
+
+        // act
+        var message = await httpClient.GetAsync($"/api/posts/{postId}", TestContext.Current.CancellationToken);
+
+        // assert
+        message.StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
+
     [Fact]
     public async Task GetPost_WithUnknownId_ShouldReturnNotFound()
     {
