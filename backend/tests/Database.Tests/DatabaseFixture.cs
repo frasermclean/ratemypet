@@ -34,6 +34,8 @@ public sealed class DatabaseFixture : IAsyncLifetime
             }
         });
 
+        hostBuilder.Services.AddTransient<TimeProvider>(_ => TimeProvider.System);
+
         host = hostBuilder.AddDatabaseServices()
             .Build();
 

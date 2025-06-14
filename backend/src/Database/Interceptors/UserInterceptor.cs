@@ -5,7 +5,7 @@ using RateMyPet.Core;
 
 namespace RateMyPet.Database.Interceptors;
 
-public class UserInterceptor : SaveChangesInterceptor
+public class UserInterceptor(TimeProvider timeProvider) : SaveChangesInterceptor
 {
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
@@ -22,14 +22,14 @@ public class UserInterceptor : SaveChangesInterceptor
         return ValueTask.FromResult(result);
     }
 
-    private static void UpdateAddedOrModifiedUsers(DbContextEventData eventData)
+    private void UpdateAddedOrModifiedUsers(DbContextEventData eventData)
     {
         Debug.Assert(eventData.Context is not null);
 
         foreach (var userEntry in eventData.Context.ChangeTracker.Entries<User>()
                      .Where(userEntry => userEntry is { State: EntityState.Added or EntityState.Modified }))
         {
-            userEntry.Property(user => user.LastActivity).CurrentValue = DateTime.UtcNow;
+            userEntry.Property(user => user.LastActivity).CurrentValue = timeProvider.GetUtcNow().DateTime;
 
             if (userEntry.State == EntityState.Added)
             {
