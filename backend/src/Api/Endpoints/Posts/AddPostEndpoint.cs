@@ -35,7 +35,7 @@ public class AddPostEndpoint(
             Slug = Core.Post.CreateSlug(request.Title),
             Title = request.Title,
             Description = request.Description,
-            UserId = User.GetUserId()!.Value,
+            UserId = User.GetAuthenticatedUserId(),
             SpeciesId = request.SpeciesId,
             Tags = request.Tags.Distinct().ToList(),
         };
