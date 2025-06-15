@@ -1,7 +1,5 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
-using FluentResults;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RateMyPet.Core;
@@ -11,14 +9,12 @@ namespace RateMyPet.ImageHosting;
 public class CloudinaryService : IImageHostingService
 {
     private readonly ILogger<CloudinaryService> logger;
-    private readonly string environment;
     private readonly Cloudinary cloudinary;
 
     public CloudinaryService(IOptions<CloudinaryOptions> options, HttpClient httpClient,
-        ILogger<CloudinaryService> logger, IHostEnvironment environment)
+        ILogger<CloudinaryService> logger)
     {
         this.logger = logger;
-        this.environment = environment.EnvironmentName.ToLower();
 
         var (cloudName, apiKey, apiSecret) = options.Value;
         var account = new Account(cloudName, apiKey, apiSecret);
@@ -33,7 +29,7 @@ public class CloudinaryService : IImageHostingService
         };
     }
 
-    public async Task<Result<PostImage>> GetAsync(string publicId, CancellationToken cancellationToken = default)
+    public async Task<PostImage> GetAsync(string publicId, CancellationToken cancellationToken = default)
     {
         var parameters = new GetResourceParams(publicId)
         {
@@ -45,7 +41,7 @@ public class CloudinaryService : IImageHostingService
         if (result.Error is not null)
         {
             logger.LogError("Failed to get image: {Error}", result.Error.Message);
-            return Result.Fail(result.Error.Message);
+            throw new CloudinaryServerException(result.Error);
         }
 
         return new PostImage
@@ -82,7 +78,7 @@ public class CloudinaryService : IImageHostingService
             PublicId = parameters.Slug,
             AssetFolder = parameters.Environment.Equals("prod", StringComparison.InvariantCultureIgnoreCase)
                 ? "posts"
-                : $"{environment}/posts",
+                : $"{parameters.Environment.ToLowerInvariant()}/posts",
             UseAssetFolderAsPublicIdPrefix = true,
             Context = new StringDictionary($"caption={parameters.Description}", $"alt={parameters.Title}"),
             MetadataFields = new StringDictionary(
@@ -110,8 +106,7 @@ public class CloudinaryService : IImageHostingService
         };
     }
 
-    public async Task<Result> DeleteAsync(List<string> publicIds,
-        CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(List<string> publicIds, CancellationToken cancellationToken = default)
     {
         var parameters = new DelResParams
         {
@@ -124,15 +119,13 @@ public class CloudinaryService : IImageHostingService
         if (result.Error is not null)
         {
             logger.LogError("Failed to delete images: {Error}", result.Error.Message);
-            return Result.Fail(result.Error.Message);
+            throw new CloudinaryServerException(result.Error);
         }
 
         logger.LogInformation("Requested to deleted {Count} images", result.Deleted.Count);
-
-        return Result.Ok();
     }
 
-    public async Task<Result> SetAccessControlAsync(string publicId, bool isPublic,
+    public async Task SetAccessControlAsync(string publicId, bool isPublic,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(publicId);
@@ -150,12 +143,10 @@ public class CloudinaryService : IImageHostingService
         if (result.Error is not null)
         {
             logger.LogError("Failed to set public access for images: {Error}", result.Error.Message);
-            return Result.Fail(result.Error.Message);
+            throw new CloudinaryServerException(result.Error);
         }
 
         logger.LogInformation("Set {AccessType} access for image with public ID: {PublicId}",
             isPublic ? "public" : "restricted", publicId);
-
-        return Result.Ok();
     }
 }
