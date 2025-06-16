@@ -2,7 +2,7 @@
 
 public class UserActivity
 {
-    public uint Id { get; init; }
+    public long Id { get; init; }
     public required Guid UserId { get; init; }
     public User? User { get; init; }
     public required string Code { get; init; }
