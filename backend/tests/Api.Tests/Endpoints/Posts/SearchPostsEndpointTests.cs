@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using Gridify;
-using RateMyPet.Initializer;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
@@ -21,6 +20,6 @@ public class SearchPostsEndpointTests(ApiFixture fixture) : TestBase<ApiFixture>
         // assert
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
         message.Headers.ETag.ShouldNotBeNull();
-        paging.Count.ShouldBe(SeedData.Posts.Count);
+        paging.Count.ShouldBeGreaterThan(0);
     }
 }

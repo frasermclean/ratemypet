@@ -12,7 +12,7 @@ public static class Program
 
         builder.AddServiceDefaults()
             .AddStorageServices()
-            .AddDatabaseServices();
+            .AddDatabaseServices(DatabaseInitializer.SeedAsync);
 
         builder.Services.AddHostedService<WorkerService>()
             .AddScoped<DatabaseInitializer>()

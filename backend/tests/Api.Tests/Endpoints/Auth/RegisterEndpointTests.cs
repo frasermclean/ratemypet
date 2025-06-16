@@ -70,8 +70,8 @@ public class RegisterEndpointTests(ApiFixture fixture) : TestBase<ApiFixture>
     }
 
     private static RegisterRequest CreateRequest(
-        string userName = "bob",
-        string emailAddress = "bob.smith@example.com",
+        string userName = "jane",
+        string emailAddress = "jane.smith@example.com",
         string password = "Password123!") => new()
     {
         UserName = userName,

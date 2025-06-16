@@ -9,7 +9,9 @@ namespace RateMyPet.Database;
 
 public static class ServiceRegistration
 {
-    public static TBuilder AddDatabaseServices<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
+    public static TBuilder AddDatabaseServices<TBuilder>(this TBuilder builder,
+        Func<DbContext, bool, CancellationToken, Task>? seedAsync = null)
+        where TBuilder : IHostApplicationBuilder
     {
         builder.Services.AddScoped<UserInterceptor>();
 
@@ -18,6 +20,11 @@ public static class ServiceRegistration
             optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("Database"))
                 .AddInterceptors(provider.GetRequiredService<UserInterceptor>())
                 .UseExceptionProcessor();
+
+            if (seedAsync is not null)
+            {
+                optionsBuilder.UseAsyncSeeding(seedAsync);
+            }
         });
 
         builder.EnrichSqlServerDbContext<ApplicationDbContext>();

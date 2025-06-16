@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 using OpenTelemetry.Trace;
 using RateMyPet.Core;
 using RateMyPet.Database;
@@ -15,7 +13,6 @@ public class DatabaseInitializer(ApplicationDbContext dbContext, ILogger<Databas
 
         try
         {
-            await EnsureDatabaseExistsAsync(cancellationToken);
             await dbContext.Database.MigrateAsync(cancellationToken);
         }
         catch (Exception exception)
@@ -25,33 +22,23 @@ public class DatabaseInitializer(ApplicationDbContext dbContext, ILogger<Databas
         }
     }
 
-    private async Task EnsureDatabaseExistsAsync(CancellationToken cancellationToken)
-    {
-        var dbCreator = dbContext.GetService<IRelationalDatabaseCreator>();
-
-        var strategy = dbContext.Database.CreateExecutionStrategy();
-
-        await strategy.ExecuteAsync(async () =>
-        {
-            if (await dbCreator.ExistsAsync(cancellationToken))
-            {
-                logger.LogInformation("Database already exists");
-                return;
-            }
-
-            logger.LogInformation("Creating database");
-            await dbCreator.CreateAsync(cancellationToken);
-        });
-    }
-
     public static async Task SeedAsync(DbContext dbContext, bool _, CancellationToken cancellationToken = default)
     {
-        if (await dbContext.Set<Post>().AnyAsync(cancellationToken))
+        foreach (var user in SeedData.Users.Values)
         {
-            return;
+            if (await dbContext.Set<User>().AnyAsync(u => u.Id == user.Id, cancellationToken))
+            {
+                continue;
+            }
+
+            dbContext.Add(user);
         }
 
-        dbContext.AddRange(SeedData.Posts);
+        if (!await dbContext.Set<Post>().AnyAsync(cancellationToken))
+        {
+            dbContext.AddRange(SeedData.Posts);
+        }
+
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

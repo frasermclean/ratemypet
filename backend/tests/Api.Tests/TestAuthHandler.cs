@@ -3,7 +3,7 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using RateMyPet.Database.Configuration;
+using RateMyPet.Initializer;
 
 namespace RateMyPet.Api;
 
@@ -23,14 +23,14 @@ public class TestAuthHandler(
             return Task.FromResult(AuthenticateResult.Fail("Invalid authorization header"));
         }
 
-        var parts = authorizationHeader.Split('-');
-        var role = parts[1];
-        var userId = UserConfiguration.DeveloperUserId;
+        var headerParts = authorizationHeader.Split('-');
+        var role = headerParts[1];
+        var user = SeedData.Users[role];
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.Name, "Fraser McLean"),
-            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName!),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Role, role)
         };
 

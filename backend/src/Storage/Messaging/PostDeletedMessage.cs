@@ -2,4 +2,4 @@
 
 namespace RateMyPet.Storage.Messaging;
 
-public record PostDeletedMessage(Guid PostId) : IMessage;
+public record PostDeletedMessage(string ImagePublicId, bool? ShouldHardDelete) : IMessage;
