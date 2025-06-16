@@ -7,6 +7,21 @@ namespace RateMyPet.Api.Endpoints.Auth;
 public class VerifyUserEndpointTests(ApiFixture fixture) : TestBase<ApiFixture>
 {
     [Fact]
+    public async Task VerifyUser_WithAuthenticatedUser_ShouldReturnOk()
+    {
+        // arrange
+        var httpClient = fixture.ContributorClient;
+
+        // act
+        var (message, response) = await httpClient.GETAsync<VerifyUserEndpoint, VerifyUserResponse>();
+
+        // assert
+        message.StatusCode.ShouldBe(HttpStatusCode.OK);
+        response.IsAuthenticated.ShouldBeTrue();
+        response.User.ShouldNotBeNull();
+    }
+
+    [Fact]
     public async Task VerifyUser_WithUnauthenticatedUser_ShouldReturnOk()
     {
         // act
