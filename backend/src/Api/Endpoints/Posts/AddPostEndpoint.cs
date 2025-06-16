@@ -35,13 +35,13 @@ public class AddPostEndpoint(
             Slug = Core.Post.CreateSlug(request.Title),
             Title = request.Title,
             Description = request.Description,
-            UserId = User.GetAuthenticatedUserId(),
+            UserId = request.UserId,
             SpeciesId = request.SpeciesId,
             Tags = request.Tags.Distinct().ToList(),
         };
 
         dbContext.Posts.Add(post);
-        dbContext.UserActivities.Add(PostUserActivity.AddPost(post.UserId, post.Id));
+        dbContext.UserActivities.Add(PostUserActivity.AddPost(request.UserId, post.Id));
 
         try
         {

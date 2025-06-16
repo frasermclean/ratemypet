@@ -39,6 +39,20 @@ public class AddPostEndpointTests(ApiFixture fixture) : TestBase<ApiFixture>
         problemDetails.Errors.ShouldContain(error => error.Name == "speciesId" && error.Reason == "Invalid species ID");
     }
 
+    [Fact]
+    public async Task AddPost_WithAnonymousUser_ShouldReturnUnauthorized()
+    {
+        // arrange
+        var httpClient = fixture.Client;
+        var request = CreateRequest();
+
+        // act
+        var message = await httpClient.POSTAsync<AddPostEndpoint, AddPostRequest>(request, true);
+
+        // assert
+        message.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+    }
+
     private static AddPostRequest CreateRequest(
         string title = "Test Post",
         string description = "This is a test post",
