@@ -24,7 +24,5 @@ public class UserActivityConfiguration : IEntityTypeConfiguration<UserActivity>
             .HasColumnName("TimestampUtc")
             .HasPrecision(2)
             .HasDefaultValueSql("getutcdate()");
-
-
     }
 }
