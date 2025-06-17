@@ -5,7 +5,7 @@ using RateMyPet.Database;
 
 namespace RateMyPet.Initializer;
 
-public class DatabaseInitializer(ApplicationDbContext dbContext, ILogger<DatabaseInitializer> logger, Tracer tracer)
+public class DatabaseInitializer(ApplicationDbContext dbContext, Tracer tracer)
 {
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
