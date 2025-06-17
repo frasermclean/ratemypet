@@ -35,7 +35,7 @@ public class Post : ISoftDeletable
     public int SpeciesId { get; set; }
     public Species? Species { get; init; }
     public PostImage? Image { get; set; }
-    public List<PostReaction> Reactions { get; } = [];
+    public List<PostReaction> Reactions { get; init; } = [];
     public List<PostComment> Comments { get; init; } = [];
     public List<string> Tags { get; set; } = [];
     public List<PostUserActivity> Activities { get; } = [];

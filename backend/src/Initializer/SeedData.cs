@@ -51,6 +51,19 @@ public static class SeedData
             },
             Tags = ["dog", "puppy", "cute"],
             Status = PostStatus.Approved,
+            Reactions =
+            [
+                new PostReaction
+                {
+                    UserId = Users[Role.Administrator].Id,
+                    Reaction = Reaction.Like
+                },
+                new PostReaction
+                {
+                    UserId = Users[Role.Contributor].Id,
+                    Reaction = Reaction.Wow
+                }
+            ],
             Comments =
             [
                 new PostComment
