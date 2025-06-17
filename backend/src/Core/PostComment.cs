@@ -5,7 +5,7 @@ public class PostComment : ISoftDeletable
     public const int ContentMaxLength = 500;
 
     public Guid Id { get; init; }
-    public required Guid PostId { get; init; }
+    public Guid PostId { get; init; }
     public Post? Post { get; init; }
     public required Guid UserId { get; init; }
     public User? User { get; init; }

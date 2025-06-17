@@ -50,7 +50,29 @@ public static class SeedData
                 Size = 97438
             },
             Tags = ["dog", "puppy", "cute"],
-            Status = PostStatus.Approved
+            Status = PostStatus.Approved,
+            Comments =
+            [
+                new PostComment
+                {
+                    Id = Guid.Parse("52b77193-d80e-409b-9e03-db98663ddfaf"),
+                    UserId = Users[Role.Contributor].Id,
+                    Content = "What a great pic!"
+                },
+                new PostComment
+                {
+                    Id = Guid.Parse("942c6ade-7378-47f4-bbcf-da025869ef2b"),
+                    UserId = Users[Role.Administrator].Id,
+                    Content = "Thanks! He is a great dog.",
+                    ParentId = Guid.Parse("52b77193-d80e-409b-9e03-db98663ddfaf")
+                },
+                new PostComment
+                {
+                    Id = Guid.Parse("7ee570e5-caf3-4bc9-a74c-a6ff1244b5bd"),
+                    UserId = Users[Role.Contributor].Id,
+                    Content = "This comment should be deleted",
+                }
+            ]
         },
         new("Soft kitty warm kitty", Users[Role.Contributor].Id, 2) // index 1 - this post will be deleted in tests
         {
