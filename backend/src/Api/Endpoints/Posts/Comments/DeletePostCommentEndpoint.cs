@@ -28,7 +28,8 @@ public class DeletePostCommentEndpoint(ApplicationDbContext dbContext)
             return TypedResults.NotFound();
         }
 
-        if (comment.UserId != request.UserId || !User.IsInRole(Role.Administrator))
+        // ensure the user has permission to delete the comment
+        if (!(comment.UserId == request.UserId || User.IsInRole(Role.Administrator)))
         {
             Logger.LogError("User {UserId} attempted to delete comment {CommentId} without permission",
                 request.UserId, request.CommentId);
