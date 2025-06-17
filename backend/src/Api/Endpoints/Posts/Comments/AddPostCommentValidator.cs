@@ -10,6 +10,7 @@ public class AddPostCommentValidator : Validator<AddPostCommentRequest>
     {
         RuleFor(request => request.Content)
             .NotEmpty()
-            .MaximumLength(PostComment.ContentMaxLength);
+            .MaximumLength(PostComment.ContentMaxLength)
+            .WithMessage("Content must not be empty and must not exceed {MaxLength} characters.");
     }
 }

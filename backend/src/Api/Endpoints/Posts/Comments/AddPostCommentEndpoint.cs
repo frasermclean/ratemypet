@@ -1,4 +1,5 @@
-﻿using FastEndpoints;
+﻿using EntityFramework.Exceptions.Common;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using RateMyPet.Core;
 using RateMyPet.Database;
@@ -6,7 +7,7 @@ using RateMyPet.Database;
 namespace RateMyPet.Api.Endpoints.Posts.Comments;
 
 public class AddPostCommentEndpoint(ApplicationDbContext dbContext)
-    : Endpoint<AddPostCommentRequest, Results<Ok<PostCommentResponse>, NotFound>>
+    : Endpoint<AddPostCommentRequest, Ok<PostCommentResponse>>
 {
     public override void Configure()
     {
@@ -14,7 +15,7 @@ public class AddPostCommentEndpoint(ApplicationDbContext dbContext)
         Roles(Role.Contributor);
     }
 
-    public override async Task<Results<Ok<PostCommentResponse>, NotFound>> ExecuteAsync(AddPostCommentRequest request,
+    public override async Task<Ok<PostCommentResponse>> ExecuteAsync(AddPostCommentRequest request,
         CancellationToken cancellationToken)
     {
         var comment = MapToComment(request);
@@ -26,12 +27,10 @@ public class AddPostCommentEndpoint(ApplicationDbContext dbContext)
         {
             await dbContext.SaveChangesAsync(cancellationToken);
         }
-        catch (Exception exception)
+        catch (ReferenceConstraintException exception) when (exception.ConstraintProperties.Contains("PostId"))
         {
-            Logger.LogError(exception, "Failed to add comment to post with ID {PostId} by user with ID {UserId}",
-                request.PostId, request.UserId);
-
-            throw;
+            Logger.LogError(exception, "Could not add comment to post with ID {PostId}", request.PostId);
+            ThrowError(r => r.PostId, "Invalid post ID");
         }
 
         Logger.LogInformation("Added comment with ID {CommentId} to post with ID {PostId} by user with ID {UserId}",
@@ -41,7 +40,7 @@ public class AddPostCommentEndpoint(ApplicationDbContext dbContext)
         {
             Id = comment.Id,
             Content = comment.Content,
-            AuthorUserName = comment.User?.UserName ?? string.Empty,
+            AuthorUserName = comment.User?.UserName,
             CreatedAtUtc = comment.CreatedAtUtc
         });
     }

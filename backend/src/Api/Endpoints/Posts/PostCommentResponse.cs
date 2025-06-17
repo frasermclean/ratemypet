@@ -11,7 +11,10 @@ public class PostCommentResponse
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public bool IsDeleted { get; init; }
-    public required string AuthorUserName { get; init; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? AuthorUserName { get; init; }
+
     public DateTime CreatedAtUtc { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
