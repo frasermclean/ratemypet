@@ -1,7 +1,8 @@
 ﻿using System.Net;
+using RateMyPet.Api.Endpoints.Auth;
 using RateMyPet.Core;
 
-namespace RateMyPet.Api.Endpoints.Auth;
+namespace RateMyPet.Api.Tests.Endpoints.Auth;
 
 [Collection(nameof(ApiCollection))]
 [Trait("Category", "Integration")]

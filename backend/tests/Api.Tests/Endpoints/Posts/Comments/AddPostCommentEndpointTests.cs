@@ -1,8 +1,10 @@
 ﻿using System.Net;
+using RateMyPet.Api.Endpoints.Posts;
+using RateMyPet.Api.Endpoints.Posts.Comments;
 using RateMyPet.Core;
 using RateMyPet.Initializer;
 
-namespace RateMyPet.Api.Endpoints.Posts.Comments;
+namespace RateMyPet.Api.Tests.Endpoints.Posts.Comments;
 
 [Collection(nameof(ApiCollection))]
 [Trait("Category", "Integration")]

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Time.Testing;
 
-namespace RateMyPet.Core;
+namespace RateMyPet.Core.Tests;
 
 public class PostTests
 {

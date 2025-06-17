@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RateMyPet.Initializer;
 
-namespace RateMyPet.Api;
+namespace RateMyPet.Api.Tests;
 
 public class TestAuthHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,

@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <RootNamespace>RateMyPet.Api</RootNamespace>
+  <PropertyGroup>    
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,10 +16,6 @@
     <PackageReference Include="Shouldly" />
     <PackageReference Include="Testcontainers.Azurite" />
     <PackageReference Include="Testcontainers.MsSql" />
-    <PackageReference Include="xunit.runner.visualstudio">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="xunit.v3" />
   </ItemGroup>
 

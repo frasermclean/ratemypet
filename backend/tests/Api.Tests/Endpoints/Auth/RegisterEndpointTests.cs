@@ -2,10 +2,11 @@
 using System.Text.Json;
 using Azure.Storage.Queues;
 using Microsoft.Extensions.DependencyInjection;
+using RateMyPet.Api.Endpoints.Auth;
 using RateMyPet.Storage;
 using RateMyPet.Storage.Messaging;
 
-namespace RateMyPet.Api.Endpoints.Auth;
+namespace RateMyPet.Api.Tests.Endpoints.Auth;
 
 [Collection(nameof(ApiCollection))]
 [Trait("Category", "Integration")]

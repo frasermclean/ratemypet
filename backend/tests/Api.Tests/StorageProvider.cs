@@ -1,6 +1,6 @@
 ﻿using Testcontainers.Azurite;
 
-namespace RateMyPet.Api;
+namespace RateMyPet.Api.Tests;
 
 public sealed class StorageProvider
 {

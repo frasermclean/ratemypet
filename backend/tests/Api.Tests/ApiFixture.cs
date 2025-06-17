@@ -9,7 +9,7 @@ using RateMyPet.Core;
 using RateMyPet.Database;
 using RateMyPet.Initializer;
 
-namespace RateMyPet.Api;
+namespace RateMyPet.Api.Tests;
 
 public class ApiFixture : AppFixture<Program>
 {

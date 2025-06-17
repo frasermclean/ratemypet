@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using Gridify;
+using RateMyPet.Api.Endpoints.Posts;
 
-namespace RateMyPet.Api.Endpoints.Posts;
+namespace RateMyPet.Api.Tests.Endpoints.Posts;
 
 [Collection(nameof(ApiCollection))]
 [Trait("Category", "Integration")]

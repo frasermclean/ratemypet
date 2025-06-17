@@ -1,6 +1,7 @@
 ﻿using System.Net;
+using RateMyPet.Api.Endpoints.Species;
 
-namespace RateMyPet.Api.Endpoints.Species;
+namespace RateMyPet.Api.Tests.Endpoints.Species;
 
 [Collection(nameof(ApiCollection))]
 [Trait("Category", "Integration")]
