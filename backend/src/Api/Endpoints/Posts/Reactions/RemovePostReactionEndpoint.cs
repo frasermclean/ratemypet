@@ -21,7 +21,7 @@ public class RemovePostReactionEndpoint(ApplicationDbContext dbContext)
         var userId = User.GetUserId();
 
         var deletedReactionCount = await dbContext.PostReactions
-            .Where(reaction => reaction.User.Id == userId && reaction.Post.Id == postId)
+            .Where(reaction => reaction.UserId == userId && reaction.PostId == postId)
             .ExecuteDeleteAsync(cancellationToken);
 
         if (deletedReactionCount == 0)

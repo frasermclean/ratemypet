@@ -11,4 +11,6 @@ public enum UserActivityCategory
     DeletePost,
     AddComment,
     DeleteComment,
+    UpdateReaction,
+    DeleteReaction,
 }

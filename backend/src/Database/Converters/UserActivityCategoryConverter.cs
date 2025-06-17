@@ -17,7 +17,9 @@ public class UserActivityCategoryConverter() : ValueConverter<UserActivityCatego
         { UserActivityCategory.UpdatePost, "UPDP" },
         { UserActivityCategory.DeletePost, "DELP" },
         { UserActivityCategory.AddComment, "ADDC" },
-        { UserActivityCategory.DeleteComment, "DELC" }
+        { UserActivityCategory.DeleteComment, "DELC" },
+        { UserActivityCategory.UpdateReaction, "UPDR" },
+        { UserActivityCategory.DeleteReaction, "DELR" },
     };
 
     private static readonly Dictionary<string, UserActivityCategory> CodeToCategoryMap = CategoryToCodeMap

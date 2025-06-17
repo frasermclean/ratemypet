@@ -41,7 +41,7 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
                 Status = post.Status,
                 CreatedAt = post.CreatedAtUtc,
                 UpdatedAt = post.UpdatedAtUtc,
-                UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == userId)!.Reaction,
+                UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.UserId == userId)!.Reaction,
                 Reactions = new PostReactionsResponse
                 {
                     LikeCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Like),

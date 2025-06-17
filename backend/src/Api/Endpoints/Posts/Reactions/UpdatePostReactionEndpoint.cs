@@ -19,34 +19,34 @@ public class UpdatePostReactionEndpoint(ApplicationDbContext dbContext)
     {
         var post = await dbContext.Posts.Where(post => post.Id == request.PostId)
             .Include(post => post.Reactions)
-            .ThenInclude(reaction => reaction.User)
             .FirstOrDefaultAsync(post => post.Id == request.PostId, cancellationToken);
+
         if (post is null)
         {
             Logger.LogWarning("Could not find post with ID {PostId} to add reaction to", request.PostId);
             return TypedResults.NotFound();
         }
 
-        var user = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken);
-
-        var existingReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == user.Id);
-        if (existingReaction is not null)
+        var postReaction = post.Reactions.FirstOrDefault(reaction => reaction.UserId == request.UserId);
+        if (postReaction is not null)
         {
             Logger.LogInformation("Updating reaction to {Reaction} for user with ID {UserId} on post with ID {PostId}",
-                request.Reaction, user.Id, post.Id);
-            existingReaction.Reaction = request.Reaction;
+                request.Reaction, request.UserId, post.Id);
+            postReaction.Reaction = request.Reaction;
         }
         else
         {
             Logger.LogInformation("Adding reaction {Reaction} for user with ID {UserId} to post with ID {PostId}",
-                request.Reaction, user.Id, post.Id);
+                request.Reaction, request.UserId, post.Id);
             post.Reactions.Add(new PostReaction
             {
-                User = user,
+                UserId = request.UserId,
                 Post = post,
                 Reaction = request.Reaction
             });
         }
+
+        dbContext.Add(PostUserActivity.UpdateReaction(request.UserId, request.PostId, request.Reaction));
 
         await dbContext.SaveChangesAsync(cancellationToken);
 

@@ -26,6 +26,7 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.HasMany(post => post.Activities)
             .WithOne(activity => activity.Post)
             .HasForeignKey(activity => activity.PostId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.OwnsOne(post => post.Image, imageBuilder =>

@@ -12,7 +12,7 @@ using RateMyPet.Database;
 namespace RateMyPet.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250617024716_AddUserActivities")]
+    [Migration("20250617052746_AddUserActivities")]
     partial class AddUserActivities
     {
         /// <inheritdoc />
@@ -536,6 +536,9 @@ namespace RateMyPet.Database.Migrations
                     b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Reaction")
+                        .HasColumnType("char(1)");
+
                     b.HasIndex("CommentId");
 
                     b.HasIndex("PostId");
@@ -716,8 +719,7 @@ namespace RateMyPet.Database.Migrations
                     b.HasOne("RateMyPet.Core.Post", "Post")
                         .WithMany("Activities")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Comment");
 

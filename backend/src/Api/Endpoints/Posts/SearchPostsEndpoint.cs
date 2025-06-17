@@ -53,7 +53,7 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext)
                     SadCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Sad)
                 },
                 ReactionCount = post.Reactions.Count,
-                UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == userId)!.Reaction,
+                UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.UserId == userId)!.Reaction,
                 CommentCount = post.Comments.Count
             })
             .AsNoTracking()

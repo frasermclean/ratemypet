@@ -3,9 +3,9 @@
 public class PostUserActivity : UserActivity
 {
     public Guid PostId { get; init; }
-    public Post? Post { get; init; }
+    public Post Post { get; init; } = null!;
     public PostComment? Comment { get; init; }
-    public Guid? CommentId { get; init; }
+    public Reaction? Reaction { get; init; }
 
     public static PostUserActivity AddPost(Guid userId, Post post) => new()
     {
@@ -42,5 +42,13 @@ public class PostUserActivity : UserActivity
         PostId = postId,
         Comment = comment,
         Category = UserActivityCategory.DeleteComment
+    };
+
+    public static PostUserActivity UpdateReaction(Guid userId, Guid postId, Reaction reaction) => new()
+    {
+        UserId = userId,
+        PostId = postId,
+        Reaction = reaction,
+        Category = UserActivityCategory.UpdateReaction
     };
 }

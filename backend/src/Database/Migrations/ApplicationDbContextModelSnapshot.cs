@@ -533,6 +533,9 @@ namespace RateMyPet.Database.Migrations
                     b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Reaction")
+                        .HasColumnType("char(1)");
+
                     b.HasIndex("CommentId");
 
                     b.HasIndex("PostId");
@@ -713,8 +716,7 @@ namespace RateMyPet.Database.Migrations
                     b.HasOne("RateMyPet.Core.Post", "Post")
                         .WithMany("Activities")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Comment");
 

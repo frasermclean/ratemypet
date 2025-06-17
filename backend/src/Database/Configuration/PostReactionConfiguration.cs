@@ -25,5 +25,7 @@ public class PostReactionConfiguration : IEntityTypeConfiguration<PostReaction>
         builder.Property(postReaction => postReaction.RowVersion)
             .IsRowVersion()
             .HasConversion<byte[]>();
+
+        builder.HasQueryFilter(postReaction => postReaction.Post.DeletedAtUtc == null);
     }
 }

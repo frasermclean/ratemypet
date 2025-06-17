@@ -62,7 +62,8 @@ namespace RateMyPet.Database.Migrations
                     TimestampUtc = table.Column<DateTime>(type: "datetime2(2)", precision: 2, nullable: false, defaultValueSql: "getutcdate()"),
                     Discriminator = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: false),
                     PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    CommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Reaction = table.Column<string>(type: "char(1)", nullable: true)
                 },
                 constraints: table =>
                 {
