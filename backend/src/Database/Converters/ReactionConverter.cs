@@ -4,32 +4,18 @@ using RateMyPet.Core;
 namespace RateMyPet.Database.Converters;
 
 public class ReactionConverter() : ValueConverter<Reaction, char>(
-    reaction => ReactionToChar(reaction),
-    c => CharToReaction(c))
+    reaction => ReactionToCharMap[reaction],
+    c => CharToReactionMap[c])
 {
-    private const char LikeChar = 'L';
-    private const char FunnyChar = 'F';
-    private const char CrazyChar = 'C';
-    private const char WowChar = 'W';
-    private const char SadChar = 'S';
-
-    private static char ReactionToChar(Reaction reaction) => reaction switch
+    private static readonly Dictionary<Reaction, char> ReactionToCharMap = new()
     {
-        Reaction.Like => LikeChar,
-        Reaction.Funny => FunnyChar,
-        Reaction.Crazy => CrazyChar,
-        Reaction.Wow => WowChar,
-        Reaction.Sad => SadChar,
-        _ => throw new ArgumentOutOfRangeException(nameof(reaction), reaction, "Unknown reaction")
+        { Reaction.Like, 'L' },
+        { Reaction.Funny, 'F' },
+        { Reaction.Crazy, 'C' },
+        { Reaction.Wow, 'W' },
+        { Reaction.Sad, 'S' }
     };
 
-    private static Reaction CharToReaction(char c) => c switch
-    {
-        LikeChar => Reaction.Like,
-        FunnyChar => Reaction.Funny,
-        CrazyChar => Reaction.Crazy,
-        WowChar => Reaction.Wow,
-        SadChar => Reaction.Sad,
-        _ => throw new ArgumentOutOfRangeException(nameof(c), c, "Unknown reaction character")
-    };
+    private static readonly Dictionary<char, Reaction> CharToReactionMap = ReactionToCharMap
+        .ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
 }
