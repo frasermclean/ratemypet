@@ -18,6 +18,7 @@ public class UserActivityCategoryConverter() : ValueConverter<UserActivityCatego
         { UserActivityCategory.DeletePost, "DELP" },
         { UserActivityCategory.AddComment, "ADDC" },
         { UserActivityCategory.DeleteComment, "DELC" },
+        { UserActivityCategory.AddReaction, "ADDR" },
         { UserActivityCategory.UpdateReaction, "UPDR" },
         { UserActivityCategory.DeleteReaction, "DELR" },
     };

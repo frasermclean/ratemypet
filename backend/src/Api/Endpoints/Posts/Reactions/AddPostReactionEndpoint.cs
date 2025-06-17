@@ -19,6 +19,7 @@ public class AddPostReactionEndpoint(ApplicationDbContext dbContext) : Endpoint<
     {
         var postReaction = MapToPostReaction(request);
         dbContext.Add(postReaction);
+        dbContext.Add(PostUserActivity.AddReaction(request.UserId, request.PostId, request.Reaction));
 
         try
         {
