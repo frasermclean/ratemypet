@@ -15,6 +15,18 @@ namespace RateMyPet.Database.Migrations
                 name: "IX_Posts_Slug",
                 table: "Posts");
 
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_PostReactions",
+                table: "PostReactions");
+
+            migrationBuilder.DropIndex(
+                name: "IX_PostReactions_PostId",
+                table: "PostReactions");
+
+            migrationBuilder.DropColumn(
+                name: "Id",
+                table: "PostReactions");
+
             migrationBuilder.RenameColumn(
                 name: "LastSeenUtc",
                 table: "Users",
@@ -50,6 +62,11 @@ namespace RateMyPet.Database.Migrations
                 name: "AK_Posts_Slug",
                 table: "Posts",
                 column: "Slug");
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_PostReactions",
+                table: "PostReactions",
+                columns: new[] { "PostId", "UserId" });
 
             migrationBuilder.CreateTable(
                 name: "UserActivities",
@@ -112,6 +129,10 @@ namespace RateMyPet.Database.Migrations
                 name: "AK_Posts_Slug",
                 table: "Posts");
 
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_PostReactions",
+                table: "PostReactions");
+
             migrationBuilder.DropColumn(
                 name: "DeletedAtUtc",
                 table: "Posts");
@@ -136,10 +157,28 @@ namespace RateMyPet.Database.Migrations
                 oldMaxLength: 60,
                 oldDefaultValueSql: "concat('post-', lower(convert(varchar(36), newid())))");
 
+            migrationBuilder.AddColumn<long>(
+                name: "Id",
+                table: "PostReactions",
+                type: "bigint",
+                nullable: false,
+                defaultValue: 0L)
+                .Annotation("SqlServer:Identity", "1, 1");
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_PostReactions",
+                table: "PostReactions",
+                column: "Id");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Posts_Slug",
                 table: "Posts",
                 column: "Slug");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostReactions_PostId",
+                table: "PostReactions",
+                column: "PostId");
         }
     }
 }

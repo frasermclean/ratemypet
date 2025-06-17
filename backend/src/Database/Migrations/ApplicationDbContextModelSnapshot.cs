@@ -144,13 +144,10 @@ namespace RateMyPet.Database.Migrations
 
             modelBuilder.Entity("RateMyPet.Core.PostReaction", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
                     b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Reaction")
@@ -163,12 +160,7 @@ namespace RateMyPet.Database.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostId");
+                    b.HasKey("PostId", "UserId");
 
                     b.HasIndex("UserId");
 

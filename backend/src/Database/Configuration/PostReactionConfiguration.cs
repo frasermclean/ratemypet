@@ -26,6 +26,8 @@ public class PostReactionConfiguration : IEntityTypeConfiguration<PostReaction>
             .IsRowVersion()
             .HasConversion<byte[]>();
 
+        builder.HasKey(nameof(PostReaction.PostId), nameof(PostReaction.UserId));
+
         builder.HasQueryFilter(postReaction => postReaction.Post.DeletedAtUtc == null);
     }
 }
