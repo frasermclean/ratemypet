@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RateMyPet.Core;
+using RateMyPet.Database.Converters;
 
 namespace RateMyPet.Database.Configuration;
 
@@ -14,8 +15,10 @@ public class UserActivityConfiguration : IEntityTypeConfiguration<UserActivity>
             .HasValue<UserActivity>("Base")
             .HasValue<PostUserActivity>("Post");
 
-        builder.Property(activity => activity.Code)
-            .HasColumnType("char(4)");
+        builder.Property(activity => activity.Category)
+            .HasColumnName("Code")
+            .HasColumnType("char(4)")
+            .HasConversion<UserActivityCategoryConverter>();
 
         builder.Property(activity => activity.Timestamp)
             .HasColumnName("TimestampUtc")

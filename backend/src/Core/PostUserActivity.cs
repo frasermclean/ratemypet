@@ -11,21 +11,21 @@ public class PostUserActivity : UserActivity
     {
         UserId = userId,
         Post = post,
-        Code = "ADDP"
+        Category = UserActivityCategory.AddPost
     };
 
     public static PostUserActivity UpdatePost(Guid userId, Post post) => new()
     {
         UserId = userId,
         Post = post,
-        Code = "UPDP"
+        Category = UserActivityCategory.UpdatePost
     };
 
     public static PostUserActivity DeletePost(Guid userId, Guid postId) => new()
     {
         UserId = userId,
         PostId = postId,
-        Code = "DELP"
+        Category = UserActivityCategory.DeletePost
     };
 
     public static PostUserActivity AddComment(Guid userId, Guid postId, PostComment comment) => new()
@@ -33,7 +33,7 @@ public class PostUserActivity : UserActivity
         UserId = userId,
         PostId = postId,
         Comment = comment,
-        Code = "ADDC",
+        Category = UserActivityCategory.AddComment
     };
 
     public static PostUserActivity DeleteComment(Guid userId, Guid postId, PostComment comment) => new()
@@ -41,6 +41,6 @@ public class PostUserActivity : UserActivity
         UserId = userId,
         PostId = postId,
         Comment = comment,
-        Code = "DELC"
+        Category = UserActivityCategory.DeleteComment
     };
 }

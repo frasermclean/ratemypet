@@ -401,9 +401,10 @@ namespace RateMyPet.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("Code")
+                    b.Property<string>("Category")
                         .IsRequired()
-                        .HasColumnType("char(4)");
+                        .HasColumnType("char(4)")
+                        .HasColumnName("Code");
 
                     b.Property<string>("Discriminator")
                         .IsRequired()

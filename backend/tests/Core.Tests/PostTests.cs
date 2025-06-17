@@ -20,7 +20,7 @@ public class PostTests
         post.Slug.ShouldStartWith("test-post-");
         post.UserId.ShouldBe(userId);
         post.Title.ShouldBe(title);
-        post.Activities.ShouldHaveSingleItem().Code.ShouldBe("ADDP");
+        post.Activities.ShouldHaveSingleItem().Category.ShouldBe(UserActivityCategory.AddPost);
     }
 
     [Fact]
