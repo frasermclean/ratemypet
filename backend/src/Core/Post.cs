@@ -35,10 +35,10 @@ public class Post : ISoftDeletable
     public int SpeciesId { get; set; }
     public Species? Species { get; init; }
     public PostImage? Image { get; set; }
-    public ICollection<PostReaction> Reactions { get; } = [];
-    public ICollection<PostComment> Comments { get; init; } = [];
-    public ICollection<string> Tags { get; set; } = [];
-    public ICollection<PostUserActivity> Activities { get; } = [];
+    public List<PostReaction> Reactions { get; } = [];
+    public List<PostComment> Comments { get; init; } = [];
+    public List<string> Tags { get; set; } = [];
+    public List<PostUserActivity> Activities { get; } = [];
     public PostStatus Status { get; set; } = PostStatus.Initial;
     public DateTime CreatedAtUtc { get; init; }
     public DateTime? UpdatedAtUtc { get; set; }
