@@ -1,6 +1,5 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
 using RateMyPet.Database;
 
@@ -18,35 +17,40 @@ public class AddPostCommentEndpoint(ApplicationDbContext dbContext)
     public override async Task<Results<Ok<PostCommentResponse>, NotFound>> ExecuteAsync(AddPostCommentRequest request,
         CancellationToken cancellationToken)
     {
-        var post = await dbContext.Posts.FirstOrDefaultAsync(p => p.Id == request.PostId, cancellationToken);
-        if (post is null)
+        var comment = MapToComment(request);
+
+        dbContext.Add(comment);
+        dbContext.Add(PostUserActivity.AddComment(request.UserId, request.PostId, comment));
+
+        try
         {
-            Logger.LogWarning("Could not find post with ID {PostId} to add comment to", request.PostId);
-            return TypedResults.NotFound();
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "Failed to add comment to post with ID {PostId} by user with ID {UserId}",
+                request.PostId, request.UserId);
+
+            throw;
         }
 
-        var comment = new PostComment
-        {
-            Post = post,
-            User = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken),
-            Content = request.Content,
-            Parent = request.ParentId is not null
-                ? await dbContext.PostComments.FirstAsync(c => c.Id == request.ParentId, cancellationToken)
-                : null
-        };
-
-        post.Comments.Add(comment);
-        await dbContext.SaveChangesAsync(cancellationToken);
-
         Logger.LogInformation("Added comment with ID {CommentId} to post with ID {PostId} by user with ID {UserId}",
-            comment.Id, post.Id, comment.User.Id);
+            comment.Id, request.PostId, request.UserId);
 
         return TypedResults.Ok(new PostCommentResponse
         {
             Id = comment.Id,
             Content = comment.Content,
-            AuthorUserName = comment.User.UserName!,
+            AuthorUserName = comment.User?.UserName ?? string.Empty,
             CreatedAtUtc = comment.CreatedAtUtc
         });
     }
+
+    private static PostComment MapToComment(AddPostCommentRequest request) => new()
+    {
+        PostId = request.PostId,
+        UserId = request.UserId,
+        Content = request.Content,
+        ParentId = request.ParentId
+    };
 }

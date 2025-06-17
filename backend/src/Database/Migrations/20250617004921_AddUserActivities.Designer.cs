@@ -12,7 +12,7 @@ using RateMyPet.Database;
 namespace RateMyPet.Database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250613055126_AddUserActivities")]
+    [Migration("20250617004921_AddUserActivities")]
     partial class AddUserActivities
     {
         /// <inheritdoc />
@@ -56,7 +56,7 @@ namespace RateMyPet.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)")
-                        .HasDefaultValueSql("CONCAT('post-', LOWER(CONVERT(varchar(36), NEWID())))");
+                        .HasDefaultValueSql("concat('post-', lower(convert(varchar(36), newid())))");
 
                     b.Property<int>("SpeciesId")
                         .HasColumnType("int");
@@ -110,6 +110,10 @@ namespace RateMyPet.Database.Migrations
                         .HasPrecision(2)
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasPrecision(2)
+                        .HasColumnType("datetime2(2)");
 
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uniqueidentifier");
@@ -525,8 +529,13 @@ namespace RateMyPet.Database.Migrations
                 {
                     b.HasBaseType("RateMyPet.Core.UserActivity");
 
+                    b.Property<Guid?>("CommentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.HasIndex("CommentId");
 
                     b.HasIndex("PostId");
 
@@ -699,11 +708,17 @@ namespace RateMyPet.Database.Migrations
 
             modelBuilder.Entity("RateMyPet.Core.PostUserActivity", b =>
                 {
+                    b.HasOne("RateMyPet.Core.PostComment", "Comment")
+                        .WithMany()
+                        .HasForeignKey("CommentId");
+
                     b.HasOne("RateMyPet.Core.Post", "Post")
                         .WithMany("Activities")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Comment");
 
                     b.Navigation("Post");
                 });

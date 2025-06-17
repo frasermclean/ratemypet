@@ -1,7 +1,6 @@
 ﻿using EntityFramework.Exceptions.Common;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Database;
@@ -30,18 +29,9 @@ public class AddPostEndpoint(
         CancellationToken cancellationToken)
     {
         // create new post
-        var post = new Post
-        {
-            Slug = Core.Post.CreateSlug(request.Title),
-            Title = request.Title,
-            Description = request.Description,
-            UserId = request.UserId,
-            SpeciesId = request.SpeciesId,
-            Tags = request.Tags.Distinct().ToList(),
-        };
+        var post = MapToPost(request);
 
         dbContext.Posts.Add(post);
-        dbContext.UserActivities.Add(PostUserActivity.AddPost(request.UserId, post.Id));
 
         try
         {
@@ -65,4 +55,10 @@ public class AddPostEndpoint(
         var response = Map.FromEntity(post);
         return TypedResults.Created($"/posts/{response.Id}", response);
     }
+
+    private static Post MapToPost(AddPostRequest request) => new(request.Title, request.UserId, request.SpeciesId)
+    {
+        Description = request.Description,
+        Tags = request.Tags.Distinct().ToList(),
+    };
 }

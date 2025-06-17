@@ -26,7 +26,7 @@ namespace RateMyPet.Database.Migrations
                 type: "nvarchar(60)",
                 maxLength: 60,
                 nullable: false,
-                defaultValueSql: "CONCAT('post-', LOWER(CONVERT(varchar(36), NEWID())))",
+                defaultValueSql: "concat('post-', lower(convert(varchar(36), newid())))",
                 oldClrType: typeof(string),
                 oldType: "nvarchar(60)",
                 oldMaxLength: 60,
@@ -35,6 +35,13 @@ namespace RateMyPet.Database.Migrations
             migrationBuilder.AddColumn<DateTime>(
                 name: "DeletedAtUtc",
                 table: "Posts",
+                type: "datetime2(2)",
+                precision: 2,
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DeletedAtUtc",
+                table: "PostComments",
                 type: "datetime2(2)",
                 precision: 2,
                 nullable: true);
@@ -54,11 +61,17 @@ namespace RateMyPet.Database.Migrations
                     Code = table.Column<string>(type: "char(4)", nullable: false),
                     TimestampUtc = table.Column<DateTime>(type: "datetime2(2)", precision: 2, nullable: false, defaultValueSql: "getutcdate()"),
                     Discriminator = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: false),
-                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserActivities", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserActivities_PostComments_CommentId",
+                        column: x => x.CommentId,
+                        principalTable: "PostComments",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserActivities_Posts_PostId",
                         column: x => x.PostId,
@@ -71,6 +84,11 @@ namespace RateMyPet.Database.Migrations
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserActivities_CommentId",
+                table: "UserActivities",
+                column: "CommentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserActivities_PostId",
@@ -97,6 +115,10 @@ namespace RateMyPet.Database.Migrations
                 name: "DeletedAtUtc",
                 table: "Posts");
 
+            migrationBuilder.DropColumn(
+                name: "DeletedAtUtc",
+                table: "PostComments");
+
             migrationBuilder.RenameColumn(
                 name: "LastActivityUtc",
                 table: "Users",
@@ -111,7 +133,7 @@ namespace RateMyPet.Database.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(60)",
                 oldMaxLength: 60,
-                oldDefaultValueSql: "CONCAT('post-', LOWER(CONVERT(varchar(36), NEWID())))");
+                oldDefaultValueSql: "concat('post-', lower(convert(varchar(36), newid())))");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Posts_Slug",

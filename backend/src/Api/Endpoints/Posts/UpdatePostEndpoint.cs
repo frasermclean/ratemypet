@@ -25,11 +25,7 @@ public class UpdatePostEndpoint(ApplicationDbContext dbContext)
             .Include(p => p.User)
             .FirstAsync(cancellationToken);
 
-        post.Description = request.Description;
-        post.SpeciesId = request.SpeciesId;
-        post.UpdatedAtUtc = DateTime.UtcNow;
-        post.Tags = request.Tags.Distinct().ToList();
-        post.Activities.Add(PostUserActivity.UpdatePost(request.UserId, post.Id));
+        post.Update(request.Description, request.SpeciesId, request.Tags, request.UserId);
 
         try
         {

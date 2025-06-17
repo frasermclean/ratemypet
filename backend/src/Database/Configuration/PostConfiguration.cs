@@ -10,7 +10,7 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
     {
         builder.Property(post => post.Slug)
             .HasMaxLength(Post.SlugMaxLength)
-            .HasDefaultValueSql("CONCAT('post-', LOWER(CONVERT(varchar(36), NEWID())))");
+            .HasDefaultValueSql("concat('post-', lower(convert(varchar(36), newid())))");
 
         builder.Property(post => post.Title)
             .HasMaxLength(Post.TitleMaxLength);

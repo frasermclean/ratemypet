@@ -55,8 +55,9 @@ public class GetPostEndpoint(ApplicationDbContext dbContext)
                     .Select(comment => new PostCommentResponse
                     {
                         Id = comment.Id,
-                        Content = comment.Content,
-                        AuthorUserName = comment.User.UserName!,
+                        Content = comment.DeletedAtUtc == null ? comment.Content : null,
+                        IsDeleted = comment.DeletedAtUtc != null,
+                        AuthorUserName = comment.User!.UserName!,
                         CreatedAtUtc = comment.CreatedAtUtc,
                         UpdatedAtUtc = comment.UpdatedAtUtc,
                         ParentId = comment.Parent == null ? null : comment.Parent.Id,

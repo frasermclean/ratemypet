@@ -38,13 +38,9 @@ public static class SeedData
 
     public static readonly List<Post> Posts =
     [
-        new() // index 0 - this post will be read in tests
+        new("Alberto on the lawn", Users[Role.Administrator].Id, 1) // index 0 - this post will be read in tests
         {
-            Title = "Alberto on the lawn",
-            Slug = Post.CreateSlug("Alberto on the lawn"),
             Description = "What a beautiful boy",
-            UserId = Users[Role.Administrator].Id,
-            SpeciesId = 1,
             Image = new PostImage
             {
                 AssetId = "dfa21c4a5098ff546534df05982ccb09",
@@ -56,13 +52,9 @@ public static class SeedData
             Tags = ["dog", "puppy", "cute"],
             Status = PostStatus.Approved
         },
-        new() // index 1 - this post will be deleted in tests
+        new("Soft kitty warm kitty", Users[Role.Contributor].Id, 2) // index 1 - this post will be deleted in tests
         {
-            Title = "Soft kitty warm kitty",
-            Slug = Post.CreateSlug("Soft kitty warm kitty"),
             Description = "Little ball of fur",
-            UserId = Users[Role.Contributor].Id,
-            SpeciesId = 2,
             Image = new PostImage
             {
                 AssetId = "957fe2c55eb1fc33951e442310217fc2",
@@ -74,13 +66,9 @@ public static class SeedData
             Tags = ["cat", "sleeping", "fur", "ginger"],
             Status = PostStatus.Approved
         },
-        new() // index 2 - this post will be updated in tests
+        new("Barry loves leaves", Users[Role.Contributor].Id, 1) // index 2 - this post will be updated in tests
         {
-            Title = "Barry loves leaves",
-            Slug = Post.CreateSlug("Barry loves leaves"),
             Description = "He just loves finding these big piles of leaves and jumping right in them!",
-            UserId = Users[Role.Contributor].Id,
-            SpeciesId = 1,
             Image = new PostImage
             {
                 AssetId = "4b1c80279fcf6865173b9a69a67e1902",

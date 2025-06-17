@@ -29,6 +29,9 @@ public class PostCommentConfiguration : IEntityTypeConfiguration<PostComment>
         builder.Property(comment => comment.UpdatedAtUtc)
             .HasPrecision(2);
 
+        builder.Property(comment => comment.DeletedAtUtc)
+            .HasPrecision(2);
+
         builder.Property(comment => comment.RowVersion)
             .IsRowVersion()
             .HasConversion<byte[]>();
