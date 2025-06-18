@@ -82,8 +82,20 @@ export class PostsState {
   updatePost(context: StateContext<PostsStateModel>, action: PostsActions.UpdatePost) {
     context.patchState({ status: 'busy' });
     return this.postsService.updatePost(action.request).pipe(
-      tap((currentPost) => {
-        context.patchState({ currentPost });
+      tap(() => {
+        const currentPost = context.getState().currentPost;
+        if (!currentPost) {
+          return;
+        }
+
+        context.patchState({
+          currentPost: {
+            ...currentPost,
+            description: action.request.description,
+            speciesId: action.request.speciesId,
+            tags: action.request.tags
+          }
+        });
       }),
       finalize(() => {
         context.patchState({ status: 'ready' });

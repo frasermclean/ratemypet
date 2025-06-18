@@ -65,8 +65,8 @@ export class PostsService {
       .pipe(map((response) => response.headers.get('Location')?.split('/').pop() || ''));
   }
 
-  updatePost(request: UpdatePostRequest): Observable<Post> {
-    return this.httpClient.put<Post>(`${this.baseUrl}/${request.id}`, request);
+  updatePost(request: UpdatePostRequest) {
+    return this.httpClient.put(`${this.baseUrl}/${request.id}`, request);
   }
 
   deletePost(postId: string) {

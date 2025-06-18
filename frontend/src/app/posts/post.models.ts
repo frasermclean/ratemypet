@@ -44,7 +44,6 @@ export interface AddPostRequest {
 
 export interface UpdatePostRequest {
   id: string;
-  title: string;
   description: string;
   speciesId: number;
   tags: string[];
