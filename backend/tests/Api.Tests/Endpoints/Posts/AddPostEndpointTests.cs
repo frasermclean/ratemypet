@@ -16,12 +16,11 @@ public class AddPostEndpointTests(ApiFixture fixture) : TestBase<ApiFixture>
         var request = CreateRequest("New Post");
 
         // act
-        var (message, _) =
-            await httpClient.POSTAsync<AddPostEndpoint, AddPostRequest, PostResponse>(request, true);
+        var message = await httpClient.POSTAsync<AddPostEndpoint, AddPostRequest>(request, true);
 
         // assert
         message.StatusCode.ShouldBe(HttpStatusCode.Created);
-        message.Headers.Location.ShouldNotBeNull();
+        message.Headers.Location.ShouldNotBeNull().OriginalString.ShouldStartWith("/api/posts/new-post-");
     }
 
     [Fact]

@@ -1,6 +1,5 @@
 ﻿using EntityFramework.Exceptions.Common;
 using FastEndpoints;
-using Microsoft.AspNetCore.Http.HttpResults;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Database;
@@ -15,7 +14,7 @@ public class AddPostEndpoint(
     IBlobContainerManager blobContainerManager,
     IMessagePublisher messagePublisher,
     IHostEnvironment hostEnvironment)
-    : Endpoint<AddPostRequest, Created<PostResponse>, PostResponseMapper>
+    : Endpoint<AddPostRequest>
 {
     public override void Configure()
     {
@@ -25,8 +24,7 @@ public class AddPostEndpoint(
         AllowFileUploads();
     }
 
-    public override async Task<Created<PostResponse>> ExecuteAsync(AddPostRequest request,
-        CancellationToken cancellationToken)
+    public override async Task HandleAsync(AddPostRequest request, CancellationToken cancellationToken)
     {
         // create new post
         var post = MapToPost(request);
@@ -52,8 +50,7 @@ public class AddPostEndpoint(
         var message = new PostAddedMessage(post.Id, request.Image.FileName, hostEnvironment.EnvironmentName);
         await messagePublisher.PublishAsync(message, cancellationToken);
 
-        var response = Map.FromEntity(post);
-        return TypedResults.Created($"/posts/{response.Id}", response);
+        await SendCreatedAtAsync<GetPostBySlugEndpoint>(new { postSlug = post.Slug }, cancellation: cancellationToken);
     }
 
     private static Post MapToPost(AddPostRequest request) => new(request.Title, request.UserId, request.SpeciesId)

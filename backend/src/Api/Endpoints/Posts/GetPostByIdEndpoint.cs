@@ -8,25 +8,22 @@ using RateMyPet.Database;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class GetPostEndpoint(ApplicationDbContext dbContext)
-    : EndpointWithoutRequest<Results<Ok<PostResponse>, NotFound>>
+public class GetPostByIdEndpoint(ApplicationDbContext dbContext)
+    : Endpoint<GetPostByIdRequest, Results<Ok<PostResponse>, NotFound>>
 {
     public override void Configure()
     {
-        Get("posts/{postId:guid}", "posts/{postSlug}");
+        Get("posts/{postId:guid}");
         Options(builder => builder.UseDelta<ApplicationDbContext>());
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok<PostResponse>, NotFound>> ExecuteAsync(CancellationToken cancellationToken)
+    public override async Task<Results<Ok<PostResponse>, NotFound>> ExecuteAsync(GetPostByIdRequest request, CancellationToken cancellationToken)
     {
         var userId = User.GetUserId();
-        var postId = Route<Guid?>("postId", false);
-        var postSlug = Route<string?>("postSlug", false);
 
         var response = await dbContext.Posts.AsNoTracking()
-            .Where(post => postId != null && post.Id == postId ||
-                           postSlug != null && post.Slug == postSlug)
+            .Where(post => post.Id == request.PostId)
             .Select(post => new PostResponse
             {
                 Id = post.Id,
