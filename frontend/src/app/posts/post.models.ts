@@ -1,6 +1,6 @@
 export interface Post {
   id: string;
-  slug: string | null;
+  slug: string;
   title: string;
   description?: string;
   imageId: string | null;

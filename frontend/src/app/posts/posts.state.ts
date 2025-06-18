@@ -45,12 +45,6 @@ export class PostsState {
 
   @Action(PostsActions.GetPost)
   getPost(context: StateContext<PostsStateModel>, action: PostsActions.GetPost) {
-    // prevent fetching the same post multiple times
-    const currentPost = context.getState().currentPost;
-    if (currentPost?.id === action.postIdOrSlug || currentPost?.slug === action.postIdOrSlug) {
-      return;
-    }
-
     context.patchState({ status: 'busy' });
     return this.postsService.getPost(action.postIdOrSlug).pipe(
       tap((post) => {
@@ -75,8 +69,8 @@ export class PostsState {
   addPost(context: StateContext<PostsStateModel>, action: PostsActions.AddPost) {
     context.patchState({ status: 'busy' });
     return this.postsService.addPost(action.request).pipe(
-      tap((currentPost) => {
-        context.patchState({ currentPost });
+      tap((slug) => {
+        context.dispatch(new PostsActions.GetPost(slug));
       }),
       finalize(() => {
         context.patchState({ status: 'ready' });
@@ -102,9 +96,8 @@ export class PostsState {
     context.patchState({ status: 'busy' });
     return this.postsService.deletePost(action.postId).pipe(
       tap(() => {
-        if (context.getState().currentPost?.id === action.postId) {
-          context.patchState({ currentPost: null });
-        }
+        const matches = context.getState().matches.filter((match) => match.id !== action.postId);
+        context.patchState({ matches, currentPost: null });
       }),
       finalize(() => {
         context.patchState({ status: 'ready' });
@@ -126,6 +119,7 @@ export class PostsState {
       filter((status) => status !== 'initial'),
       tap((status) => {
         context.patchState({ currentPost: { ...currentPost, status } });
+        context.dispatch(new PostsActions.GetPost(currentPost.slug));
       }),
       take(1)
     );
