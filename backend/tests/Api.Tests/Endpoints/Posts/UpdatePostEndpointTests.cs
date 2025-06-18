@@ -21,14 +21,10 @@ public class UpdatePostEndpointTests(ApiFixture fixture) : TestBase<ApiFixture>
         var request = CreateRequest(ExistingPost.Id, newDescription, ExistingPost.SpeciesId, tags);
 
         // act
-        var (message, response) =
-            await httpClient.PUTAsync<UpdatePostEndpoint, UpdatePostRequest, PostResponse>(request);
+        var message = await httpClient.PUTAsync<UpdatePostEndpoint, UpdatePostRequest>(request);
 
         // assert
-        message.StatusCode.ShouldBe(HttpStatusCode.OK);
-        response.Description.ShouldBe(newDescription);
-        response.Tags.ShouldBe(tags);
-        response.UpdatedAt.ShouldNotBeNull();
+        message.StatusCode.ShouldBe(HttpStatusCode.NoContent);
     }
 
     [Fact]

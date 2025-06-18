@@ -7,8 +7,7 @@ using RateMyPet.Database;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class UpdatePostEndpoint(ApplicationDbContext dbContext)
-    : Endpoint<UpdatePostRequest, Ok<PostResponse>, PostResponseMapper>
+public class UpdatePostEndpoint(ApplicationDbContext dbContext) : Endpoint<UpdatePostRequest, NoContent>
 {
     public override void Configure()
     {
@@ -17,7 +16,7 @@ public class UpdatePostEndpoint(ApplicationDbContext dbContext)
         PreProcessor<ModifyPostPreProcessor>();
     }
 
-    public override async Task<Ok<PostResponse>> ExecuteAsync(
+    public override async Task<NoContent> ExecuteAsync(
         UpdatePostRequest request, CancellationToken cancellationToken)
     {
         var post = await dbContext.Posts.Where(p => p.Id == request.PostId)
@@ -36,7 +35,6 @@ public class UpdatePostEndpoint(ApplicationDbContext dbContext)
             ThrowError(r => r.SpeciesId, "Invalid species ID");
         }
 
-        var response = Map.FromEntity(post);
-        return TypedResults.Ok(response);
+        return TypedResults.NoContent();
     }
 }
