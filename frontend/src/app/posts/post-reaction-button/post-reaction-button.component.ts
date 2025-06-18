@@ -26,6 +26,7 @@ export class PostReactionButtonComponent {
   notificationService = inject(NotificationService);
   removePostReaction = dispatch(PostsActions.RemovePostReaction);
   updatePostReaction = dispatch(PostsActions.UpdatePostReaction);
+  addPostReaction = dispatch(PostsActions.AddPostReaction);
   isLoggedIn = select(AuthState.isLoggedIn);
 
   onClick() {
@@ -36,8 +37,10 @@ export class PostReactionButtonComponent {
 
     if (this.userReaction() === this.reaction()) {
       this.removePostReaction(this.postId());
-    } else {
+    } else if (this.userReaction()) {
       this.updatePostReaction(this.postId(), this.reaction());
+    } else {
+      this.addPostReaction(this.postId(), this.reaction());
     }
   }
 }

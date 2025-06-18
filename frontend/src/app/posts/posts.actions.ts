@@ -36,6 +36,11 @@ export namespace PostsActions {
     constructor(public postId: string) {}
   }
 
+  export class AddPostReaction {
+    static readonly type = '[Posts] Add Post Reaction';
+    constructor(public postId: string, public reaction: Reaction) {}
+  }
+
   export class UpdatePostReaction {
     static readonly type = '[Posts] Update Post Reaction';
     constructor(public postId: string, public reaction: Reaction) {}

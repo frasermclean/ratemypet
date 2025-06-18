@@ -6,7 +6,6 @@ import {
   AddPostRequest,
   Post,
   PostComment,
-  PostReactions,
   PostStatus,
   Reaction,
   SearchPostsMatch,
@@ -72,12 +71,16 @@ export class PostsService {
     return this.httpClient.delete(`${this.baseUrl}/${postId}`);
   }
 
+  addPostReaction(postId: string, reaction: Reaction) {
+    return this.httpClient.post(`${this.baseUrl}/${postId}/reactions`, { reaction });
+  }
+
   updatePostReaction(postId: string, reaction: Reaction) {
-    return this.httpClient.put<PostReactions>(`${this.baseUrl}/${postId}/reactions`, { reaction });
+    return this.httpClient.put(`${this.baseUrl}/${postId}/reactions`, { reaction });
   }
 
   removePostReaction(postId: string) {
-    return this.httpClient.delete<PostReactions>(`${this.baseUrl}/${postId}/reactions`);
+    return this.httpClient.delete(`${this.baseUrl}/${postId}/reactions`);
   }
 
   addPostComment(postId: string, content: string, parentId?: string) {

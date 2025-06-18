@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext, StateToken } from '@ngxs/store';
 import { catchError, filter, finalize, interval, of, switchMap, take, tap } from 'rxjs';
-import { Post, SearchPostsMatch } from './post.models';
+import { Post, PostReactions, Reaction, SearchPostsMatch } from './post.models';
 import { PostsActions } from './posts.actions';
 import { PostsService } from './posts.service';
 
@@ -131,18 +131,56 @@ export class PostsState {
     );
   }
 
+  @Action(PostsActions.AddPostReaction)
+  addPostReaction(context: StateContext<PostsStateModel>, action: PostsActions.AddPostReaction) {
+    return this.postsService.addPostReaction(action.postId, action.reaction).pipe(
+      tap(() => {
+        // update matches
+        const matches = context.getState().matches.map((match) => {
+          if (match.id !== action.postId) {
+            return match;
+          }
+          const reactions = this.adjustReactions(match.reactions, { increase: action.reaction });
+          return { ...match, reactions, userReaction: action.reaction };
+        });
+        context.patchState({ matches });
+
+        // update current post
+        const currentPost = context.getState().currentPost;
+        if (currentPost?.id === action.postId) {
+          const reactions = this.adjustReactions(currentPost.reactions, { increase: action.reaction });
+          context.patchState({ currentPost: { ...currentPost, reactions, userReaction: action.reaction } });
+        }
+      })
+    );
+  }
+
   @Action(PostsActions.UpdatePostReaction)
   updatePostReaction(context: StateContext<PostsStateModel>, action: PostsActions.UpdatePostReaction) {
     return this.postsService.updatePostReaction(action.postId, action.reaction).pipe(
-      tap((reactions) => {
-        const state = context.getState();
-        const matches = state.matches.map((match) =>
-          match.id === action.postId ? { ...match, reactions, userReaction: action.reaction } : match
-        );
-        if (state.currentPost?.id === action.postId) {
-          context.patchState({ currentPost: { ...state.currentPost, reactions, userReaction: action.reaction } });
-        }
+      tap(() => {
+        // update matches
+        const matches = context.getState().matches.map((match) => {
+          if (match.id !== action.postId) {
+            return match;
+          }
+          const reactions = this.adjustReactions(match.reactions, {
+            increase: action.reaction,
+            decrease: match.userReaction
+          });
+          return { ...match, reactions, userReaction: action.reaction };
+        });
         context.patchState({ matches });
+
+        // update current post
+        const currentPost = context.getState().currentPost;
+        if (currentPost?.id === action.postId) {
+          const reactions = this.adjustReactions(currentPost.reactions, {
+            increase: action.reaction,
+            decrease: currentPost.userReaction
+          });
+          context.patchState({ currentPost: { ...currentPost, reactions, userReaction: action.reaction } });
+        }
       })
     );
   }
@@ -150,15 +188,23 @@ export class PostsState {
   @Action(PostsActions.RemovePostReaction)
   removePostReaction(context: StateContext<PostsStateModel>, action: PostsActions.RemovePostReaction) {
     return this.postsService.removePostReaction(action.postId).pipe(
-      tap((reactions) => {
-        const state = context.getState();
-        const matches = state.matches.map((match) =>
-          match.id === action.postId ? { ...match, reactions, userReaction: undefined } : match
-        );
-        if (state.currentPost?.id === action.postId) {
-          context.patchState({ currentPost: { ...state.currentPost, reactions, userReaction: undefined } });
-        }
+      tap(() => {
+        // update matches
+        const matches = context.getState().matches.map((match) => {
+          if (match.id !== action.postId) {
+            return match;
+          }
+          const reactions = this.adjustReactions(match.reactions, { decrease: match.userReaction });
+          return { ...match, reactions, userReaction: undefined };
+        });
         context.patchState({ matches });
+
+        // update current post
+        const currentPost = context.getState().currentPost;
+        if (currentPost?.id === action.postId) {
+          const reactions = this.adjustReactions(currentPost.reactions, { decrease: currentPost.userReaction });
+          context.patchState({ currentPost: { ...currentPost, reactions, userReaction: undefined } });
+        }
       })
     );
   }
@@ -216,5 +262,47 @@ export class PostsState {
   @Selector([POSTS_STATE_TOKEN])
   static currentPost(state: PostsStateModel) {
     return state.currentPost;
+  }
+
+  /**
+   * Adjusts the reactions count for a specific reaction type.
+   * @param reactions - The current reactions state.
+   * @param adjust - An object containing the reaction to increase and/or decrease.*
+   * @returns The updated reactions state.
+   */
+  private adjustReactions(
+    reactions: PostReactions,
+    adjust: { increase?: Reaction; decrease?: Reaction },
+    amount: number = 1
+  ): PostReactions {
+    const { increase, decrease } = adjust;
+
+    // increase and decrease reactions
+    if (increase && decrease) {
+      return {
+        ...reactions,
+        [increase]: (reactions[increase] || 0) + amount,
+        [decrease]: (reactions[decrease] || 0) - amount
+      };
+    }
+
+    // increase reaction only
+    if (increase) {
+      return {
+        ...reactions,
+        [increase]: (reactions[increase] || 0) + amount
+      };
+    }
+
+    // decrease reaction only
+    if (decrease) {
+      return {
+        ...reactions,
+        [decrease]: (reactions[decrease] || 0) - amount
+      };
+    }
+
+    // no adjustments needed, return the original reactions
+    return reactions;
   }
 }
