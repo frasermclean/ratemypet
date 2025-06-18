@@ -33,6 +33,9 @@ public class AddPostReactionEndpoint(ApplicationDbContext dbContext) : Endpoint<
             ThrowError(r => r.Reaction, "You have already reacted to this post.");
         }
 
+        Logger.LogInformation("Added reaction {Reaction} for user with ID {UserId} on post with ID {PostId}",
+            request.Reaction, request.UserId, request.PostId);
+
         return TypedResults.NoContent();
     }
 

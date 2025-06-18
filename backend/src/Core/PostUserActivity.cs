@@ -59,4 +59,11 @@ public class PostUserActivity : UserActivity
         Reaction = reaction,
         Category = UserActivityCategory.UpdateReaction
     };
+
+    public static PostUserActivity DeleteReaction(Guid userId, Guid postId) => new()
+    {
+        UserId = userId,
+        PostId = postId,
+        Category = UserActivityCategory.DeleteReaction
+    };
 }
