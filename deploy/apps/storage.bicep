@@ -66,12 +66,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
 @description('Name of the storage account')
 output accountName string = storageAccount.name
 
-@description('Name of the images blob storage container')
-output imagesContainerName string = storageAccount::blobServices::containers[0].name
-
-@description('Name of the images cache blob storage container')
-output imagesCacheContainerName string = storageAccount::blobServices::containers[1].name
-
 @description('Blob endpoint')
 output blobEndpoint string = storageAccount.properties.primaryEndpoints.blob
 
