@@ -1,13 +1,10 @@
 ﻿using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
 using RateMyPet.Api.Extensions;
-using RateMyPet.Core;
 
 namespace RateMyPet.Api.Endpoints.Auth;
 
-public class VerifyUserEndpoint(UserManager<User> userManager)
-    : EndpointWithoutRequest<Ok<VerifyUserResponse>>
+public class VerifyUserEndpoint : EndpointWithoutRequest<Ok<VerifyUserResponse>>
 {
     public override void Configure()
     {
@@ -15,23 +12,27 @@ public class VerifyUserEndpoint(UserManager<User> userManager)
         AllowAnonymous();
     }
 
-    public override async Task<Ok<VerifyUserResponse>> ExecuteAsync(CancellationToken cancellationToken)
+    public override Task<Ok<VerifyUserResponse>> ExecuteAsync(CancellationToken cancellationToken)
     {
-        var user = await userManager.GetUserAsync(User);
+        var userId = User.GetUserId();
+        var userName = User.GetUserName();
+        var emailAddress = User.GetEmailAddress();
 
-        return TypedResults.Ok(new VerifyUserResponse
+        var response = new VerifyUserResponse
         {
-            IsAuthenticated = user is not null,
-            User = user is not null
+            IsAuthenticated = User.Identity?.IsAuthenticated ?? false,
+            User = userId is not null && userName is not null && emailAddress is not null
                 ? new LoginResponse
                 {
-                    UserId = user.Id,
-                    UserName = user.UserName!,
-                    EmailAddress = user.Email!,
-                    EmailHash = user.Email.ToSha256Hash(),
-                    Roles = await userManager.GetRolesAsync(user)
+                    UserId = userId.Value,
+                    UserName = userName,
+                    EmailAddress = emailAddress,
+                    EmailHash = emailAddress.ToSha256Hash(),
+                    Roles = User.GetRoles(),
                 }
                 : null
-        });
+        };
+
+        return Task.FromResult(TypedResults.Ok(response));
     }
 }
