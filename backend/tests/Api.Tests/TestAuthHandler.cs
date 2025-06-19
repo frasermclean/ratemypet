@@ -31,6 +31,7 @@ public class TestAuthHandler(
         {
             new Claim(ClaimTypes.Name, user.UserName!),
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email!),
             new Claim(ClaimTypes.Role, role)
         };
 

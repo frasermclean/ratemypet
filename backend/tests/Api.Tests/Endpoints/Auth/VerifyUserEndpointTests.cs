@@ -20,6 +20,11 @@ public class VerifyUserEndpointTests(ApiFixture fixture) : TestBase<ApiFixture>
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
         response.IsAuthenticated.ShouldBeTrue();
         response.User.ShouldNotBeNull();
+        response.User.UserId.ShouldNotBe(Guid.Empty);
+        response.User.UserName.ShouldNotBeNullOrEmpty();
+        response.User.EmailAddress.ShouldNotBeNullOrEmpty();
+        response.User.EmailHash.ShouldNotBeNullOrEmpty();
+        response.User.Roles.ShouldNotBeEmpty();
     }
 
     [Fact]
