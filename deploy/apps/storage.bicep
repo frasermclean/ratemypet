@@ -16,13 +16,13 @@ param tags object = {
 }
 
 var containerNames = [
-  'images'
-  'images-cache'
+  'post-images'
 ]
 
 var queueNames = [
   'forgot-password'
   'post-added'
+  'post-deleted'
   'register-confirmation'
 ]
 
