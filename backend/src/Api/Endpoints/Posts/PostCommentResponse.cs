@@ -5,15 +5,8 @@ namespace RateMyPet.Api.Endpoints.Posts;
 public class PostCommentResponse
 {
     public Guid Id { get; init; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Content { get; init; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public bool IsDeleted { get; init; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? AuthorUserName { get; init; }
+    public required string Content { get; init; }
+    public required string AuthorUserName { get; init; }
 
     public DateTime CreatedAtUtc { get; init; }
 

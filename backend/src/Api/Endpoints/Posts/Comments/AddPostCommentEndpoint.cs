@@ -1,6 +1,7 @@
 ﻿using EntityFramework.Exceptions.Common;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
+using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 using RateMyPet.Database;
 
@@ -40,7 +41,7 @@ public class AddPostCommentEndpoint(ApplicationDbContext dbContext)
         {
             Id = comment.Id,
             Content = comment.Content,
-            AuthorUserName = comment.User?.UserName,
+            AuthorUserName = User.GetUserName()!,
             CreatedAtUtc = comment.CreatedAtUtc
         });
     }

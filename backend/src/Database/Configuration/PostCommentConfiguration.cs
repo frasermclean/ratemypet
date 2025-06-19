@@ -36,6 +36,6 @@ public class PostCommentConfiguration : IEntityTypeConfiguration<PostComment>
             .IsRowVersion()
             .HasConversion<byte[]>();
 
-        builder.HasQueryFilter(comment => comment.Post!.DeletedAtUtc == null);
+        builder.HasQueryFilter(comment => comment.DeletedAtUtc == null && comment.Post!.DeletedAtUtc == null);
     }
 }

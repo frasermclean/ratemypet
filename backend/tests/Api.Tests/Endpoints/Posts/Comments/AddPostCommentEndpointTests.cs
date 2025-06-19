@@ -26,8 +26,7 @@ public class AddPostCommentEndpointTests(ApiFixture fixture) : TestBase<ApiFixtu
         message.StatusCode.ShouldBe(HttpStatusCode.OK);
         response.Id.ShouldNotBe(Guid.Empty);
         response.Content.ShouldBe(content);
-        response.IsDeleted.ShouldBeFalse();
-        response.AuthorUserName.ShouldBeNull();
+        response.AuthorUserName.ShouldNotBeNullOrEmpty();
         response.CreatedAtUtc.ShouldBeGreaterThan(DateTime.UtcNow - TimeSpan.FromSeconds(60));
         response.UpdatedAtUtc.ShouldBeNull();
         response.ParentId.ShouldBeNull();
