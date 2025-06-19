@@ -35,7 +35,7 @@ export class TelemetryService {
     this.appInsights.loadAppInsights();
     this.appInsights.addTelemetryInitializer((item) => {
       item.tags = item.tags ?? [];
-      item.tags['ai.cloud.role'] = 'frontend';
+      item.tags['ai.cloud.role'] = 'ratemypet-web';
     });
 
     this.registerPageTrackingEventHandlers();
