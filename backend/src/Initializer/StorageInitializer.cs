@@ -34,7 +34,7 @@ public class StorageInitializer(
 
         var queuesToCreate = new[]
         {
-            QueueNames.ForgotPassword, QueueNames.PostAdded, QueueNames.RegisterConfirmation
+            QueueNames.ForgotPassword, QueueNames.PostAdded, QueueNames.PostDeleted, QueueNames.RegisterConfirmation
         };
 
         span.SetAttribute("QueuesToCreate", string.Join(",", queuesToCreate));

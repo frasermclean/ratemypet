@@ -1,6 +1,4 @@
-﻿using RateMyPet.Core.Messages;
-
-namespace RateMyPet.Core.Abstractions;
+﻿namespace RateMyPet.Core.Abstractions;
 
 public interface IMessagePublisher
 {

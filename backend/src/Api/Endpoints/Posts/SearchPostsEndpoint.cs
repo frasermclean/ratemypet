@@ -38,9 +38,9 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext)
                 Title = post.Title,
                 Description = post.Description,
                 ImageId = post.Image != null ? post.Image.PublicId : null,
-                AuthorUserName = post.User.UserName!,
+                AuthorUserName = post.User!.UserName!,
                 AuthorEmailHash = post.User.Email.ToSha256Hash(),
-                SpeciesName = post.Species.Name,
+                SpeciesName = post.Species!.Name,
                 Tags = post.Tags,
                 CreatedAt = post.CreatedAtUtc,
                 UpdatedAt = post.UpdatedAtUtc,
@@ -53,7 +53,7 @@ public class SearchPostsEndpoint(ApplicationDbContext dbContext)
                     SadCount = post.Reactions.Count(reaction => reaction.Reaction == Reaction.Sad)
                 },
                 ReactionCount = post.Reactions.Count,
-                UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.User.Id == userId)!.Reaction,
+                UserReaction = post.Reactions.FirstOrDefault(reaction => reaction.UserId == userId)!.Reaction,
                 CommentCount = post.Comments.Count
             })
             .AsNoTracking()

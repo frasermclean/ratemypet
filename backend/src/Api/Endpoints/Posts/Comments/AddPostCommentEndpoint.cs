@@ -1,13 +1,14 @@
-﻿using FastEndpoints;
+﻿using EntityFramework.Exceptions.Common;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
+using RateMyPet.Api.Extensions;
 using RateMyPet.Core;
 using RateMyPet.Database;
 
 namespace RateMyPet.Api.Endpoints.Posts.Comments;
 
 public class AddPostCommentEndpoint(ApplicationDbContext dbContext)
-    : Endpoint<AddPostCommentRequest, Results<Ok<PostCommentResponse>, NotFound>>
+    : Endpoint<AddPostCommentRequest, Ok<PostCommentResponse>>
 {
     public override void Configure()
     {
@@ -15,38 +16,41 @@ public class AddPostCommentEndpoint(ApplicationDbContext dbContext)
         Roles(Role.Contributor);
     }
 
-    public override async Task<Results<Ok<PostCommentResponse>, NotFound>> ExecuteAsync(AddPostCommentRequest request,
+    public override async Task<Ok<PostCommentResponse>> ExecuteAsync(AddPostCommentRequest request,
         CancellationToken cancellationToken)
     {
-        var post = await dbContext.Posts.FirstOrDefaultAsync(p => p.Id == request.PostId, cancellationToken);
-        if (post is null)
+        var comment = MapToComment(request);
+
+        dbContext.Add(comment);
+        dbContext.Add(PostUserActivity.AddComment(request.UserId, request.PostId, comment));
+
+        try
         {
-            Logger.LogWarning("Could not find post with ID {PostId} to add comment to", request.PostId);
-            return TypedResults.NotFound();
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (ReferenceConstraintException exception) when (exception.ConstraintProperties.Contains("PostId"))
+        {
+            Logger.LogError(exception, "Could not add comment to post with ID {PostId}", request.PostId);
+            ThrowError(r => r.PostId, "Invalid post ID");
         }
 
-        var comment = new PostComment
-        {
-            Post = post,
-            User = await dbContext.Users.FirstAsync(user => user.Id == request.UserId, cancellationToken),
-            Content = request.Content,
-            Parent = request.ParentId is not null
-                ? await dbContext.PostComments.FirstAsync(c => c.Id == request.ParentId, cancellationToken)
-                : null
-        };
-
-        post.Comments.Add(comment);
-        await dbContext.SaveChangesAsync(cancellationToken);
-
         Logger.LogInformation("Added comment with ID {CommentId} to post with ID {PostId} by user with ID {UserId}",
-            comment.Id, post.Id, comment.User.Id);
+            comment.Id, request.PostId, request.UserId);
 
         return TypedResults.Ok(new PostCommentResponse
         {
             Id = comment.Id,
             Content = comment.Content,
-            AuthorUserName = comment.User.UserName!,
+            AuthorUserName = User.GetUserName()!,
             CreatedAtUtc = comment.CreatedAtUtc
         });
     }
+
+    private static PostComment MapToComment(AddPostCommentRequest request) => new()
+    {
+        PostId = request.PostId,
+        UserId = request.UserId,
+        Content = request.Content,
+        ParentId = request.ParentId
+    };
 }

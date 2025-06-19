@@ -7,6 +7,7 @@ public class PostCommentResponse
     public Guid Id { get; init; }
     public required string Content { get; init; }
     public required string AuthorUserName { get; init; }
+
     public DateTime CreatedAtUtc { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

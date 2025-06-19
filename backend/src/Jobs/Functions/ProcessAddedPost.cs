@@ -1,56 +1,50 @@
 ﻿using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
-using RateMyPet.Core.Messages;
 using RateMyPet.Database;
+using RateMyPet.ImageHosting;
 using RateMyPet.Storage;
+using RateMyPet.Storage.Messaging;
 
 namespace RateMyPet.Jobs.Functions;
 
 public class ProcessAddedPost(
     ILogger<ProcessAddedPost> logger,
     ApplicationDbContext dbContext,
-    IImageHostingService hostingService,
+    IImageHostingService imageHostingService,
     IImageAnalysisService analysisService,
-    IModerationService moderationService)
+    IModerationService moderationService,
+    [FromKeyedServices(BlobContainerNames.PostImages)]
+    IBlobContainerManager blobContainerManager)
 {
     [Function(nameof(ProcessAddedPost))]
     public async Task ExecuteAsync([QueueTrigger(QueueNames.PostAdded)] PostAddedMessage message,
         CancellationToken cancellationToken)
     {
         // look up post by id
-        var post = await dbContext.Posts.FirstOrDefaultAsync(post => post.Id == message.PostId, cancellationToken);
-        if (post is null)
-        {
-            logger.LogError("Post {PostId} was not found", message.PostId);
-            return;
-        }
+        var post = await dbContext.Posts.FirstAsync(post => post.Id == message.PostId, cancellationToken);
 
-        var imagePublicId = post.Image?.PublicId;
-        if (imagePublicId is null)
-        {
-            logger.LogError("Post {PostId} has no image", post.Id);
-            return;
-        }
+        // get stream from blob storage
+        await using var stream = await blobContainerManager.OpenReadStreamAsync(post.Slug, cancellationToken);
+        var imageData = await BinaryData.FromStreamAsync(stream, cancellationToken);
 
-        var imageUri = hostingService.GetPublicUri(imagePublicId);
-
-        var moderationResults = await Task.WhenAll(
-            moderationService.AnalyzeTextAsync(post.Title, cancellationToken),
-            moderationService.AnalyzeTextAsync(post.Description, cancellationToken),
-            moderationService.AnalyzeImageAsync(imageUri, cancellationToken)
-        );
-
-        if (moderationResults.All(result => result.IsSafe))
+        var isSafe = await ModerateContentAsync(post, imageData, cancellationToken);
+        if (isSafe)
         {
             logger.LogInformation("Post {PostId} passed all moderation checks", post.Id);
 
-            var tags = await analysisService.GetTagsAsync(imageUri, cancellationToken);
-
             post.Status = PostStatus.Approved;
+
+            var tags = await analysisService.GetTagsAsync(imageData, cancellationToken);
             post.Tags = [.. post.Tags.Concat(tags).Distinct().Order()];
+
+            // upload image to image hosting service
+            var uploadParameters = MapToUploadParameters(message, post);
+            stream.Position = 0;
+            post.Image = await imageHostingService.UploadAsync(uploadParameters, stream, cancellationToken);
         }
         else
         {
@@ -61,4 +55,26 @@ public class ProcessAddedPost(
         // update post entity
         await dbContext.SaveChangesAsync(cancellationToken);
     }
+
+    private async Task<bool> ModerateContentAsync(Post post, BinaryData imageData, CancellationToken cancellationToken)
+    {
+        var results = await Task.WhenAll(
+            moderationService.AnalyzeTextAsync(post.Title, cancellationToken),
+            moderationService.AnalyzeTextAsync(post.Description, cancellationToken),
+            moderationService.AnalyzeImageAsync(imageData, cancellationToken)
+        );
+
+        return results.All(result => result.IsSafe);
+    }
+
+    private static UploadParameters MapToUploadParameters(PostAddedMessage message, Post post) => new()
+    {
+        FileName = message.ImageFileName,
+        Title = post.Title,
+        Description = post.Description,
+        Slug = post.Slug,
+        Environment = message.EnvironmentName,
+        SpeciesId = post.SpeciesId,
+        UserId = post.UserId
+    };
 }

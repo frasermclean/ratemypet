@@ -19,12 +19,10 @@ public static class ServiceRegistration
         return builder;
     }
 
-    private static IServiceCollection AddBlobContainerManagers(this IServiceCollection services)
+    private static void AddBlobContainerManagers(this IServiceCollection services)
     {
         services.AddKeyedScoped<IBlobContainerManager>(BlobContainerNames.PostImages, (provider, _) =>
             new BlobContainerManager(provider.GetRequiredService<BlobServiceClient>()
                 .GetBlobContainerClient(BlobContainerNames.PostImages)));
-
-        return services;
     }
 }

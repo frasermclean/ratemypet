@@ -8,7 +8,7 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
     public ApplicationDbContext CreateDbContext(string[] args)
     {
         const string connectionString =
-            "Server=localhost;Database=RateMyPet;User ID=sa;Password=sup3rSECRET!;TrustServerCertificate=True";
+            "Server=127.0.0.1;Database=RateMyPet;User ID=sa;Password=sup3rSECRET!;TrustServerCertificate=True";
 
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseSqlServer(connectionString).Options;

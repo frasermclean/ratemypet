@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 using OpenTelemetry.Trace;
+using RateMyPet.Core;
 using RateMyPet.Database;
 
 namespace RateMyPet.Initializer;
 
-public class DatabaseInitializer(ApplicationDbContext dbContext, ILogger<DatabaseInitializer> logger, Tracer tracer)
+public class DatabaseInitializer(ApplicationDbContext dbContext, Tracer tracer)
 {
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
@@ -14,7 +13,6 @@ public class DatabaseInitializer(ApplicationDbContext dbContext, ILogger<Databas
 
         try
         {
-            await EnsureDatabaseExistsAsync(cancellationToken);
             await dbContext.Database.MigrateAsync(cancellationToken);
         }
         catch (Exception exception)
@@ -24,23 +22,23 @@ public class DatabaseInitializer(ApplicationDbContext dbContext, ILogger<Databas
         }
     }
 
-    private async Task EnsureDatabaseExistsAsync(CancellationToken cancellationToken)
+    public static async Task SeedAsync(DbContext dbContext, bool _, CancellationToken cancellationToken = default)
     {
-        var dbCreator = dbContext.GetService<IRelationalDatabaseCreator>();
-
-        var strategy = dbContext.Database.CreateExecutionStrategy();
-
-        await strategy.ExecuteAsync(async () =>
+        foreach (var user in SeedData.Users.Values)
         {
-            if (await dbCreator.ExistsAsync(cancellationToken))
+            if (await dbContext.Set<User>().AnyAsync(u => u.Id == user.Id, cancellationToken))
             {
-                logger.LogInformation("Database already exists");
-                return;
+                continue;
             }
 
-            logger.LogInformation("Creating database");
-            await dbCreator.CreateAsync(cancellationToken);
-        });
-    }
+            dbContext.Add(user);
+        }
 
+        if (!await dbContext.Set<Post>().AnyAsync(cancellationToken))
+        {
+            dbContext.AddRange(SeedData.Posts);
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

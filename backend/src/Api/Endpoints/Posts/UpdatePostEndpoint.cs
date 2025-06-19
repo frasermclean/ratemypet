@@ -1,4 +1,5 @@
-﻿using FastEndpoints;
+﻿using EntityFramework.Exceptions.Common;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
@@ -6,8 +7,7 @@ using RateMyPet.Database;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
-public class UpdatePostEndpoint(ApplicationDbContext dbContext)
-    : Endpoint<UpdatePostRequest, Ok<PostResponse>, PostResponseMapper>
+public class UpdatePostEndpoint(ApplicationDbContext dbContext) : Endpoint<UpdatePostRequest, NoContent>
 {
     public override void Configure()
     {
@@ -16,7 +16,7 @@ public class UpdatePostEndpoint(ApplicationDbContext dbContext)
         PreProcessor<ModifyPostPreProcessor>();
     }
 
-    public override async Task<Ok<PostResponse>> ExecuteAsync(
+    public override async Task<NoContent> ExecuteAsync(
         UpdatePostRequest request, CancellationToken cancellationToken)
     {
         var post = await dbContext.Posts.Where(p => p.Id == request.PostId)
@@ -24,20 +24,17 @@ public class UpdatePostEndpoint(ApplicationDbContext dbContext)
             .Include(p => p.User)
             .FirstAsync(cancellationToken);
 
-        var species = await dbContext.Species.FirstOrDefaultAsync(s => s.Id == request.SpeciesId, cancellationToken);
-        if (species is null)
+        post.Update(request.Description, request.SpeciesId, request.Tags, request.UserId);
+
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (ReferenceConstraintException exception) when (exception.ConstraintProperties.Contains("SpeciesId"))
         {
             ThrowError(r => r.SpeciesId, "Invalid species ID");
         }
 
-        post.Description = request.Description;
-        post.Species = species;
-        post.UpdatedAtUtc = DateTime.UtcNow;
-        post.Tags = request.Tags.Distinct().ToList();
-
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        var response = Map.FromEntity(post);
-        return TypedResults.Ok(response);
+        return TypedResults.NoContent();
     }
 }

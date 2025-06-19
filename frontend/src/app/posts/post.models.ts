@@ -1,6 +1,6 @@
 export interface Post {
   id: string;
-  slug: string | null;
+  slug: string;
   title: string;
   description?: string;
   imageId: string | null;
@@ -19,11 +19,10 @@ export interface Post {
 export type PostStatus = 'initial' | 'approved' | 'rejected';
 
 export interface PostReactions {
-  like: number;
-  funny: number;
-  crazy: number;
-  wow: number;
-  sad: number;
+  [Reaction.Like]: number;
+  [Reaction.Funny]: number;
+  [Reaction.Crazy]: number;
+  [Reaction.Wow]: number;
 }
 
 export interface PostComment {
@@ -45,7 +44,6 @@ export interface AddPostRequest {
 
 export interface UpdatePostRequest {
   id: string;
-  title: string;
   description: string;
   speciesId: number;
   tags: string[];

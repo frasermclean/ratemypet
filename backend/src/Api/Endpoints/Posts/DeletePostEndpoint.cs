@@ -1,15 +1,16 @@
-﻿using FastEndpoints;
+﻿using System.Diagnostics;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
 using RateMyPet.Core.Abstractions;
 using RateMyPet.Database;
+using RateMyPet.Storage.Messaging;
 
 namespace RateMyPet.Api.Endpoints.Posts;
 
 public class DeletePostEndpoint(
     ApplicationDbContext dbContext,
-    IImageHostingService imageHostingService) : Endpoint<DeletePostRequest, NoContent>
+    IMessagePublisher messagePublisher) : Endpoint<DeletePostRequest, Results<NoContent, NotFound>>
 {
     public override void Configure()
     {
@@ -18,18 +19,31 @@ public class DeletePostEndpoint(
         PreProcessor<ModifyPostPreProcessor>();
     }
 
-    public override async Task<NoContent> ExecuteAsync(DeletePostRequest request,
+    public override async Task<Results<NoContent, NotFound>> ExecuteAsync(DeletePostRequest request,
         CancellationToken cancellationToken)
     {
-        var post = await dbContext.Posts.FirstAsync(post => post.Id == request.PostId, cancellationToken);
+        var post = await dbContext.Posts.FindAsync([request.PostId], cancellationToken);
 
-        dbContext.Posts.Remove(post);
-        await dbContext.SaveChangesAsync(cancellationToken);
-        Logger.LogInformation("Deleted post {PostId}", post.Id);
+        Debug.Assert(post is not null); // pre-processor ensures this
 
-        if (post.Image?.PublicId is not null)
+        if (request.ShouldHardDelete.GetValueOrDefault() && User.IsInRole(Role.Administrator))
         {
-            await imageHostingService.DeleteAsync([post.Image.PublicId], cancellationToken);
+            dbContext.Remove(post);
+            Logger.LogInformation("Hard deleting post ID {PostId}", request.PostId);
+        }
+        else
+        {
+            post.DeletedAtUtc = DateTime.UtcNow;
+            post.Activities.Add(PostUserActivity.DeletePost(request.UserId, request.PostId));
+            Logger.LogInformation("Marking post ID {PostId} as deleted", request.PostId);
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        if (post.Image is not null)
+        {
+            await messagePublisher.PublishAsync(new PostDeletedMessage(post.Image.PublicId, request.ShouldHardDelete),
+                cancellationToken);
         }
 
         return TypedResults.NoContent();

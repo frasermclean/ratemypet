@@ -35,6 +35,7 @@ public class ResetPasswordEndpoint(UserManager<User> userManager)
             ThrowError(r => r.ResetCode, "Invalid reset code");
         }
 
+        user.Activities.Add(UserActivity.ResetPassword(user.Id));
         var result = await userManager.ResetPasswordAsync(user, token, request.NewPassword);
         if (!result.Succeeded)
         {

@@ -1,25 +1,20 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
-using FluentResults;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RateMyPet.Core;
-using RateMyPet.Core.Abstractions;
 
 namespace RateMyPet.ImageHosting;
 
 public class CloudinaryService : IImageHostingService
 {
     private readonly ILogger<CloudinaryService> logger;
-    private readonly string environment;
     private readonly Cloudinary cloudinary;
 
     public CloudinaryService(IOptions<CloudinaryOptions> options, HttpClient httpClient,
-        ILogger<CloudinaryService> logger, IHostEnvironment environment)
+        ILogger<CloudinaryService> logger)
     {
         this.logger = logger;
-        this.environment = environment.EnvironmentName.ToLower();
 
         var (cloudName, apiKey, apiSecret) = options.Value;
         var account = new Account(cloudName, apiKey, apiSecret);
@@ -34,7 +29,7 @@ public class CloudinaryService : IImageHostingService
         };
     }
 
-    public async Task<Result<PostImage>> GetAsync(string publicId, CancellationToken cancellationToken = default)
+    public async Task<PostImage> GetAsync(string publicId, CancellationToken cancellationToken = default)
     {
         var parameters = new GetResourceParams(publicId)
         {
@@ -46,7 +41,7 @@ public class CloudinaryService : IImageHostingService
         if (result.Error is not null)
         {
             logger.LogError("Failed to get image: {Error}", result.Error.Message);
-            return Result.Fail(result.Error.Message);
+            throw new CloudinaryServerException(result.Error);
         }
 
         return new PostImage
@@ -73,30 +68,30 @@ public class CloudinaryService : IImageHostingService
         return new Uri(url);
     }
 
-    public async Task<Result<PostImage>> UploadAsync(string fileName, Stream stream, Post post,
+    public async Task<PostImage> UploadAsync(UploadParameters parameters, Stream stream,
         CancellationToken cancellationToken = default)
     {
-        var parameters = new ImageUploadParams
+        var result = await cloudinary.UploadAsync(new ImageUploadParams
         {
-            File = new FileDescription(fileName, stream),
-            DisplayName = post.Title,
-            PublicId = post.Slug,
-            AssetFolder = $"{environment}/{post.User.UserName}",
+            File = new FileDescription(parameters.FileName, stream),
+            DisplayName = parameters.Title,
+            PublicId = parameters.Slug,
+            AssetFolder = parameters.Environment.Equals("prod", StringComparison.InvariantCultureIgnoreCase)
+                ? "posts"
+                : $"{parameters.Environment.ToLowerInvariant()}/posts",
             UseAssetFolderAsPublicIdPrefix = true,
-            Context = new StringDictionary($"caption={post.Description}", $"alt={post.Title}"),
+            Context = new StringDictionary($"caption={parameters.Description}", $"alt={parameters.Title}"),
             MetadataFields = new StringDictionary(
-                $"environment={environment}",
-                $"speciesName={post.Species.Name}",
-                $"userName={post.User.UserName}"
+                $"environment={parameters.Environment.ToLowerInvariant()}",
+                $"species_id={parameters.SpeciesId}",
+                $"user_id={parameters.UserId}"
             )
-        };
-
-        var result = await cloudinary.UploadAsync(parameters, cancellationToken);
+        }, cancellationToken);
 
         if (result.Error is not null)
         {
             logger.LogError("Failed to upload image: {Error}", result.Error.Message);
-            return Result.Fail(result.Error.Message);
+            throw new CloudinaryServerException(result.Error);
         }
 
         logger.LogInformation("Uploaded image with public ID: {PublicId}", result.PublicId);
@@ -111,8 +106,7 @@ public class CloudinaryService : IImageHostingService
         };
     }
 
-    public async Task<Result> DeleteAsync(List<string> publicIds,
-        CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(List<string> publicIds, CancellationToken cancellationToken = default)
     {
         var parameters = new DelResParams
         {
@@ -125,11 +119,34 @@ public class CloudinaryService : IImageHostingService
         if (result.Error is not null)
         {
             logger.LogError("Failed to delete images: {Error}", result.Error.Message);
-            return Result.Fail(result.Error.Message);
+            throw new CloudinaryServerException(result.Error);
         }
 
         logger.LogInformation("Requested to deleted {Count} images", result.Deleted.Count);
+    }
 
-        return Result.Ok();
+    public async Task SetAccessControlAsync(string publicId, bool isPublic,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(publicId);
+
+        var parameters = new UpdateParams(publicId)
+        {
+            AccessControl =
+            [
+                new AccessControlRule { AccessType = isPublic ? AccessType.Anonymous : AccessType.Token }
+            ]
+        };
+
+        var result = await cloudinary.UpdateResourceAsync(parameters, cancellationToken);
+
+        if (result.Error is not null)
+        {
+            logger.LogError("Failed to set public access for images: {Error}", result.Error.Message);
+            throw new CloudinaryServerException(result.Error);
+        }
+
+        logger.LogInformation("Set {AccessType} access for image with public ID: {PublicId}",
+            isPublic ? "public" : "restricted", publicId);
     }
 }

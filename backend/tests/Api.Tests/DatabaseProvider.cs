@@ -1,6 +1,6 @@
 ﻿using Testcontainers.MsSql;
 
-namespace RateMyPet.Api;
+namespace RateMyPet.Api.Tests;
 
 public sealed class DatabaseProvider
 {

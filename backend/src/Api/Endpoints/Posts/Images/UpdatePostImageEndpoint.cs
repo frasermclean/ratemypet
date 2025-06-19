@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using RateMyPet.Core;
-using RateMyPet.Core.Abstractions;
 using RateMyPet.Database;
+using RateMyPet.ImageHosting;
 
 namespace RateMyPet.Api.Endpoints.Posts.Images;
 
@@ -25,13 +25,8 @@ public class UpdatePostImageEndpoint(ApplicationDbContext dbContext, IImageHosti
             return TypedResults.NotFound();
         }
 
-        var result = await imageHostingService.GetAsync(request.ImageId, cancellationToken);
-        if (result.IsFailed)
-        {
-            ThrowError(r => r.ImageId, "Invalid image ID");
-        }
+        post.Image = await imageHostingService.GetAsync(request.ImageId, cancellationToken);
 
-        post.Image = result.Value;
         await dbContext.SaveChangesAsync(cancellationToken);
 
         Logger.LogInformation("Updated post with ID: {PostId} to use image with ID: {ImageId}", post.Id,

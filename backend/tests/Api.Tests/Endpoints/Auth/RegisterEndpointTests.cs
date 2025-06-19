@@ -1,13 +1,12 @@
 ﻿using System.Net;
 using System.Text.Json;
 using Azure.Storage.Queues;
-using FastEndpoints;
-using FastEndpoints.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using RateMyPet.Core.Messages;
+using RateMyPet.Api.Endpoints.Auth;
 using RateMyPet.Storage;
+using RateMyPet.Storage.Messaging;
 
-namespace RateMyPet.Api.Endpoints.Auth;
+namespace RateMyPet.Api.Tests.Endpoints.Auth;
 
 [Collection(nameof(ApiCollection))]
 [Trait("Category", "Integration")]
@@ -72,8 +71,8 @@ public class RegisterEndpointTests(ApiFixture fixture) : TestBase<ApiFixture>
     }
 
     private static RegisterRequest CreateRequest(
-        string userName = "bob",
-        string emailAddress = "bob.smith@example.com",
+        string userName = "jane",
+        string emailAddress = "jane.smith@example.com",
         string password = "Password123!") => new()
     {
         UserName = userName,

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using RateMyPet.Database;
 
 #nullable disable
 
@@ -16,7 +17,7 @@ namespace RateMyPet.Database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -33,6 +34,10 @@ namespace RateMyPet.Database.Migrations
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("getutcdate()");
 
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasPrecision(2)
+                        .HasColumnType("datetime2(2)");
+
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -44,8 +49,11 @@ namespace RateMyPet.Database.Migrations
                         .HasColumnType("rowversion");
 
                     b.Property<string>("Slug")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
+                        .HasColumnType("nvarchar(60)")
+                        .HasDefaultValueSql("concat('post-', lower(convert(varchar(36), newid())))");
 
                     b.Property<int>("SpeciesId")
                         .HasColumnType("int");
@@ -71,7 +79,7 @@ namespace RateMyPet.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Slug");
+                    b.HasAlternateKey("Slug");
 
                     b.HasIndex("SpeciesId");
 
@@ -99,6 +107,10 @@ namespace RateMyPet.Database.Migrations
                         .HasPrecision(2)
                         .HasColumnType("datetime2(2)")
                         .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasPrecision(2)
+                        .HasColumnType("datetime2(2)");
 
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uniqueidentifier");
@@ -132,13 +144,10 @@ namespace RateMyPet.Database.Migrations
 
             modelBuilder.Entity("RateMyPet.Core.PostReaction", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
                     b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Reaction")
@@ -151,12 +160,7 @@ namespace RateMyPet.Database.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostId");
+                    b.HasKey("PostId", "UserId");
 
                     b.HasIndex("UserId");
 
@@ -302,10 +306,10 @@ namespace RateMyPet.Database.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("LastSeen")
+                    b.Property<DateTime?>("LastActivity")
                         .HasPrecision(2)
                         .HasColumnType("datetime2(2)")
-                        .HasColumnName("LastSeenUtc");
+                        .HasColumnName("LastActivityUtc");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -379,6 +383,45 @@ namespace RateMyPet.Database.Migrations
                             TwoFactorEnabled = false,
                             UserName = "frasermclean"
                         });
+                });
+
+            modelBuilder.Entity("RateMyPet.Core.UserActivity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("char(4)")
+                        .HasColumnName("Code");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(2)
+                        .HasColumnType("datetime2(2)")
+                        .HasColumnName("TimestampUtc")
+                        .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserActivities", (string)null);
+
+                    b.HasDiscriminator().HasValue("Base");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("RateMyPet.Core.UserClaim", b =>
@@ -472,6 +515,26 @@ namespace RateMyPet.Database.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("RateMyPet.Core.PostUserActivity", b =>
+                {
+                    b.HasBaseType("RateMyPet.Core.UserActivity");
+
+                    b.Property<Guid?>("CommentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Reaction")
+                        .HasColumnType("char(1)");
+
+                    b.HasIndex("CommentId");
+
+                    b.HasIndex("PostId");
+
+                    b.HasDiscriminator().HasValue("Post");
+                });
+
             modelBuilder.Entity("RateMyPet.Core.Post", b =>
                 {
                     b.HasOne("RateMyPet.Core.Species", "Species")
@@ -481,7 +544,7 @@ namespace RateMyPet.Database.Migrations
                         .IsRequired();
 
                     b.HasOne("RateMyPet.Core.User", "User")
-                        .WithMany()
+                        .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -583,6 +646,17 @@ namespace RateMyPet.Database.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RateMyPet.Core.UserActivity", b =>
+                {
+                    b.HasOne("RateMyPet.Core.User", "User")
+                        .WithMany("Activities")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("RateMyPet.Core.UserClaim", b =>
                 {
                     b.HasOne("RateMyPet.Core.User", null)
@@ -625,8 +699,26 @@ namespace RateMyPet.Database.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RateMyPet.Core.PostUserActivity", b =>
+                {
+                    b.HasOne("RateMyPet.Core.PostComment", "Comment")
+                        .WithMany()
+                        .HasForeignKey("CommentId");
+
+                    b.HasOne("RateMyPet.Core.Post", "Post")
+                        .WithMany("Activities")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Comment");
+
+                    b.Navigation("Post");
+                });
+
             modelBuilder.Entity("RateMyPet.Core.Post", b =>
                 {
+                    b.Navigation("Activities");
+
                     b.Navigation("Comments");
 
                     b.Navigation("Reactions");
@@ -634,6 +726,13 @@ namespace RateMyPet.Database.Migrations
 
             modelBuilder.Entity("RateMyPet.Core.Species", b =>
                 {
+                    b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("RateMyPet.Core.User", b =>
+                {
+                    b.Navigation("Activities");
+
                     b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
