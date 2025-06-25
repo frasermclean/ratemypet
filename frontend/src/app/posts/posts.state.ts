@@ -1,5 +1,6 @@
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { Navigate } from '@ngxs/router-plugin';
 import { Action, Selector, State, StateContext, StateToken } from '@ngxs/store';
 import { catchError, filter, finalize, interval, of, switchMap, take, tap } from 'rxjs';
 import { Post, PostReactions, Reaction, SearchPostsMatch } from './post.models';
@@ -70,7 +71,7 @@ export class PostsState {
     context.patchState({ status: 'busy' });
     return this.postsService.addPost(action.request).pipe(
       tap((slug) => {
-        context.dispatch(new PostsActions.GetPost(slug));
+        context.dispatch(new Navigate(['/posts', slug]));
       }),
       finalize(() => {
         context.patchState({ status: 'ready' });
@@ -96,6 +97,8 @@ export class PostsState {
             tags: action.request.tags
           }
         });
+
+        context.dispatch(new Navigate(['/posts', currentPost.slug]));
       }),
       finalize(() => {
         context.patchState({ status: 'ready' });
