@@ -68,7 +68,7 @@ export class PostsState {
 
   @Action(PostsActions.AddPost)
   addPost(context: StateContext<PostsStateModel>, action: PostsActions.AddPost) {
-    context.patchState({ status: 'busy' });
+    context.patchState({ status: 'busy', currentPost: null });
     return this.postsService.addPost(action.request).pipe(
       tap((slug) => {
         context.dispatch(new Navigate(['/posts', slug]));
