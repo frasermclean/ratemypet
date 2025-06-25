@@ -52,8 +52,8 @@ export class PostEditComponent implements OnInit {
 
   formGroup = this.formBuilder.group({
     id: [''],
-    title: ['', [Validators.required, Validators.maxLength(50)]],
-    description: ['', [Validators.required]],
+    title: ['', [Validators.required, Validators.maxLength(50), Validators.pattern(/^[a-zA-Z0-9\s!?.-]+$/)]],
+    description: ['', [Validators.required, Validators.maxLength(500)]],
     speciesId: [0, Validators.required],
     image: [null as File | null, Validators.required],
     tags: [[] as string[]]

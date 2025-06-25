@@ -12,9 +12,13 @@
       <mat-form-field class="full-width">
         <mat-label>Title</mat-label>
         <input matInput formControlName="title" placeholder="Title of your post" required />
-        <mat-error>
-          Title is <strong>required</strong> and has a maximum length of <strong>50</strong> characters.
-        </mat-error>
+        @if (formGroup.controls.title.hasError('required')) {
+        <mat-error>Title is required</mat-error>
+        } @else if (formGroup.controls.title.hasError('maxlength')) {
+        <mat-error>Title has a maximum length of 50 characters</mat-error>
+        } @else if (formGroup.controls.title.hasError('pattern')) {
+        <mat-error>Can only contain letters, numbers, and the following: !?.</mat-error>
+        }
       </mat-form-field>
 
       <!-- description -->
@@ -26,6 +30,11 @@
           placeholder="Short description of what's going on"
           required
         ></textarea>
+        @if (formGroup.controls.description.hasError('required')) {
+        <mat-error>Description is required</mat-error>
+        } @else if (formGroup.controls.description.hasError('maxlength')) {
+        <mat-error>Description has a maximum length of 500 characters</mat-error>
+        }
       </mat-form-field>
 
       <!-- species -->
@@ -52,6 +61,7 @@
           }
         </mat-chip-grid>
         <input placeholder="Add a tag" [matChipInputFor]="tagGrid" (matChipInputTokenEnd)="addTag($event)" />
+        <mat-hint>Add up to 5 tags. Type a word and then press enter.</mat-hint>
         <mat-error> A maximum of 5 tags are allowed. </mat-error>
       </mat-form-field>
     </mat-card-content>
