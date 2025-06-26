@@ -4,6 +4,11 @@ RateMyPet is a social site where users can share photos and stories about their 
 
 The production version of the site can be found [here](https://ratemy.pet)
 
+## Status
+[![CI/CD Backend](https://github.com/frasermclean/ratemypet/actions/workflows/cicd-backend.yml/badge.svg)](https://github.com/frasermclean/ratemypet/actions/workflows/cicd-backend.yml)
+[![CI/CD Frontend](https://github.com/frasermclean/ratemypet/actions/workflows/cicd-frontend.yml/badge.svg)](https://github.com/frasermclean/ratemypet/actions/workflows/cicd-frontend.yml)
+[![codecov](https://codecov.io/github/frasermclean/ratemypet/graph/badge.svg?token=YADUH3HUHK)](https://codecov.io/github/frasermclean/ratemypet)
+
 ## Technology Stack
 
 - **Frontend**: Angular, SCSS
