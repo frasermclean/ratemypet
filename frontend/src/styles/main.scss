@@ -2,19 +2,12 @@
 @use "themes";
 @use "colors";
 
-@include mat.typography-hierarchy(themes.$dark-theme);
-@include mat.elevation-classes();
-
-// workaround until https://github.com/angular/components/issues/26094 is resolved
-@for $i from 0 through 24 {
-  mat-card.mat-elevation-z#{$i} {
-    @include mat.elevation($i);
-  }
-}
-
 :root {
+  @include mat.app-background();
+  @include mat.elevation-classes();
+  @include mat.typography-hierarchy(themes.$dark-theme);
+
   // component styles
-  @include mat.core-theme(themes.$dark-theme); // common styles for all components
   @include mat.badge-theme(themes.$dark-theme);
   @include mat.button-theme(themes.$dark-theme);
   @include mat.button-toggle-theme(themes.$dark-theme);

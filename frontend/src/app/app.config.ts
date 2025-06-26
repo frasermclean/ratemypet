@@ -1,10 +1,5 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import {
-  ApplicationConfig,
-  ErrorHandler,
-  provideAppInitializer,
-  provideExperimentalZonelessChangeDetection
-} from '@angular/core';
+import { ApplicationConfig, ErrorHandler, provideAppInitializer, provideZonelessChangeDetection } from '@angular/core';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, TitleStrategy, withComponentInputBinding } from '@angular/router';
@@ -18,7 +13,7 @@ import provideUiDefaults from './config/ui-defaults.provider';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideExperimentalZonelessChangeDetection(),
+    provideZonelessChangeDetection(),
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withFetch(), withInterceptors([apiCookieInterceptor])),
     provideClientHydration(withEventReplay()),
