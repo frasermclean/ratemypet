@@ -8,7 +8,10 @@ public static class Program
     {
         var builder = DistributedApplication.CreateBuilder(args)
             .AddSqlServerWithDatabase(out var database)
-            .AddAzureStorage(out var storage, out var blobs, out var queues);
+            .AddAzureStorage(out var storage, out var blobs, out var queues)
+            .AddAiServicesParameters(out var aiServicesComputerVisionEndpoint, out var aiServicesContentSafetyEndpoint)
+            .AddCloudinaryParameters(out var cloudinaryCloudName, out var cloudinaryApiKey, out var cloudinaryApiSecret)
+            .AddEmailParameters(out var emailAcsEndpoint, out var emailFrontendBaseUrl, out var emailSenderAddress);
 
         var initializer = builder.AddProject<Projects.Initializer>("initializer")
             .WithReference(database)
@@ -23,6 +26,9 @@ public static class Program
             .WithReference(database)
             .WithReference(blobs)
             .WithReference(queues)
+            .WithEnvironment("Cloudinary__CloudName", cloudinaryCloudName)
+            .WithEnvironment("Cloudinary__ApiKey", cloudinaryApiKey)
+            .WithEnvironment("Cloudinary__ApiSecret", cloudinaryApiSecret)
             .WithExternalHttpEndpoints()
             .WithHttpHealthCheck("/health");
 
@@ -31,6 +37,14 @@ public static class Program
             .WithHostStorage(storage)
             .WithReference(database)
             .WithReference(blobs)
+            .WithEnvironment("AiServices__ComputerVisionEndpoint", aiServicesComputerVisionEndpoint)
+            .WithEnvironment("AiServices__ContentSafetyEndpoint", aiServicesContentSafetyEndpoint)
+            .WithEnvironment("Cloudinary__CloudName", cloudinaryCloudName)
+            .WithEnvironment("Cloudinary__ApiKey", cloudinaryApiKey)
+            .WithEnvironment("Cloudinary__ApiSecret", cloudinaryApiSecret)
+            .WithEnvironment("Email__AcsEndpoint", emailAcsEndpoint)
+            .WithEnvironment("Email__FrontendBaseUrl", emailFrontendBaseUrl)
+            .WithEnvironment("Email__SenderAddress", emailSenderAddress)
             .WithExternalHttpEndpoints();
 
         builder.AddNpmApp("frontend", "../../../frontend")
@@ -73,6 +87,43 @@ public static class Program
 
         blobs = storage.AddBlobs("blobs");
         queues = storage.AddQueues("queues");
+
+        return builder;
+    }
+
+    private static IDistributedApplicationBuilder AddAiServicesParameters(
+        this IDistributedApplicationBuilder builder,
+        out IResourceBuilder<ParameterResource> aiServicesComputerVisionEndpoint,
+        out IResourceBuilder<ParameterResource> aiServicesContentSafetyEndpoint)
+    {
+        aiServicesComputerVisionEndpoint = builder.AddParameter("aiServicesComputerVisionEndpoint");
+        aiServicesContentSafetyEndpoint = builder.AddParameter("aiServicesContentSafetyEndpoint");
+
+        return builder;
+    }
+
+    private static IDistributedApplicationBuilder AddCloudinaryParameters(
+        this IDistributedApplicationBuilder builder,
+        out IResourceBuilder<ParameterResource> cloudinaryCloudName,
+        out IResourceBuilder<ParameterResource> cloudinaryApiKey,
+        out IResourceBuilder<ParameterResource> cloudinaryApiSecret)
+    {
+        cloudinaryCloudName = builder.AddParameter("cloudinaryCloudName");
+        cloudinaryApiKey = builder.AddParameter("cloudinaryApiKey");
+        cloudinaryApiSecret = builder.AddParameter("cloudinaryApiSecret", true);
+
+        return builder;
+    }
+
+    private static IDistributedApplicationBuilder AddEmailParameters(
+        this IDistributedApplicationBuilder builder,
+        out IResourceBuilder<ParameterResource> emailAcsEndpoint,
+        out IResourceBuilder<ParameterResource> emailFrontendBaseUrl,
+        out IResourceBuilder<ParameterResource> emailSenderAddress)
+    {
+        emailAcsEndpoint = builder.AddParameter("emailAcsEndpoint");
+        emailFrontendBaseUrl = builder.AddParameter("emailFrontendBaseUrl");
+        emailSenderAddress = builder.AddParameter("emailSenderAddress", true);
 
         return builder;
     }

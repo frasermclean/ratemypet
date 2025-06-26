@@ -9,7 +9,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
-import { Router } from '@angular/router';
 import { Actions, dispatch, ofActionSuccessful, select } from '@ngxs/store';
 import { ImageUploadComponent } from '@shared/components/image-upload/image-upload.component';
 import { NotificationService } from '@shared/services/notification.service';
@@ -52,14 +51,14 @@ export class PostEditComponent implements OnInit {
 
   formGroup = this.formBuilder.group({
     id: [''],
-    title: ['', [Validators.required, Validators.maxLength(50)]],
-    description: ['', [Validators.required]],
+    title: ['', [Validators.required, Validators.maxLength(50), Validators.pattern(/^[a-zA-Z0-9\s!?.-]+$/)]],
+    description: ['', [Validators.required, Validators.maxLength(500)]],
     speciesId: [0, Validators.required],
     image: [null as File | null, Validators.required],
     tags: [[] as string[]]
   });
 
-  constructor(actions$: Actions, notificationService: NotificationService, router: Router) {
+  constructor(actions$: Actions, notificationService: NotificationService) {
     actions$.pipe(ofActionSuccessful(PostsActions.GetPost), takeUntilDestroyed()).subscribe(() => {
       const currentPost = this.currentPost();
       if (!currentPost) return;
@@ -69,12 +68,10 @@ export class PostEditComponent implements OnInit {
 
     actions$.pipe(ofActionSuccessful(PostsActions.AddPost), takeUntilDestroyed()).subscribe(() => {
       notificationService.showInformation('Post created successfully');
-      router.navigate(['/posts', this.currentPost()!.slug]);
     });
 
     actions$.pipe(ofActionSuccessful(PostsActions.UpdatePost), takeUntilDestroyed()).subscribe(() => {
       notificationService.showInformation('Post updated successfully');
-      router.navigate(['/posts', this.currentPost()!.slug]);
     });
   }
 

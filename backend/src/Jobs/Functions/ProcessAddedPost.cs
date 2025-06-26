@@ -39,7 +39,7 @@ public class ProcessAddedPost(
             post.Status = PostStatus.Approved;
 
             var tags = await analysisService.GetTagsAsync(imageData, cancellationToken);
-            post.Tags = [.. post.Tags.Concat(tags).Distinct().Order()];
+            post.Tags = [.. post.Tags.Concat(tags).Distinct().Take(Post.TagsMaxCount).Order()];
 
             // upload image to image hosting service
             var uploadParameters = MapToUploadParameters(message, post);
