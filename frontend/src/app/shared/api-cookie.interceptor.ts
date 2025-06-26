@@ -1,23 +1,27 @@
-import { isPlatformServer } from '@angular/common';
-import { HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
-import { inject, PLATFORM_ID, REQUEST } from '@angular/core';
-import { Observable } from 'rxjs';
+import { HttpEvent, HttpHandlerFn, HttpRequest, HttpResponse } from '@angular/common/http';
+import { inject, REQUEST } from '@angular/core';
+import { VerifyUserResponse } from '@auth/auth.models';
+import { Observable, of } from 'rxjs';
 
 export function apiCookieInterceptor(
   request: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> {
-  const platformId = inject(PLATFORM_ID);
+  const serverRequest = inject(REQUEST);
 
   // skip the interceptor for non-API requests or if running on the client side
-  if (!request.url.startsWith('/api/') || !isPlatformServer(platformId)) {
+  if (!serverRequest || !request.url.startsWith('/api/')) {
     return next(request);
   }
 
   // get the cookie from the server request
-  const serverRequest = inject(REQUEST);
-  const cookie = serverRequest?.headers.get('cookie') || '';
+  const cookie = serverRequest.headers.get('cookie');
+
   if (!cookie) {
+    // return synthetic response for verify-user endpoint if no cookie is present
+    if (request.url.endsWith('/auth/verify-user')) {
+      return of(ANONYMOUS_RESPONSE);
+    }
     return next(request);
   }
 
@@ -28,3 +32,11 @@ export function apiCookieInterceptor(
 
   return next(clonedRequest);
 }
+
+const ANONYMOUS_RESPONSE = new HttpResponse<VerifyUserResponse>({
+  status: 200,
+  body: {
+    isAuthenticated: false,
+    user: null
+  }
+});
