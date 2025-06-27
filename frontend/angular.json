@@ -22,6 +22,10 @@
             "server": "src/main.server.ts",
             "outputPath": "dist",
             "outputMode": "server",
+            "ssr": {
+              "entry": "src/server.ts",
+              "experimentalPlatform": "neutral"
+            },
             "polyfills": [],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -39,10 +43,7 @@
                 "src/styles"
               ]
             },
-            "scripts": [],
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            "scripts": []
           },
           "configurations": {
             "production": {
