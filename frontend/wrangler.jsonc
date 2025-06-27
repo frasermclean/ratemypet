@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ratemypet",
+  "main": "./dist/server/main.mjs",
+  "compatibility_date": "2025-06-20",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist/browser"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

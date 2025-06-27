@@ -21,6 +21,7 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
+    "types": ["./worker-configuration.d.ts"],
     "paths": {
       "@auth/*": ["./src/app/auth/*"],
       "@shared/*": ["./src/app/shared/*"]
