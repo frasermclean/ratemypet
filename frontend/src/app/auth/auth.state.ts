@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Navigate } from '@ngxs/router-plugin';
-import { Action, NgxsOnInit, Selector, State, StateContext, StateToken } from '@ngxs/store';
+import { Action, Selector, State, StateContext, StateToken } from '@ngxs/store';
 import { NotificationService } from '@shared/services/notification.service';
 import { catchError, finalize, tap } from 'rxjs';
 import { AuthActions } from './auth.actions';
@@ -32,13 +32,9 @@ const AUTH_STATE_TOKEN = new StateToken<AuthStateModel>('auth');
   }
 })
 @Injectable()
-export class AuthState implements NgxsOnInit {
+export class AuthState {
   private readonly authService = inject(AuthService);
   private readonly notificationService = inject(NotificationService);
-
-  ngxsOnInit(context: StateContext<any>): void {
-    context.dispatch(new AuthActions.VerifyUser());
-  }
 
   @Action(AuthActions.Login)
   login(context: StateContext<AuthStateModel>, action: AuthActions.Login) {
