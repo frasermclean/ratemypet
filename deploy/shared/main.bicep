@@ -32,6 +32,8 @@ param deploymentAppPrincipalId string
 @description('Current date and time in UTC')
 param now string = utcNow()
 
+param shouldCreateDataProtectionKeys bool = false
+
 var tags = {
   workload: workload
   category: category
@@ -140,7 +142,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   }
 
   resource dataProtectionKeys 'keys' = [
-    for name in environmentNames: {
+    for name in environmentNames: if (shouldCreateDataProtectionKeys) {
       name: 'data-protection-${name}'
       tags: {
         environment: name
@@ -221,8 +223,8 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
     for (name, i) in environmentNames: {
       name: 'DataProtection:KeyUri$${name}'
       properties: {
-        value: '{"uri":${keyVault::dataProtectionKeys[i].properties.keyUri}"}'
-        contentType: 'application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8'
+        value: keyVault::dataProtectionKeys[i].properties.keyUri
+        contentType: 'text/plain'
       }
     }
   ]
