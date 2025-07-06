@@ -22,8 +22,16 @@ public class StorageInitializer(
     {
         using var span = tracer.StartActiveSpan("Initialize blob containers");
 
-        var postImagesContainerClient = blobServiceClient.GetBlobContainerClient(BlobContainerNames.PostImages);
-        await postImagesContainerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
+        var blobContainersToCreate = BlobContainerNames.All;
+        span.SetAttribute("BlobContainersToCreate", string.Join(",", blobContainersToCreate));
+
+        foreach (var containerName in blobContainersToCreate)
+        {
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            await containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
+
+            logger.LogInformation("Blob container {ContainerName} initialized", containerName);
+        }
 
         logger.LogInformation("Blob containers initialized");
     }
