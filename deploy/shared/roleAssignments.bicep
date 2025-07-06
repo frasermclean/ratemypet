@@ -9,6 +9,9 @@ param keyVaultAdministrators array = []
 @description('Array of prinicpal IDs that have read access to the key vault secrets')
 param keyVaultSecretsUsers array = []
 
+@description('Array of prinicpal IDs that have cryptographic operations access to the key vault')
+param keyVaultCryptoUsers array = []
+
 @description('Name of the app configuration')
 param appConfigurationName string = 'ratemypet-shared-ac'
 
@@ -28,6 +31,7 @@ param communicationAndEmailServiceOwners array = []
 var roleDefinitionIds = {
   KeyVaultAdministrator: '00482a5a-887f-4fb3-b363-3b7fe8e74483'
   KeyVaultSecretsUser: '4633458b-17de-408a-b874-0445c86b69e6'
+  KeyVaultCryptoUser: '12338af0-0e69-4776-bea7-57ae8d297424'
   AppConfigurationDataOwner: '5ae67dd6-50cb-40e7-96ff-dc2bfa4b606b'
   AppConfiguratonDataReader: '516239f1-63e1-4d78-a4de-a74fb236a071'
   CommunicationAndEmailServiceOwner: '09976791-48a7-449e-bb21-39d1a415f350'
@@ -63,6 +67,21 @@ resource keyVaultSecretsUserRoleAssigment 'Microsoft.Authorization/roleAssignmen
       roleDefinitionId: resourceId(
         'Microsoft.Authorization/roleDefinitions@2022-04-01',
         roleDefinitionIds.KeyVaultSecretsUser
+      )
+    }
+  }
+]
+
+// key vault crypto user role assignments
+resource keyVaultCryptoUserRoleAssigment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [
+  for principalId in keyVaultCryptoUsers: {
+    name: guid(keyVault.id, roleDefinitionIds.KeyVaultCryptoUser, principalId)
+    scope: keyVault
+    properties: {
+      principalId: principalId
+      roleDefinitionId: resourceId(
+        'Microsoft.Authorization/roleDefinitions@2022-04-01',
+        roleDefinitionIds.KeyVaultCryptoUser
       )
     }
   }

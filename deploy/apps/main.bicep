@@ -188,6 +188,9 @@ module sharedRoleAssignmentsModule '../shared/roleAssignments.bicep' = {
       containerAppsModule.outputs.apiAppPrincipalId
       jobsAppModule.outputs.principalId
     ]
+    keyVaultCryptoUsers: [
+      containerAppsModule.outputs.apiAppPrincipalId
+    ]
     appConfigurationName: appConfigurationName
     configurationDataReaders: [
       containerAppsModule.outputs.apiAppPrincipalId
