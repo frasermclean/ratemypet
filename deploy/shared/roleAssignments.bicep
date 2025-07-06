@@ -3,28 +3,28 @@ targetScope = 'resourceGroup'
 @description('Name of the key vault')
 param keyVaultName string = 'ratemypet-shared-kv'
 
-@description('Array of prinicpal IDs that have administrative access to the key vault')
+@description('Array of principal IDs that have administrative access to the key vault')
 param keyVaultAdministrators array = []
 
-@description('Array of prinicpal IDs that have read access to the key vault secrets')
+@description('Array of principal IDs that have read access to the key vault secrets')
 param keyVaultSecretsUsers array = []
 
-@description('Array of prinicpal IDs that have cryptographic operations access to the key vault')
+@description('Array of principal IDs that have cryptographic operations access to the key vault')
 param keyVaultCryptoUsers array = []
 
 @description('Name of the app configuration')
 param appConfigurationName string = 'ratemypet-shared-ac'
 
-@description('Array of prinicpal IDs that have read and write access to the configuration data')
+@description('Array of principal IDs that have read and write access to the configuration data')
 param configurationDataOwners array = []
 
-@description('Array of prinicpal IDs that have read access to the configuration data')
+@description('Array of principal IDs that have read access to the configuration data')
 param configurationDataReaders array = []
 
 @description('Name of the communication and email service')
 param communicationServicesName string = 'ratemypet-shared-acs'
 
-@description('Array of prinicpal IDs that have access to the communication and email service')
+@description('Array of principal IDs that have access to the communication and email service')
 param communicationAndEmailServiceOwners array = []
 
 @description('Mapping of role names to role definition IDs')

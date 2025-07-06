@@ -3,10 +3,10 @@ targetScope = 'resourceGroup'
 @description('The object id of the Azure AD group that will be granted admin access')
 param adminGroupObjectId string
 
-@description('Prinicpal id of the API application managed identity')
+@description('Principal id of the API application managed identity')
 param apiAppPrincipalId string
 
-@description('Prinicpal id of the jobs application managed identity')
+@description('Principal id of the jobs application managed identity')
 param jobsAppPrincipalId string
 
 @description('The name of the storage account to grant access to')
