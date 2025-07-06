@@ -37,6 +37,8 @@ var tags = {
   category: category
 }
 
+var environmentNames = ['dev', 'test', 'prod']
+
 // DNS zone
 resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
   name: dnsZoneName
@@ -137,6 +139,31 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     }
   }
 
+  resource dataProtectionKeys 'keys' = [
+    for name in environmentNames: {
+      name: 'data-protection-${name}'
+      tags: {
+        environment: name
+      }
+      properties: {
+        kty: 'RSA'
+        keySize: 2048
+        keyOps: [
+          'encrypt'
+          'decrypt'
+          'sign'
+          'verify'
+          'wrapKey'
+          'unwrapKey'
+        ]
+        attributes: {
+          enabled: true
+          nbf: dateTimeToEpoch(now)
+        }
+      }
+    }
+  ]
+
   resource containerRegistryPasswordSecret 'secrets' = if (!empty(containerRegistryPassword)) {
     name: 'container-registry-password'
     properties: {
@@ -189,6 +216,16 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
       contentType: 'text/plain'
     }
   }
+
+  resource dataProtectionKeyUriKeyValues 'keyValues' = [
+    for (name, i) in environmentNames: {
+      name: 'DataProtection:KeyUri$${name}'
+      properties: {
+        value: '{"uri":${keyVault::dataProtectionKeys[i].properties.keyUri}"}'
+        contentType: 'application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8'
+      }
+    }
+  ]
 }
 
 // managed identity
