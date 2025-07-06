@@ -16,6 +16,7 @@ param tags object = {
 }
 
 var containerNames = [
+  'data-protection'
   'post-images'
 ]
 
