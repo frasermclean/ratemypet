@@ -1,6 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Azure.Storage.Blobs;
 using FastEndpoints;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +24,14 @@ public static class ServiceRegistration
             .AddIdentity()
             .AddFastEndpoints()
             .AddImageHosting();
+
+        // data protection
+        builder.Services.AddDataProtection()
+            .PersistKeysToAzureBlobStorage(provider => provider.GetRequiredService<BlobServiceClient>()
+                .GetBlobContainerClient(BlobContainerNames.DataProtection)
+                .GetBlobClient("key.xml"))
+            .ProtectKeysWithAzureKeyVault(builder.Configuration.GetValue<Uri>("DataProtection:KeyUri"),
+                TokenCredentialFactory.Create());
 
         // json serialization options
         builder.Services.Configure<JsonOptions>(options =>

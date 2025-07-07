@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -52,6 +53,10 @@ public class ApiFixture : AppFixture<Program>
         // add test auth handler scheme
         services.AddAuthentication(TestAuthHandler.SchemeName)
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.SchemeName, _ => { });
+
+        // override data protection to use an ephemeral provider
+        services.AddDataProtection()
+            .UseEphemeralDataProtectionProvider();
     }
 
     protected override async ValueTask PreSetupAsync()

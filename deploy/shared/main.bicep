@@ -32,10 +32,14 @@ param deploymentAppPrincipalId string
 @description('Current date and time in UTC')
 param now string = utcNow()
 
+param shouldCreateDataProtectionKeys bool = false
+
 var tags = {
   workload: workload
   category: category
 }
+
+var environmentNames = ['dev', 'test', 'prod']
 
 // DNS zone
 resource dnsZone 'Microsoft.Network/dnsZones@2018-05-01' = {
@@ -137,6 +141,31 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     }
   }
 
+  resource dataProtectionKeys 'keys' = [
+    for name in environmentNames: if (shouldCreateDataProtectionKeys) {
+      name: 'data-protection-${name}'
+      tags: {
+        environment: name
+      }
+      properties: {
+        kty: 'RSA'
+        keySize: 2048
+        keyOps: [
+          'encrypt'
+          'decrypt'
+          'sign'
+          'verify'
+          'wrapKey'
+          'unwrapKey'
+        ]
+        attributes: {
+          enabled: true
+          nbf: dateTimeToEpoch(now)
+        }
+      }
+    }
+  ]
+
   resource containerRegistryPasswordSecret 'secrets' = if (!empty(containerRegistryPassword)) {
     name: 'container-registry-password'
     properties: {
@@ -189,6 +218,16 @@ resource appConfiguration 'Microsoft.AppConfiguration/configurationStores@2024-0
       contentType: 'text/plain'
     }
   }
+
+  resource dataProtectionKeyUriKeyValues 'keyValues' = [
+    for (name, i) in environmentNames: {
+      name: 'DataProtection:KeyUri$${name}'
+      properties: {
+        value: keyVault::dataProtectionKeys[i].properties.keyUri
+        contentType: 'text/plain'
+      }
+    }
+  ]
 }
 
 // managed identity
