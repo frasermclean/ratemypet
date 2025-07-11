@@ -3,7 +3,7 @@ FROM node:22-slim AS build
 ARG CONFIGURATION=production
 WORKDIR /app/src
 COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm@latest-10
+RUN corepack enable && corepack prepare pnpm@latest-10 --activate
 RUN pnpm install --frozen-lockfile
 COPY . ./
 RUN npm run build -- --configuration $CONFIGURATION
