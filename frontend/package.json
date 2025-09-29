@@ -23,7 +23,7 @@
     "@angular/platform-browser-dynamic": "^20.1.4",
     "@angular/platform-server": "^20.1.4",
     "@angular/router": "^20.1.4",
-    "@angular/ssr": "^20.1.4",
+    "@angular/ssr": "^20.3.3",
     "@cloudinary/url-gen": "^1.21.0",
     "@microsoft/applicationinsights-angularplugin-js": "^15.3.7",
     "@microsoft/applicationinsights-web": "^3.3.9",
