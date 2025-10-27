@@ -101,7 +101,7 @@ jobs:
       # Upload migrations script
       - name: Upload migrations script
         if: github.event_name == 'push'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: migrations
           path: ${{ env.MIGRATIONS_SCRIPT }}
@@ -161,7 +161,7 @@ jobs:
       # Upload jobs artifact
       - name: Upload jobs artifact
         if: github.event_name == 'push'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: jobs
           path: ${{ github.workspace }}/jobs
