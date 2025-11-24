@@ -18,7 +18,7 @@ jobs:
     steps:
       # Checkout the repository
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Remove Bicep configuration file (to remove experimental warning)
       - name: Remove Bicep configuration file
