@@ -12,7 +12,7 @@ COPY src/ .
 RUN dotnet publish "./Jobs/Jobs.csproj" -c $BUILD_CONFIGURATION -o /app
 
 # To enable ssh & remote debugging on app service change the base image to the one below
-# FROM mcr.microsoft.com/azure-functions/dotnet-isolated:4-dotnet-isolated9.0-appservice
+# FROM mcr.microsoft.com/azure-functions/dotnet-isolated:4-dotnet-isolated10.0-appservice
 FROM mcr.microsoft.com/azure-functions/dotnet-isolated:4-dotnet-isolated10.0
 COPY --from=build ["/app", "/home/site/wwwroot"]
 ENV AzureWebJobsScriptRoot=/home/site/wwwroot
