@@ -4,9 +4,9 @@ namespace RateMyPet.Api.Tests;
 
 public sealed class StorageProvider
 {
-    private readonly AzuriteContainer storageContainer = new AzuriteBuilder()
-        .WithImage("mcr.microsoft.com/azure-storage/azurite:latest")
-        .Build();
+    private readonly AzuriteContainer storageContainer =
+        new AzuriteBuilder("mcr.microsoft.com/azure-storage/azurite:latest")
+            .Build();
 
     public string ConnectionString => storageContainer.GetConnectionString();
 

@@ -9,8 +9,8 @@ public static class ServiceRegistration
 {
     public static TBuilder AddStorageServices<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
-        builder.AddAzureBlobClient("blobs");
-        builder.AddAzureQueueClient("queues");
+        builder.AddAzureBlobServiceClient("blobs");
+        builder.AddAzureQueueServiceClient("queues");
 
         builder.Services
             .AddSingleton<IMessagePublisher, MessagePublisher>()
