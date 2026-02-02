@@ -47,7 +47,9 @@ public static class Program
             .WithEnvironment("Email__SenderAddress", emailSenderAddress)
             .WithExternalHttpEndpoints();
 
-        builder.AddNpmApp("frontend", "../../../frontend")
+        builder.AddJavaScriptApp("frontend", "../../../frontend")
+            .WithPnpm()
+            .WithRunScript("start")
             .WaitFor(api)
             .WithReference(api)
             .WithHttpEndpoint(4200, env: "PORT")
