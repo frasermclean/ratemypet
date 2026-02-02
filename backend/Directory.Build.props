@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>RateMyPet.$(MSBuildProjectName)</RootNamespace>
     <AssemblyName>RateMyPet.$(MSBuildProjectName)</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -10,5 +10,5 @@
   <ItemGroup>
     <InternalsVisibleTo Include="$(AssemblyName).Tests" />
   </ItemGroup>
-  
+
 </Project>

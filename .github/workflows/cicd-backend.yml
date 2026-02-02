@@ -42,9 +42,9 @@ jobs:
 
       # Setup .NET
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9
+          dotnet-version: 10
           cache: true
           cache-dependency-path: backend/**/packages.lock.json
 

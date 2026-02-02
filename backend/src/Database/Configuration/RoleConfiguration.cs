@@ -19,13 +19,15 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
             {
                 Id = ContributorId,
                 Name = Role.Contributor,
-                NormalizedName = Role.Contributor.ToUpperInvariant()
+                NormalizedName = Role.Contributor.ToUpperInvariant(),
+                ConcurrencyStamp = null
             },
             new Role
             {
                 Id = AdministratorId,
                 Name = Role.Administrator,
-                NormalizedName = Role.Administrator.ToUpperInvariant()
+                NormalizedName = Role.Administrator.ToUpperInvariant(),
+                ConcurrencyStamp = null
             }
         );
     }

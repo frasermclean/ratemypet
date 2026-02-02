@@ -50,7 +50,7 @@ public class AddPostEndpoint(
         var message = new PostAddedMessage(post.Id, request.Image.FileName, hostEnvironment.EnvironmentName);
         await messagePublisher.PublishAsync(message, cancellationToken);
 
-        await SendCreatedAtAsync<GetPostBySlugEndpoint>(new { postSlug = post.Slug }, cancellation: cancellationToken);
+        await Send.CreatedAtAsync<GetPostBySlugEndpoint>(new { postSlug = post.Slug }, cancellation: cancellationToken);
     }
 
     private static Post MapToPost(AddPostRequest request) => new(request.Title, request.UserId, request.SpeciesId)

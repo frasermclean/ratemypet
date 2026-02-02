@@ -13,8 +13,7 @@ public sealed class DatabaseFixture : IAsyncLifetime
 {
     private IHost? host;
 
-    private readonly MsSqlContainer container = new MsSqlBuilder()
-        .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+    private readonly MsSqlContainer container = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
         .Build();
 
     public IServiceProvider ServiceProvider =>
